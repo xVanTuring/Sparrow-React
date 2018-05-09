@@ -6,10 +6,6 @@ import Folders from './Folders';
 
 
 class Left extends Component {
-  // constructor(props) {
-  //   super(props);
-  //   // this.folders = generatefolder()
-  // }
   render() {
     return (
       <div
@@ -48,7 +44,7 @@ class Left extends Component {
           }}
         >Folder (11)
         </span>
-        <Folders />
+        <Folders size={1} />
       </div>);
   }
 }

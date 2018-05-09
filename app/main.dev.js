@@ -13,6 +13,10 @@
 import { app, BrowserWindow } from 'electron';
 import MenuBuilder from './menu';
 
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+
 let mainWindow = null;
 
 if (process.env.NODE_ENV === 'production') {
@@ -22,7 +26,6 @@ if (process.env.NODE_ENV === 'production') {
 
 if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
   require('electron-debug')();
-  const path = require('path');
   const p = path.join(__dirname, '..', 'app', 'node_modules');
   require('module').globalPaths.push(p);
 }
@@ -74,7 +77,12 @@ app.on('ready', async () => {
       throw new Error('"mainWindow" is not defined');
     }
     mainWindow.show();
-    mainWindow.focus();
+    // mainWindow.focus();
+    fs.readFile(path.join(os.homedir(), 'Sparrow', 'config.json'), (err, data) => {
+      if (err == null) {
+        mainWindow.webContents.send('metaLoaded', data.toString());
+      }
+    });
   });
 
   mainWindow.on('closed', () => {

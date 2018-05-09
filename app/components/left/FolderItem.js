@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 // import folder_indicator from "./folder_indicator.svg";
 import { connect } from 'react-redux';
-import { selectFolder } from '../../actions/folder';
 import uuidv1 from 'uuid/v1';
+import { selectFolder } from '../../actions/folder';
+
 // todo: Add Support for Mutli-Select
 // const predefinedIcons = {
 //   un_cate: '',
@@ -12,19 +13,25 @@ import uuidv1 from 'uuid/v1';
 //   trash: '',
 //   folder: ''
 // };
-type FolderItemProps = {
+export type FolderType = {
+  name: string,
   id: string,
+  children: FolderType[]
+};
+
+type FolderItemProps = {
+  id?: string,
   onFolderClick: (id: string) => void,
-  level: number,
-  title: string,
-  size: number,
-  subFolders: [],
-  select_folder_id: string
+  level?: number,
+  name: string,
+  size?: number,
+  subFolders?: FolderType[],
+  select_folder_id?: string
 };
 class FolderItem extends Component<FolderItemProps> {
   constructor(props) {
     super(props);
-    this.folderId = this.props.id || uuidv1();
+    this.id = this.props.id || uuidv1();
     this.state = {
       hover: false,
       collpased: false
@@ -37,7 +44,7 @@ class FolderItem extends Component<FolderItemProps> {
     this.setState({ hover: false });
   }
   handleClick = () => {
-    this.props.onFolderClick(this.folderId);
+    this.props.onFolderClick(this.id);
     this.setState({
       collpased: !this.state.collpased
     });
@@ -46,7 +53,7 @@ class FolderItem extends Component<FolderItemProps> {
     const nameLeft = 40 + ((this.props.level || 0) * 14);
     const imgLeft = 16 + ((this.props.level || 0) * 14);
     let visibility = false;
-    if (this.props.select_folder_id === this.folderId) {
+    if (this.props.select_folder_id === this.id) {
       visibility = true;
     } else if (this.state.hover) {
       visibility = true;
@@ -66,8 +73,9 @@ class FolderItem extends Component<FolderItemProps> {
           onClick={this.handleClick}
         >
           <div
+            className="hover_indicator"
             style={{
-              background: '#77777760',
+              backgroundColor: 'rgba(119, 119, 119, 0.6)',
               position: 'absolute',
               left: 0,
               right: 8,
@@ -79,18 +87,18 @@ class FolderItem extends Component<FolderItemProps> {
           />
 
           <img
-            // src={folder_indicator}
+            src="./dist/folder_indicator.svg"
             style={{
               width: 12,
               position: 'absolute',
               left: (this.props.level || 0) * 14,
               top: 8,
-              visibility: (this.props.subFolders != null) ? 'visible' : 'hidden'
+              visibility: (this.props.subFolders != null && this.props.subFolders.length !== 0) ? 'visible' : 'hidden'
             }}
             alt="folder"
           />
           <img
-            // src={All}
+            src="./dist/all_imgs.svg"
             style={{
               width: 16,
               position: 'absolute',
@@ -108,7 +116,7 @@ class FolderItem extends Component<FolderItemProps> {
               left: nameLeft,
             }}
           >
-            {this.props.title || 'All'}
+            {this.props.name || 'All'}
           </span>
           <span
             style={{
@@ -130,38 +138,38 @@ class FolderItem extends Component<FolderItemProps> {
           }}
         >
           {
-            generateFolder(this.props.subFolders)
+            generateFolder(this.props.subFolders, (this.props.level || 0) + 1)
           }
         </div>
       </div>
     );
   }
 }
-const generateFolder = (subFolders) => {
-  if (subFolders == null) {
+const generateFolder = (subFolders?: FolderType[], level: number) => {
+  if (subFolders == null || subFolders.length === 0) {
     return '';
   }
+  // console.log(subFolders);
   return subFolders.map((item) => {
-    console.log('');
+
     return (
       <RFolderItem
-        title={item.title}
-        size={item.size}
-        key={item.title}
-        level={item.level}
-        subFolders={item.subFolders}
+        name={item.name}
+        id={item.id}
+        // size={item.size}
+        key={item.id}
+        level={level}
+        subFolders={item.children}
       />
     );
   });
 };
 const mapStateToProps = (state) => {
-  console.log('');
   return {
-    select_folder_id: state.folders.get('select_folder_id')
+    select_folder_id: state.selectFolder
   };
 };
 const mapDispatchToProps = (dispatch) => {
-  console.log('');
   return {
     onFolderClick: (id) => {
       dispatch(selectFolder(id));

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import FolderItem from './FolderItem';
+import { PRESET_FOLDER_ID } from '../center/Center';
 
 class FixedFolders extends Component {
   render() {
@@ -9,11 +10,10 @@ class FixedFolders extends Component {
           marginTop: 12
         }}
       >
-        <FolderItem title="All" size={1034} folderId="1" />
-        <FolderItem title="Un-Cate" size={377} folderId="2" />
-        <FolderItem title="Un-Tag" size={231} folderId="3" />
-        <FolderItem title="All Tags" size={57} folderId="4" />
-        <FolderItem title="Trash" size={11} folderId="5" />
+        <FolderItem name="All" size={0} id={PRESET_FOLDER_ID[0]} />
+        <FolderItem name="Un-Cate" size={377} id={PRESET_FOLDER_ID[1]} />
+        <FolderItem name="Un-Tag" size={231} id={PRESET_FOLDER_ID[2]} />
+        <FolderItem name="Trash" size={11} id={PRESET_FOLDER_ID[3]} />
       </div>
     );
   }

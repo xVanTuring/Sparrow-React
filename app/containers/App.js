@@ -1,24 +1,24 @@
 import React, { Component } from 'react';
-import { Provider } from 'react-redux';
+
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import Left from '../components/left/Left';
 import Center from '../components/center/Center';
 import Right from '../components/right/Right';
 
 type Props = {
-  store: {}
 };
 class App extends Component<Props> {
   render() {
     return (
-      <Provider store={this.props.store}>
-        <div className="App">
-          <Left />
-          <Center />
-          <Right />
-        </div>
-      </Provider>
+      <div className="App">
+        <Left />
+        <Center />
+        <Right />
+      </div>
+
     );
   }
 }
 
-export default App;
+export default DragDropContext(HTML5Backend)(App);

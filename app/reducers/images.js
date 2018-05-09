@@ -1,10 +1,19 @@
-import { Map } from 'immutable';
-import { SELECT_IMAGE } from '../actions/image';
+import { List } from 'immutable';
+import { SELECT_IMAGE, SET_IMAGE } from '../actions/image';
 
-const images = (state = new Map({}), action) => {
+export const selectedImg = (state = '', action) => {
   if (action.type === SELECT_IMAGE) {
-    return state.set('select_image_id', action.id);
+    return action.id;
   }
   return state;
 };
-export default images;
+export const images = (state = List(), action) => {
+  if (action.type === SET_IMAGE) {
+    return List(action.images);
+  }
+  return state;
+};
+export const addImage = (state = '', action) => {
+  return state;
+};
+

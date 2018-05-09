@@ -1,11 +1,16 @@
-import { Map } from 'immutable';
-import { SELECT_FOLDER } from '../actions/folder';
+import { List } from 'immutable';
+import { SELECT_FOLDER, SET_FOLDERS } from '../actions/folder';
 
-const folders = (state = new Map({}), action) => {
+export const selectFolder = (state = '', action) => {
   if (action.type === SELECT_FOLDER) {
-    return state.set('select_folder_id', action.id);
+    return action.id;
   }
   return state;
 };
 
-export default folders;
+export const folders = (state = List(), action) => {
+  if (action.type === SET_FOLDERS) {
+    return List(action.folders);
+  }
+  return state;
+};
