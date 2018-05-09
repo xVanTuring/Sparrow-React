@@ -3,13 +3,14 @@ import thunk from 'redux-thunk';
 import { createHashHistory } from 'history';
 import { routerMiddleware, routerActions } from 'react-router-redux';
 import { createLogger } from 'redux-logger';
-import rootReducer from '../reducers';
-import * as counterActions from '../actions/counter';
-import type { counterStateType } from '../reducers/counter';
+import rootReducer, { StoreInitState } from '../reducers';
+import * as imageAction from '../actions/image';
+import * as folderAction from '../actions/folder';
+// import { StoreInitState } from '../reducers/index';
 
 const history = createHashHistory();
 
-const configureStore = (initialState?: counterStateType) => {
+const configureStore = (initialState?: StoreInitState) => {
   // Redux Configuration
   const middleware = [];
   const enhancers = [];
@@ -34,7 +35,8 @@ const configureStore = (initialState?: counterStateType) => {
 
   // Redux DevTools Configuration
   const actionCreators = {
-    ...counterActions,
+    ...imageAction,
+    ...folderAction,
     ...routerActions,
   };
   // If Redux DevTools Extension is installed use it, otherwise use Redux compose

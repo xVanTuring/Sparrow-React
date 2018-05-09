@@ -1,11 +1,14 @@
-// @flow
 import { combineReducers } from 'redux';
-import { routerReducer as router } from 'react-router-redux';
-import counter from './counter';
+import { Map } from 'immutable';
+import folders from './folder';
+import images from './images';
 
-const rootReducer = combineReducers({
-  counter,
-  router,
+export type StoreInitState = {
+  folders: Map,
+  images: Map
+};
+const reducer = combineReducers({
+  folders,
+  images
 });
-
-export default rootReducer;
+export default reducer;
