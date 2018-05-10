@@ -11,45 +11,80 @@ export type ImageType = {
 };
 export const ImageModel = 'Image';
 type ImageProp = {
-  img_id?: string,
+  id?: string,
   onImageClick: (id: string) => void,
   width?: number,
+  size?: string,
   src: string,
+  name: string,
   connectDragSource: any,
   connectDragPreview: any
-  // isDragging?: boolean
 
 };
 class Image extends Component<ImageProp> {
   constructor(props) {
     super(props);
-    this.img_id = this.props.img_id || uuidv1();
+    this.id = this.props.id || uuidv1();
   }
-  handleClick = () => {
-    this.props.onImageClick(this.img_id);
+  handleClick = (e) => {
+    this.props.onImageClick(this.id);
+    // e.stopPropagation();
+  }
+  handleMouseDown = (e) => {
+    e.stopPropagation();
   }
   render() {
     // add support for multi-select
     const { connectDragSource } = this.props;
     return connectDragSource(<div
-      onClick={this.handleClick}
       style={{
         margin: '8px',
-        padding: '2px',
-        border: '2px solid ' + ((this.img_id === this.props.select_image_id) ? '#0E70E8' : 'rgba(0,0,0,0)'),
-        borderRadius: '4px',
+        pointerEvents: 'auto'
       }}
+      onClick={this.handleClick}
+      onMouseDown={this.handleMouseDown}
     >
-      <img
-        src={this.props.src}
+      <div
         style={{
-          width: this.props.width || 200,
-          verticalAlign: 'bottom',
-          borderRadius: '2px'
+          padding: '2px',
+          border: '2px solid ' + ((this.id === this.props.select_image_id) ? '#0E70E8' : 'rgba(0,0,0,0)'),
+          borderRadius: '4px',
+          marginBottom: 8,
+          pointerEvents: 'none'
         }}
-        alt="img"
-        ref={(e) => { this.props.connectDragPreview(e) }}
-      />
+      >
+        <img
+          src={this.props.src}
+          style={{
+            width: this.props.width || 200,
+            verticalAlign: 'bottom',
+            borderRadius: '2px',
+            // display: 'block'
+          }}
+          alt="img"
+          ref={(e) => { this.props.connectDragPreview(e); }}
+        />
+      </div>
+      <div
+        style={{
+          color: 'white',
+          fontSize: 16,
+          padding: '2px 6px',
+          // backgroundColor: 'blue',
+          borderRadius: 4,
+          textAlign: 'center',
+        }}
+      >{this.props.name}
+      </div>
+      <span
+        style={{
+          color: '#686868',
+          fontSize: 10,
+          // verticalAlign: 'top',
+        }}
+      >
+        {this.props.size}
+      </span>
     </div>);
   }
 }
@@ -70,7 +105,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 const imageSource = {
   beginDrag(props, monitor, component) {
-    console.log(component);
+    // console.log(component);
     return { id: '123' };
   }
 };

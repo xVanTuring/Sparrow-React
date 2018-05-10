@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import Masonry from 'react-masonry-component';
 import { connect } from 'react-redux';
 import { DropTarget } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
+// import AutoResponsive from 'autoresponsive-react';
 import Image from './Image';
 import DropArea from './DropArea';
 
@@ -11,12 +13,70 @@ type Prop = {
   connectDropTarget: any,
   isOver: boolean,
   // isOverCurrent: boolean,
-  canDrop: boolean
+  canDrop: boolean,
+  basePath: string
   // itemType: any
 };
 class Center extends Component<Prop> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isDragging: false,
+      startMousePos: { x: 200, y: 32 },
+      currentMousePos: { x: 200, y: 32 },
+      offset: 0,
+      updateCurrentMousePos: { x: 200, y: 32 },
+    };
+    this.scroller = null;
+    this.initScrollTop = 0;
+  }
+  handleMouseDown = (e) => {
+    const top = this.scroller.scrollTop;
+    this.setState({
+      isDragging: true,
+      startMousePos: { x: e.clientX, y: e.clientY + top }
+    });
+    this.initScrollTop = top;
+  }
+  handleMouseMove = (e) => {
+    // const top = this.scroller.scrollTop;
+    this.setState({
+      currentMousePos: { x: e.clientX, y: e.clientY + this.initScrollTop },
+      // updateCurrentMousePos: { x: e.clientX, y: e.clientY + top }
+    });
+  }
+  handleMouseUp = () => {
+    this.setState({
+      isDragging: false,
+      offset: 0
+    });
+  }
+  handleSroll = () => {
+    const offset = this.scroller.scrollTop - this.initScrollTop;
+    // const { currentMousePos } = this.state;
+    // console.log(offset);
+    if (this.state.isDragging) {
+      this.setState({
+        offset
+      });
+    }
+  }
   render() {
     const { connectDropTarget, isOver, canDrop } = this.props;
+    const {
+      isDragging,
+      startMousePos,
+      currentMousePos,
+      offset
+    } = this.state;
+
+    // const offset2 = startMousePos.y < currentMousePos.y ? offset : -offset;
+    const updatedY = currentMousePos.y + offset;
+    const height = Math.abs(startMousePos.y - updatedY);
+    const left = startMousePos.x < currentMousePos.x ?
+      startMousePos.x : currentMousePos.x;
+    const top = startMousePos.y < updatedY ?
+      startMousePos.y : updatedY;
     return connectDropTarget(<div
       className="right_border"
       style={{
@@ -46,22 +106,50 @@ class Center extends Component<Prop> {
           backgroundColor: '#303030',
           overflow: 'auto'
         }}
+        onMouseDown={this.handleMouseDown}
+        onMouseMove={this.handleMouseMove}
+        onMouseUp={this.handleMouseUp}
+        // onMouseLeave={this.handleMouseUp}
+        onScroll={this.handleSroll}
+        ref={(ref) => { this.scroller = ref; }}
       >
         <Masonry
+          ref={(ref) => { this.scroller = ref; }}
           style={{
-            margin: '4px auto'
+            margin: 'auto',
           }}
           options={{
             fitWidth: true,
           }}
+
         >
           {
-            this.props.images.map((path) => {
-              return <Image src={path} key={path} />;
+            this.props.images.map((item) => {
+              return (<Image
+                src={`${this.props.basePath}/images/${item.id}/${item.name}.${item.ext}`}
+                key={item.id}
+                size={`${item.width}x${item.height}`}
+                name={item.name}
+              />);
             })
           }
         </Masonry>
+        <div
+          style={{
+            position: 'absolute',
+            left: left - 230,
+            top: top - 32,
+            width: Math.abs(startMousePos.x - currentMousePos.x),
+            height,
+            backgroundColor: 'rgba(58,201,223,0.44)',
+            display: isDragging ? '' : 'none',
+            border: '1px solid rgba(58,201,223,0.7)',
+            pointerEvents: 'none',
+            boxSizing: 'border-box',
+          }}
+        />
       </div>
+
       <div
         className="drop_mask"
         style={{
@@ -76,7 +164,7 @@ class Center extends Component<Prop> {
       >
         <DropArea />
       </div>
-    </div>);
+    </div >);
   }
 }
 
@@ -86,7 +174,8 @@ const filter = (imgs, folderId) => {
 };
 const mapStateToProps = (state) => {
   return {
-    images: state.images
+    images: state.images,
+    basePath: state.basePath
     // with filter
   };
 };

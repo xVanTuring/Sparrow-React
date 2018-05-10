@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
+const { ipcRenderer } = require('electron');
 
 type AreaProp = {
   connectDropTarget: any,
@@ -36,7 +37,22 @@ class DropArea extends Component<AreaProp> {
 
 const areaTarget = {
   drop(props, monitor) {
-    console.log(monitor.getItem());
+    // addImages
+    if (monitor.getItem().files != null) {
+      const filtered = monitor.getItem().files.map((item) => {
+        if (item.type.indexOf('image') !== -1) {
+          return {
+            name: item.name,
+            lastModified: item.lastModified,
+            path: item.path,
+            size: item.size,
+            type: item.type
+          };
+        }
+      });
+      // console.log(JSON.stringify(filtered));
+      ipcRenderer.send('addImages', [filtered, '']);
+    }
   },
 };
 function collect(_connect, monitor) {

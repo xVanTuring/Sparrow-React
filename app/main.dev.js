@@ -10,14 +10,22 @@
  *
  * @flow
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import MenuBuilder from './menu';
+import { readMeta, readImages, addImages } from './operation/operation';
 
-const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
 let mainWindow = null;
+// [imgPath] targetPath(id)
+ipcMain.on('addImages', (event, arg) => {
+  // console.log(arg[1]);
+  addImages(arg[0], arg[1], (res) => {
+    // mainWindow.webContents.send('addImages', res);
+    event.sender.send('addImages', res);
+  });
+});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -78,11 +86,20 @@ app.on('ready', async () => {
     }
     mainWindow.show();
     // mainWindow.focus();
-    fs.readFile(path.join(os.homedir(), 'Sparrow', 'config.json'), (err, data) => {
-      if (err == null) {
-        mainWindow.webContents.send('metaLoaded', data.toString());
-      }
+    readMeta((projMeta) => {
+      readImages((imgs) => {
+        mainWindow.webContents.send('metaLoaded', {
+          folders: projMeta.folders,
+          images: imgs,
+          basePath: path.join(os.homedir(), 'Sparrow')
+        });
+      });
     });
+    // fs.readFile(path.join(os.homedir(), 'Sparrow', 'config.json'), (err, data) => {
+    //   if (err == null) {
+    //     mainWindow.webContents.send('metaLoaded', data.toString());
+    //   }
+    // });
   });
 
   mainWindow.on('closed', () => {

@@ -1,5 +1,6 @@
 export const SELECT_IMAGE = 'SELECT_IMAGE';
 export const SET_IMAGE = 'SET_IMAGE';
+export const ADD_IMAGE = 'ADD_IMAGE';
 export function selectImage(id) {
   return {
     type: SELECT_IMAGE,
@@ -12,4 +13,9 @@ export function setImage(images) {
     images
   };
 }
-
+export function addImages(images) {
+  return {
+    type: ADD_IMAGE,
+    images
+  };
+}

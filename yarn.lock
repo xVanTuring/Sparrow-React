@@ -499,6 +499,17 @@ autoprefixer@^7.1.2:
     postcss "^6.0.16"
     postcss-value-parser "^3.2.3"
 
+autoresponsive-core@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/autoresponsive-core/-/autoresponsive-core-1.0.1.tgz#cbb77dffb5ee625fe3dae867671050632ba04916"
+
+autoresponsive-react@^1.1.31:
+  version "1.1.31"
+  resolved "https://registry.yarnpkg.com/autoresponsive-react/-/autoresponsive-react-1.1.31.tgz#dede25f8ff7f7d4d0066159aa1636025df7f0637"
+  dependencies:
+    autoresponsive-core "^1.0.1"
+    exenv "^1.2.0"
+
 aws-sign2@~0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.6.0.tgz#14342dd38dbcc94d0e5b87d763cd63612c0e794f"
@@ -3695,6 +3706,10 @@ execall@^1.0.0:
   resolved "https://registry.yarnpkg.com/execall/-/execall-1.0.0.tgz#73d0904e395b3cab0658b08d09ec25307f29bb73"
   dependencies:
     clone-regexp "^1.0.0"
+
+exenv@^1.2.0:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.2.tgz#2ae78e85d9894158670b03d47bec1f03bd91bb9d"
 
 exit@^0.1.2:
   version "0.1.2"

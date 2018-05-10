@@ -1,7 +1,7 @@
 export const RESET_APP = 'RESET_APP';
-export function resetApp(state) {
+export function resetApp(data) {
   return {
     type: RESET_APP,
-    state
+    data
   };
 }
