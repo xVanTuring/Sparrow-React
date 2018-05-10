@@ -3,6 +3,7 @@ import uuidv1 from 'uuid/v1';
 import { connect } from 'react-redux';
 import { DragSource } from 'react-dnd';
 import { selectImage } from '../../actions/image';
+import { List } from 'immutable';
 
 export type ImageType = {
   name: string,
@@ -18,85 +19,102 @@ type ImageProp = {
   src: string,
   name: string,
   connectDragSource: any,
-  connectDragPreview: any
-
+  connectDragPreview: any,
+  selectedImgs: List<string>,
+  hoveredImgs: string[]
 };
 class Image extends Component<ImageProp> {
   constructor(props) {
     super(props);
-    this.id = this.props.id || uuidv1();
+    this.id = this.props.id;
+    this.imgRef = null;
   }
-  handleClick = (e) => {
-    this.props.onImageClick(this.id);
-    // e.stopPropagation();
+  handleClick = () => {
+    console.log('Click');
+    this.props.onImageClick([this.id]);
   }
   handleMouseDown = (e) => {
     e.stopPropagation();
   }
   render() {
-    // add support for multi-select
-    const { connectDragSource } = this.props;
-    return connectDragSource(<div
-      style={{
-        margin: '8px',
-        pointerEvents: 'auto'
-      }}
-      onClick={this.handleClick}
-      onMouseDown={this.handleMouseDown}
-    >
+    const { connectDragSource, selectedImgs, hoveredImgs } = this.props;
+    let selected = false;
+    console.log(this.props.id);
+    if (selectedImgs != null) {
+      selectedImgs.forEach((value) => {
+        if (value === this.props.id) {
+          selected = true;
+        }
+      });
+    }
+    if (hoveredImgs != null) {
+      hoveredImgs.forEach((value) => {
+        if (value === this.props.id) {
+          selected = true;
+        }
+      });
+    }
+    console.log('selected ' + selected);
+    return connectDragSource((
       <div
         style={{
-          padding: '2px',
-          border: '2px solid ' + ((this.id === this.props.select_image_id) ? '#0E70E8' : 'rgba(0,0,0,0)'),
-          borderRadius: '4px',
-          marginBottom: 8,
-          pointerEvents: 'none'
+          margin: '8px',
+          pointerEvents: 'auto'
         }}
+        onClick={this.handleClick}
+        onMouseDown={this.handleMouseDown}
       >
-        <img
-          src={this.props.src}
+        <div
           style={{
-            width: this.props.width || 200,
-            verticalAlign: 'bottom',
-            borderRadius: '2px',
-            // display: 'block'
+            padding: '2px',
+            border: `2px solid ${selected ? '#0E70E8' : 'rgba(0,0,0,0)'}`,
+            borderRadius: '4px',
+            marginBottom: 8,
+            pointerEvents: 'none'
           }}
-          alt="img"
-          ref={(e) => { this.props.connectDragPreview(e); }}
-        />
-      </div>
-      <div
-        style={{
-          color: 'white',
-          fontSize: 16,
-          padding: '2px 6px',
-          // backgroundColor: 'blue',
-          borderRadius: 4,
-          textAlign: 'center',
-        }}
-      >{this.props.name}
-      </div>
-      <span
-        style={{
-          color: '#686868',
-          fontSize: 10,
-          // verticalAlign: 'top',
-        }}
-      >
-        {this.props.size}
-      </span>
-    </div>);
+        >
+          <img
+            src={this.props.src}
+            style={{
+              width: this.props.width || 200,
+              verticalAlign: 'bottom',
+              borderRadius: '2px',
+              // display: 'block'
+            }}
+            alt="img"
+            // ref={(e) => { this.props.connectDragPreview(e); }}
+          />
+        </div>
+        <div
+          style={{
+            color: 'white',
+            fontSize: 16,
+            padding: '2px 6px',
+            // backgroundColor: 'blue',
+            borderRadius: 4,
+            textAlign: 'center',
+          }}
+        >{this.props.name}
+        </div>
+        <span
+          style={{
+            color: '#686868',
+            fontSize: 10,
+            // verticalAlign: 'top',
+          }}
+        >
+          {this.props.size}
+        </span>
+      </div>));
   }
 }
 
 const mapStateToProps = (state) => {
-  // console.log('');
   return {
-    select_image_id: state.selectedImg
+    selectedImgs: state.selectedImgs
   };
 };
 const mapDispatchToProps = (dispatch) => {
-  // console.log('');
   return {
     onImageClick: (id) => {
       dispatch(selectImage(id));

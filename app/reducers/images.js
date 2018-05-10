@@ -2,9 +2,9 @@ import { List } from 'immutable';
 import { SELECT_IMAGE, SET_IMAGE, ADD_IMAGE } from '../actions/image';
 import { RESET_APP } from '../actions/app';
 
-export const selectedImg = (state = '', action) => {
+export const selectedImgs = (state = List([]), action) => {
   if (action.type === SELECT_IMAGE) {
-    return action.id;
+    return List(action.ids);
   }
   return state;
 };

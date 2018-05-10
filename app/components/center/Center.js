@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import { List } from 'immutable';
 import Masonry from 'react-masonry-component';
 import { connect } from 'react-redux';
 import { DropTarget } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-// import AutoResponsive from 'autoresponsive-react';
 import Image from './Image';
 import DropArea from './DropArea';
+import { selectImage } from '../../actions/image';
+// todo: move ALL EVENT TO document and use state to tell actions.
 
 type Prop = {
-  images: any,
+  images: List,
   connectDropTarget: any,
   isOver: boolean,
   // isOverCurrent: boolean,
   canDrop: boolean,
-  basePath: string
+  basePath: string,
+  setSelected: (ids: []) => void
   // itemType: any
 };
 class Center extends Component<Prop> {
@@ -25,40 +27,95 @@ class Center extends Component<Prop> {
       startMousePos: { x: 200, y: 32 },
       currentMousePos: { x: 200, y: 32 },
       offset: 0,
-      updateCurrentMousePos: { x: 200, y: 32 },
+      hoveredImgs: []
     };
     this.scroller = null;
+    this.masonry = null;
     this.initScrollTop = 0;
+  }
+  handleHover = (newOffset) => {
+    const imgPos = this.masonry.items.map(item => {
+      return convertPos(item, this.masonry.size.marginLeft, 0);
+    });
+    const { currentMousePos, startMousePos, hoveredImgs } = this.state;
+    let { offset } = this.state;
+    offset = newOffset || offset;
+    const updatedY = currentMousePos.y + offset;
+    const height = Math.abs(startMousePos.y - updatedY);
+    const width = Math.abs(startMousePos.x - currentMousePos.x);
+    const left = (startMousePos.x < currentMousePos.x ?
+      startMousePos.x : currentMousePos.x) - 230;
+    const top = (startMousePos.y < updatedY ?
+      startMousePos.y : updatedY) - 32;
+    const selectionRect = {
+      x: left,
+      y: top,
+      width,
+      height
+    };
+    // todo: use last index to reduce calcu.
+    const interArr: [] = imgPos.map(item => {
+      return isIntersect(selectionRect, item);
+    });
+    const newHoveredImgs = [];
+    interArr.forEach((value, index) => {
+      if (value) {
+        newHoveredImgs.push(this.props.images.get(index).id);
+      }
+    });
+    let diff = false;
+    if (hoveredImgs.length === newHoveredImgs.length) {
+      for (let i = 0; i < hoveredImgs.length; i += 1) {
+        if (hoveredImgs[i] !== newHoveredImgs[i]) {
+          diff = true;
+        }
+      }
+    } else {
+      diff = true;
+    }
+    if (diff) {
+      this.setState({
+        hoveredImgs: newHoveredImgs
+      });
+    }
   }
   handleMouseDown = (e) => {
     const top = this.scroller.scrollTop;
     this.setState({
       isDragging: true,
-      startMousePos: { x: e.clientX, y: e.clientY + top }
+      startMousePos: { x: e.clientX, y: e.clientY + top },
+      currentMousePos: { x: e.clientX, y: e.clientY + top },
     });
     this.initScrollTop = top;
+    this.props.setSelected([]);
   }
   handleMouseMove = (e) => {
-    // const top = this.scroller.scrollTop;
-    this.setState({
-      currentMousePos: { x: e.clientX, y: e.clientY + this.initScrollTop },
-      // updateCurrentMousePos: { x: e.clientX, y: e.clientY + top }
-    });
+    if (this.state.isDragging) {
+      this.setState({
+        currentMousePos: { x: e.clientX, y: e.clientY + this.initScrollTop },
+      });
+      // console.log(this.masonry.size.marginLeft)
+      this.handleHover();
+      // this.props.setSelected(selectedItem);
+    }
   }
   handleMouseUp = () => {
+    this.props.setSelected(this.state.hoveredImgs);
     this.setState({
       isDragging: false,
-      offset: 0
+      startMousePos: { x: 200, y: 32 },
+      currentMousePos: { x: 200, y: 32 },
+      offset: 0,
+      hoveredImgs: []
     });
   }
   handleSroll = () => {
     const offset = this.scroller.scrollTop - this.initScrollTop;
-    // const { currentMousePos } = this.state;
-    // console.log(offset);
     if (this.state.isDragging) {
       this.setState({
         offset
       });
+      this.handleHover(offset);
     }
   }
   render() {
@@ -70,9 +127,9 @@ class Center extends Component<Prop> {
       offset
     } = this.state;
 
-    // const offset2 = startMousePos.y < currentMousePos.y ? offset : -offset;
     const updatedY = currentMousePos.y + offset;
-    const height = Math.abs(startMousePos.y - updatedY);
+    const height = isDragging ? Math.abs(startMousePos.y - updatedY) : 0;
+    const width = isDragging ? Math.abs(startMousePos.x - currentMousePos.x) : 0;
     const left = startMousePos.x < currentMousePos.x ?
       startMousePos.x : currentMousePos.x;
     const top = startMousePos.y < updatedY ?
@@ -109,12 +166,14 @@ class Center extends Component<Prop> {
         onMouseDown={this.handleMouseDown}
         onMouseMove={this.handleMouseMove}
         onMouseUp={this.handleMouseUp}
-        // onMouseLeave={this.handleMouseUp}
+        onMouseLeave={this.handleMouseUp}
         onScroll={this.handleSroll}
         ref={(ref) => { this.scroller = ref; }}
       >
         <Masonry
-          ref={(ref) => { this.scroller = ref; }}
+          ref={(ref) => {
+            this.masonry = this.masonry || ref.masonry;
+          }}
           style={{
             margin: 'auto',
           }}
@@ -130,6 +189,8 @@ class Center extends Component<Prop> {
                 key={item.id}
                 size={`${item.width}x${item.height}`}
                 name={item.name}
+                id={item.id}
+                hoveredImgs={this.state.hoveredImgs}
               />);
             })
           }
@@ -139,7 +200,7 @@ class Center extends Component<Prop> {
             position: 'absolute',
             left: left - 230,
             top: top - 32,
-            width: Math.abs(startMousePos.x - currentMousePos.x),
+            width,
             height,
             backgroundColor: 'rgba(58,201,223,0.44)',
             display: isDragging ? '' : 'none',
@@ -167,11 +228,39 @@ class Center extends Component<Prop> {
     </div >);
   }
 }
-
-export const PRESET_FOLDER_ID = ['ALL', 'UNCAT', 'UNTAG', 'TRASH'];
-const filter = (imgs, folderId) => {
-
+const convertPos = (item, marMarginL, marMarginT) => {
+  return {
+    width: item.size.width,
+    height: item.size.height,
+    x: item.position.x + marMarginL + 8,
+    y: item.position.y + marMarginT + 8
+  };
 };
+const isIntersect = (item1, item2) => {
+  const minx1 = item1.x;
+  const minx2 = item2.x;
+  const maxx1 = minx1 + item1.width;
+  const maxx2 = minx2 + item2.width;
+
+  const miny1 = item1.y;
+  const miny2 = item2.y;
+  const maxy1 = miny1 + item1.height;
+  const maxy2 = miny2 + item2.height;
+
+  const minX = Math.max(minx1, minx2);
+  const minY = Math.max(miny1, miny2);
+
+  const maxX = Math.min(maxx1, maxx2);
+  const maxY = Math.min(maxy1, maxy2);
+  if (minX > maxX || minY > maxY) {
+    return false;
+  }
+  return true;
+};
+export const PRESET_FOLDER_ID = ['ALL', 'UNCAT', 'UNTAG', 'TRASH'];
+// const filter = (imgs, folderId) => {
+
+// };
 const mapStateToProps = (state) => {
   return {
     images: state.images,
@@ -181,15 +270,15 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
   return {
+    setSelected: (ids) => {
+      dispatch(selectImage(ids));
+    }
   };
 };
 
 const centerTarget = {
   drop(props, monitor) {
-    // console.log(monitor.getItem());
-    // if (props.onDrop) {
-    //   props.onDrop(props, monitor);
-    // }
+
   },
 };
 function collect(_connect, monitor) {
@@ -201,6 +290,6 @@ function collect(_connect, monitor) {
     canDrop: monitor.canDrop(),
   };
 }
-const DropCenter = DropTarget([NativeTypes.FILE, NativeTypes.URL], centerTarget, collect)(Center);
+const DropCenter = DropTarget([NativeTypes.FILE], centerTarget, collect)(Center);
 export default connect(mapStateToProps, mapDispatchToProps)(DropCenter);
 
