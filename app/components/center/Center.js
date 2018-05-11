@@ -7,7 +7,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import Image from './Image';
 import DropArea from './DropArea';
 import { selectImage } from '../../actions/image';
-// todo: move ALL EVENT TO document and use state to tell actions.
+// TODO: move ALL EVENT TO document and use state to tell actions.
 
 type Prop = {
   images: List,
@@ -53,7 +53,7 @@ class Center extends Component<Prop> {
       width,
       height
     };
-    // todo: use last index to reduce calcu.
+    // TODO: use last index to reduce calcu.
     const interArr: [] = imgPos.map(item => {
       return isIntersect(selectionRect, item);
     });
@@ -258,12 +258,39 @@ const isIntersect = (item1, item2) => {
   return true;
 };
 export const PRESET_FOLDER_ID = ['ALL', 'UNCAT', 'UNTAG', 'TRASH'];
-// const filter = (imgs, folderId) => {
-
-// };
+const filter = (imgs: List, folderId) => {
+  switch (folderId) {
+    case 'ALL':
+      return imgs.filter((item) => {
+        return !item.isDeleted;
+      });
+    case 'TRASH':
+      return imgs.filter((item) => {
+        return item.isDeleted;
+      });
+    case '':
+      return [];
+    default:
+      return imgs.filter((item) => {
+        if (item.isDeleted) {
+          return false;
+        }
+        if (item.folders.length > 0) {
+          let inFolder = false;
+          item.folders.forEach(id => {
+            if (id === folderId) {
+              inFolder = true;
+            }
+          });
+          return inFolder;
+        }
+        return false;
+      });
+  }
+};
 const mapStateToProps = (state) => {
   return {
-    images: state.images,
+    images: filter(state.images, state.selectFolder),
     basePath: state.basePath
     // with filter
   };
@@ -282,7 +309,6 @@ const centerTarget = {
   },
 };
 function collect(_connect, monitor) {
-  // console.log(monitor.getItem());
   return {
     connectDropTarget: _connect.dropTarget(),
     isOver: monitor.isOver(),

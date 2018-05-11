@@ -1,24 +1,17 @@
 import React, { Component } from 'react';
-// import folder_indicator from "./folder_indicator.svg";
 import { connect } from 'react-redux';
-import uuidv1 from 'uuid/v1';
+import { DragSource } from 'react-dnd';
 import { selectFolder } from '../../actions/folder';
+import FolderDropArea from './FolderDropArea';
 
-// todo: Add Support for Mutli-Select
-// const predefinedIcons = {
-//   un_cate: '',
-//   all: '',
-//   un_tag: '',
-//   all_tag: '',
-//   trash: '',
-//   folder: ''
-// };
+// TODO: Add Support for Mutli-Select
+// add drop layer and drag.
 export type FolderType = {
   name: string,
   id: string,
   children: FolderType[]
 };
-
+export const FolderModel = 'FolderItem';
 type FolderItemProps = {
   id?: string,
   onFolderClick: (id: string) => void,
@@ -26,12 +19,15 @@ type FolderItemProps = {
   name: string,
   size?: number,
   subFolders?: FolderType[],
-  select_folder_id?: string
+  select_folder_id?: string,
+  connectDragSource: any,
+  isDragging: boolean,
+  fixedFolder?: boolean
 };
 class FolderItem extends Component<FolderItemProps> {
   constructor(props) {
     super(props);
-    this.id = this.props.id || uuidv1();
+    this.id = this.props.id;
     this.state = {
       hover: false,
       collpased: false
@@ -50,6 +46,7 @@ class FolderItem extends Component<FolderItemProps> {
     });
   }
   render() {
+    const { connectDragSource, isDragging, fixedFolder } = this.props;
     const nameLeft = 40 + ((this.props.level || 0) * 14);
     const imgLeft = 16 + ((this.props.level || 0) * 14);
     let visibility = false;
@@ -58,7 +55,7 @@ class FolderItem extends Component<FolderItemProps> {
     } else if (this.state.hover) {
       visibility = true;
     }
-    return (
+    return connectDragSource(
       <div>
         <div
           style={{
@@ -85,6 +82,7 @@ class FolderItem extends Component<FolderItemProps> {
               visibility: visibility ? 'visible' : 'hidden',
             }}
           />
+
 
           <img
             src="./dist/folder_indicator.svg"
@@ -130,13 +128,14 @@ class FolderItem extends Component<FolderItemProps> {
           >
             {this.props.size || 0}
           </span>
-
+          <FolderDropArea selfDragging={isDragging} fixedFolder={fixedFolder} />
         </div>
         <div
           style={{
             display: this.state.collpased ? '' : 'none'
           }}
         >
+
           {
             generateFolder(this.props.subFolders, (this.props.level || 0) + 1)
           }
@@ -176,5 +175,23 @@ const mapDispatchToProps = (dispatch) => {
     }
   };
 };
-const RFolderItem = connect(mapStateToProps, mapDispatchToProps)(FolderItem);
+
+const imageSource = {
+  beginDrag(props, monitor, component) {
+    // console.log(component);
+    return { id: '123' };
+  }
+};
+function collect(connect, monitor) {
+  return {
+    // Call this function inside render()
+    // to let React DnD handle the drag events:
+    connectDragSource: connect.dragSource(),
+    // You can ask the monitor about the current drag state:
+    isDragging: monitor.isDragging(),
+    connectDragPreview: connect.dragPreview(),
+  };
+}
+const DragFolder = DragSource(FolderModel, imageSource, collect)(FolderItem);
+const RFolderItem = connect(mapStateToProps, mapDispatchToProps)(DragFolder);
 export default RFolderItem;

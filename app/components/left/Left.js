@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-// import { generatefolder } from '../utils';
-// import FolderItem from './FolderItem';
+import { DropTarget } from 'react-dnd';
 import FixedFolders from './FixedFolder';
 import Folders from './Folders';
+import { ImageModel } from '../center/Image';
 
-
-class Left extends Component {
+type LeftProp = {
+  connectDropTarget: any
+};
+class Left extends Component<LeftProp> {
   render() {
-    return (
+    const { connectDropTarget } = this.props;
+    return connectDropTarget((
       <div
         className="right_border"
         style={{
@@ -45,9 +48,24 @@ class Left extends Component {
         >Folder (11)
         </span>
         <Folders size={1} />
-      </div>);
+      </div>));
   }
 }
 
+const areaTarget = {
+  drop(props, monitor) {
+  },
+};
+function collect(_connect, monitor) {
+  return {
+    connectDropTarget: _connect.dropTarget(),
+    isOver: monitor.isOver(),
+    isOverCurrent: monitor.isOver({ shallow: true }),
+    canDrop: monitor.canDrop(),
+    itemType: monitor.getItemType()
+  };
+}
+export default DropTarget([ImageModel], areaTarget, collect)(Left);
 
-export default Left;
+
+// export default Left;

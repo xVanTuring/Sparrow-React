@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
-import uuidv1 from 'uuid/v1';
 import { connect } from 'react-redux';
 import { DragSource } from 'react-dnd';
 import { selectImage } from '../../actions/image';
-import { List } from 'immutable';
 
-export type ImageType = {
-  name: string,
-  size: string,
-  src: string
-};
+// TODO: set selectedImg when drag(down)
 export const ImageModel = 'Image';
 type ImageProp = {
   id?: string,
@@ -39,7 +33,6 @@ class Image extends Component<ImageProp> {
   render() {
     const { connectDragSource, selectedImgs, hoveredImgs } = this.props;
     let selected = false;
-    console.log(this.props.id);
     if (selectedImgs != null) {
       selectedImgs.forEach((value) => {
         if (value === this.props.id) {
@@ -54,7 +47,6 @@ class Image extends Component<ImageProp> {
         }
       });
     }
-    console.log('selected ' + selected);
     return connectDragSource((
       <div
         style={{
@@ -82,7 +74,7 @@ class Image extends Component<ImageProp> {
               // display: 'block'
             }}
             alt="img"
-            // ref={(e) => { this.props.connectDragPreview(e); }}
+          // ref={(e) => { this.props.connectDragPreview(e); }}
           />
         </div>
         <div

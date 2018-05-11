@@ -3,13 +3,11 @@ import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
-import App from './containers/App';
-import { configureStore } from './store/configureStore';
-import './app.global.css';
 import { resetApp } from './actions/app';
 import { addImages } from './actions/image';
-// import { setFolders } from './actions/folder';
-// import { setImage } from './actions/image';
+import './app.global.css';
+import App from './containers/App';
+import { configureStore } from './store/configureStore';
 
 const { ipcRenderer } = require('electron');
 

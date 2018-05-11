@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
+
 const { ipcRenderer } = require('electron');
 
 type AreaProp = {
