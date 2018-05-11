@@ -7,8 +7,7 @@ const { ipcRenderer } = require('electron');
 type AreaProp = {
   connectDropTarget: any,
   isOver: boolean,
-  isOverCurrent: boolean,
-  canDrop: boolean,
+  canDrop: boolean
   // itemType?: string
 };
 class DropArea extends Component<AreaProp> {

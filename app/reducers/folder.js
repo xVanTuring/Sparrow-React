@@ -2,7 +2,7 @@ import { List } from 'immutable';
 import { SELECT_FOLDER, SET_FOLDERS } from '../actions/folder';
 import { RESET_APP } from '../actions/app';
 
-export const selectFolder = (state = '', action) => {
+export const selectFolder = (state = 'ALL', action) => {
   if (action.type === SELECT_FOLDER) {
     return action.id;
   }

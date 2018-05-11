@@ -5,6 +5,7 @@ import { selectFolder } from '../../actions/folder';
 import FolderDropArea from './FolderDropArea';
 
 // TODO: Add Support for Mutli-Select
+// extra FixedFolderItem
 // add drop layer and drag.
 export type FolderType = {
   name: string,

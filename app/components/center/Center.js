@@ -10,7 +10,7 @@ import { selectImage } from '../../actions/image';
 // TODO: move ALL EVENT TO document and use state to tell actions.
 
 type Prop = {
-  images: List,
+  images: List | [],
   connectDropTarget: any,
   isOver: boolean,
   // isOverCurrent: boolean,
@@ -100,14 +100,16 @@ class Center extends Component<Prop> {
     }
   }
   handleMouseUp = () => {
-    this.props.setSelected(this.state.hoveredImgs);
-    this.setState({
-      isDragging: false,
-      startMousePos: { x: 200, y: 32 },
-      currentMousePos: { x: 200, y: 32 },
-      offset: 0,
-      hoveredImgs: []
-    });
+    if (this.state.isDragging) {
+      this.props.setSelected(this.state.hoveredImgs);
+      this.setState({
+        isDragging: false,
+        startMousePos: { x: 200, y: 32 },
+        currentMousePos: { x: 200, y: 32 },
+        offset: 0,
+        hoveredImgs: []
+      });
+    }
   }
   handleSroll = () => {
     const offset = this.scroller.scrollTop - this.initScrollTop;

@@ -8,9 +8,7 @@ export type StoreInitState = {
   // folders: Map,
   // images: Map
 };
-const basePath = (state = '') => {
-  return state;
-};
+const basePath = (state = '') => state;
 
 const reducer = combineReducers({
   ...folders,
@@ -19,7 +17,6 @@ const reducer = combineReducers({
 });
 export const rootReducer = (state, action) => {
   if (action.type === RESET_APP) {
-    console.log(action.data);
     return reducer(action.data, action);
   }
   return reducer(state, action);

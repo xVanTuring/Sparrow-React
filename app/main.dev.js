@@ -95,11 +95,6 @@ app.on('ready', async () => {
         });
       });
     });
-    // fs.readFile(path.join(os.homedir(), 'Sparrow', 'config.json'), (err, data) => {
-    //   if (err == null) {
-    //     mainWindow.webContents.send('metaLoaded', data.toString());
-    //   }
-    // });
   });
 
   mainWindow.on('closed', () => {

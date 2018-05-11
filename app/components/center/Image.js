@@ -4,6 +4,7 @@ import { DragSource } from 'react-dnd';
 import { selectImage } from '../../actions/image';
 
 // TODO: set selectedImg when drag(down)
+// fix landscape img border
 export const ImageModel = 'Image';
 type ImageProp = {
   id?: string,

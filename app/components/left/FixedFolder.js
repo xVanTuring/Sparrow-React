@@ -10,10 +10,10 @@ class FixedFolders extends Component {
           marginTop: 12
         }}
       >
-        <FolderItem name="All" size={0} id={PRESET_FOLDER_ID[0]} />
-        <FolderItem name="Un-Cate" size={377} id={PRESET_FOLDER_ID[1]} />
-        <FolderItem name="Un-Tag" size={231} id={PRESET_FOLDER_ID[2]} />
-        <FolderItem name="Trash" size={11} id={PRESET_FOLDER_ID[3]} />
+        <FolderItem name="All" size={0} id={PRESET_FOLDER_ID[0]} fixedFolder />
+        <FolderItem name="Un-Cate" size={377} id={PRESET_FOLDER_ID[1]} fixedFolder />
+        <FolderItem name="Un-Tag" size={231} id={PRESET_FOLDER_ID[2]} fixedFolder />
+        <FolderItem name="Trash" size={11} id={PRESET_FOLDER_ID[3]} fixedFolder />
       </div>
     );
   }

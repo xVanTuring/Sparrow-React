@@ -10,7 +10,7 @@ type AreaProp = {
   // isOverCurrent: boolean,
   canDrop: boolean,
   selfDragging: boolean,
-  fixedFolder: boolean
+  fixedFolder?: boolean
   // itemType?: string
 };
 class FolderDropArea extends Component<AreaProp> {
@@ -20,9 +20,9 @@ class FolderDropArea extends Component<AreaProp> {
       isOver,
       canDrop,
       selfDragging,
-      fixedFolder
+      // fixedFolder
     } = this.props;
-    console.log(isOver && canDrop);
+    // console.log(isOver && canDrop);
     return connectDropTarget(<div
       className="drop_indicator"
       style={{
