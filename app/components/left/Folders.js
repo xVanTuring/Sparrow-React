@@ -19,26 +19,24 @@ class Folders extends Component<Prop> {
         }}
       >
         {
-          this.props.folders.map((item) => {
-            return <FolderItem name={item.name} id={item.id} key={item.id} subFolders={item.children} />;
-          })
+          this.props.folders.map((item) => (
+            <FolderItem name={item.name} id={item.id} key={item.id} subFolders={item.children} />
+          ))
         }
+
       </div>
     );
   }
 }
 
-const mapStateToProps = (state) => {
-  // console.log(state);
-  return {
-    folders: state.folders
-  };
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
+const mapStateToProps = (state) => ({
+  folders: state.folders
+});
+const mapDispatchToProps = (dispatch) => (
+  {
     // onFolderClick: (id) => {
     //   // dispatch(selectFolder(id));
     // }
-  };
-};
+  });
+
 export default connect(mapStateToProps, mapDispatchToProps)(Folders);

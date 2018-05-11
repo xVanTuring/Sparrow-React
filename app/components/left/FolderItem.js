@@ -31,8 +31,11 @@ class FolderItem extends Component<FolderItemProps> {
     this.id = this.props.id;
     this.state = {
       hover: false,
-      collpased: false
+      collpased: false,
+      isEditing: false,
+      newName: this.props.name
     };
+    this.input = null;
   }
   handleEnter = () => {
     this.setState({ hover: true });
@@ -46,17 +49,49 @@ class FolderItem extends Component<FolderItemProps> {
       collpased: !this.state.collpased
     });
   }
+  handleDoubleClick = () => {
+    // if (this.input) {
+    // don't know why
+    // setTimeout(() => {
+    //   this.input.focus();
+    // }, 100);
+    // }
+    this.setState({
+      isEditing: true
+    }, () => {
+      // this works 😀
+      this.input.focus();
+      this.input.select();
+    });
+  }
+  handleOnBlur = () => {
+    console.log('BLUR');
+    this.setState({
+      isEditing: false
+    });
+  }
+  handleOnChange = (event) => {
+    this.setState({
+      newName: event.target.value
+    });
+  }
+  handleOnKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      this.input.blur();
+    }
+  }
   render() {
     const { connectDragSource, isDragging, fixedFolder } = this.props;
+    const { hover, isEditing, newName } = this.state;
     const nameLeft = 40 + ((this.props.level || 0) * 14);
     const imgLeft = 16 + ((this.props.level || 0) * 14);
     let visibility = false;
     if (this.props.select_folder_id === this.id) {
       visibility = true;
-    } else if (this.state.hover) {
+    } else if (hover) {
       visibility = true;
     }
-    return connectDragSource(
+    return connectDragSource((
       <div>
         <div
           style={{
@@ -65,6 +100,8 @@ class FolderItem extends Component<FolderItemProps> {
             position: 'relative',
             left: 4,
             marginBottom: 2,
+            lineHeight: '28px',
+            // backgroundColor: 'blue'
           }}
           onMouseEnter={this.handleEnter}
           onMouseLeave={this.handleLeave}
@@ -73,63 +110,101 @@ class FolderItem extends Component<FolderItemProps> {
           <div
             className="hover_indicator"
             style={{
-              backgroundColor: 'rgba(119, 119, 119, 0.6)',
+              backgroundColor: `rgba(119, 119, 119, ${visibility ? '0.6' : '0'})`,
               position: 'absolute',
               left: 0,
               right: 8,
               top: 0,
               bottom: 0,
               borderRadius: '6px',
-              visibility: visibility ? 'visible' : 'hidden',
-            }}
-          />
-
-
-          <img
-            src="./dist/folder_indicator.svg"
-            style={{
-              width: 12,
-              position: 'absolute',
-              left: (this.props.level || 0) * 14,
-              top: 8,
-              visibility: (this.props.subFolders != null && this.props.subFolders.length !== 0) ? 'visible' : 'hidden'
-            }}
-            alt="folder"
-          />
-          <img
-            src="./dist/all_imgs.svg"
-            style={{
-              width: 16,
-              position: 'absolute',
-              left: imgLeft,
-              top: 6,
-            }}
-            alt="all"
-          />
-          <span
-            style={{
-              color: 'white',
+              paddingRight: 30,
               lineHeight: '28px',
-              fontSize: 13,
-              position: 'absolute',
-              left: nameLeft,
             }}
           >
-            {this.props.name || 'All'}
-          </span>
-          <span
-            style={{
-              position: 'absolute',
-              right: 18,
-              color: 'white',
-              lineHeight: '28px',
-              fontSize: 10,
-              textAlign: 'right'
-            }}
-          >
-            {this.props.size || 0}
-          </span>
-          <FolderDropArea selfDragging={isDragging} fixedFolder={fixedFolder} />
+            <img
+              src="./dist/folder_indicator.svg"
+              style={{
+                width: 12,
+                position: 'absolute',
+                left: (this.props.level || 0) * 14,
+                top: 8,
+                visibility: (this.props.subFolders != null && this.props.subFolders.length !== 0) ? 'visible' : 'hidden'
+              }}
+              alt="folder"
+            />
+            <img
+              src="./dist/all_imgs.svg"
+              style={{
+                width: 16,
+                position: 'absolute',
+                left: imgLeft,
+                top: 6,
+              }}
+              alt="all"
+            />
+            <span
+              style={{
+                color: 'white',
+                lineHeight: '28px',
+                fontSize: 13,
+                position: 'absolute',
+                left: nameLeft
+              }}
+              onDoubleClick={this.handleDoubleClick}
+            >
+              {newName}
+            </span>
+            <span
+              style={{
+                position: 'absolute',
+                right: 18,
+                color: 'white',
+                lineHeight: '28px',
+                fontSize: 10,
+                textAlign: 'right'
+              }}
+            >
+              {this.props.size || 0}
+            </span>
+            <div
+              style={{
+                position: 'absolute',
+                left: nameLeft - 4,
+                right: 6,
+                top: 0,
+                bottom: 0,
+                display: isEditing ? '' : 'none',
+              }}
+            >
+              <input
+                ref={(e) => { this.input = e; }}
+                style={{
+                  width: '100%',
+                  display: 'block',
+                  position: 'absolute',
+                  border: '0px',
+                  outline: 'none',
+                  fontSize: '13px',
+                  borderRadius: 4,
+                  paddingLeft: 4,
+                  height: 22,
+                  top: 3,
+                  boxSizing: 'border-box',
+                  backgroundColor: '#a1a1a1',
+                  color: 'white',
+                  lineHeight: '22px'
+                }}
+                value={newName}
+                type="text"
+                onBlur={this.handleOnBlur}
+                onChange={this.handleOnChange}
+                onKeyPress={this.handleOnKeyPress}
+              />
+            </div>
+
+          </div>
+          {/* <FolderDropArea selfDragging={isDragging} fixedFolder={fixedFolder} /> */}
+
         </div>
         <div
           style={{
@@ -142,7 +217,7 @@ class FolderItem extends Component<FolderItemProps> {
           }
         </div>
       </div>
-    );
+    ));
   }
 }
 const generateFolder = (subFolders?: FolderType[], level: number) => {

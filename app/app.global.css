@@ -4,7 +4,13 @@
  */
 
 /* @import "~font-awesome/css/font-awesome.css"; */
-
+::selection {
+  background:#757575; 
+  color:rgb(221, 221, 221);
+}
+div{
+  cursor: default;
+}
 .App {
   text-align: center;
 }

@@ -12,7 +12,7 @@
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
 import MenuBuilder from './menu';
-import { readMeta, readImages, addImages } from './operation/operation';
+import { readMeta, readImages, addImages, addFolder } from './operation/operation';
 
 const path = require('path');
 const os = require('os');
@@ -24,6 +24,17 @@ ipcMain.on('addImages', (event, arg) => {
   addImages(arg[0], arg[1], (res) => {
     // mainWindow.webContents.send('addImages', res);
     event.sender.send('addImages', res);
+  });
+});
+// name parentFolderId
+ipcMain.on('addFolder', (event, arg) => {
+  console.log('Received');
+  const name = arg[0];
+  const parentId = arg[1];
+  console.log({ name, parentId });
+  addFolder(name, parentId, (res) => {
+    console.log(res);
+    console.log('DONE!');
   });
 });
 

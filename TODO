@@ -3,4 +3,4 @@ add 'move to folder'
 add 'arrange folder'
 add 'init'
 add 'shift select' (try to use global listener)
-fix image drag preview
+[✅]fix image drag preview

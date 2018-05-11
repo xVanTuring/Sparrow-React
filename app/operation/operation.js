@@ -4,7 +4,7 @@ const path = require('path');
 const os = require('os');
 const uuid = require('uuid/v1');
 
-export const readMeta = (cb) => {
+export const readMeta = (cb: (res: { folders: FolderType[] }) => void) => {
   fs.readFile(path.join(os.homedir(), 'Sparrow', 'metadata.json'), (err, data) => {
     if (err == null) {
       cb(JSON.parse(data.toString()));
@@ -98,4 +98,55 @@ const addImage = (fileObjArr = [], arr, targetPathId, cb) => {
   } else if (cb) {
     cb(arr);
   }
+};
+
+type FolderType = {
+  name: string,
+  id: string,
+  children: FolderType[]
+};
+export const addFolder = (name, parentId, cb: (res: { folders: FolderType[] }) => void) => {
+  const id = uuid();
+  readMeta((res) => {
+    console.log('readMetaDone');
+    if (parentId === '') {
+      res.folders.push({
+        id,
+        name,
+        children: []
+      });
+    } else {
+      for (let i = 0; i < res.folders.length; i += 1) {
+        if (res.folders[i].id === parentId) {
+          res.folders[i].children.push({
+            id,
+            name,
+            children: []
+          });
+          break;
+        }
+      }
+    }
+    console.log('setMeta');
+    console.log(res);
+    saveMeta(res, () => {
+      console.log('saveMetaDone');
+      cb(res);
+    });
+  });
+};
+export const saveMeta = (obj, cb) => {
+  fs.writeFile(
+    path.join(
+      os.homedir(),
+      'Sparrow',
+      'metadata.json'
+    ),
+    JSON.stringify(obj), (err) => {
+      if (!err) {
+        console.log('MetaData File Writing Done!');
+        cb();
+      }
+    }
+  );
 };

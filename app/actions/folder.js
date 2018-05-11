@@ -7,11 +7,12 @@ export function selectFolder(id) {
     id
   };
 }
-export function addFolder(name, id) {
+export function addFolder(name, id, parentId) {
   return {
     type: ADD_FOLDER,
     name,
-    id
+    id,
+    parentId
   };
 }
 export function setFolders(folders) {

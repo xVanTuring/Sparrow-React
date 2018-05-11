@@ -63,7 +63,8 @@ class Image extends Component<ImageProp> {
             border: `2px solid ${selected ? '#0E70E8' : 'rgba(0,0,0,0)'}`,
             borderRadius: '4px',
             marginBottom: 8,
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            width: this.props.width || 200,
           }}
         >
           <img
@@ -80,24 +81,32 @@ class Image extends Component<ImageProp> {
         </div>
         <div
           style={{
-            color: 'white',
-            fontSize: 16,
-            padding: '2px 6px',
-            // backgroundColor: 'blue',
-            borderRadius: 4,
-            textAlign: 'center',
-          }}
-        >{this.props.name}
-        </div>
-        <span
-          style={{
-            color: '#686868',
-            fontSize: 10,
-            // verticalAlign: 'top',
+            width: this.props.width || 200,
           }}
         >
-          {this.props.size}
-        </span>
+          <span
+            style={{
+              color: 'white',
+              fontSize: 16,
+              padding: '2px 6px',
+              borderRadius: 4,
+              textAlign: 'center',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+              // backgroundColor: 'blue'
+            }}
+          >{this.props.name}
+          </span>
+          <br />
+          <span
+            style={{
+              color: '#686868',
+              fontSize: 10,
+            }}
+          >
+            {this.props.size}
+          </span>
+        </div>
       </div>));
   }
 }

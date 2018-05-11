@@ -3,6 +3,7 @@ import { DropTarget } from 'react-dnd';
 import FixedFolders from './FixedFolder';
 import Folders from './Folders';
 import { ImageModel } from '../center/Image';
+import CreateFolder from './CreateFolder';
 
 type LeftProp = {
   connectDropTarget: any
@@ -16,7 +17,8 @@ class Left extends Component<LeftProp> {
         style={{
           width: 230,
           height: '100vh',
-          backgroundColor: '#535353'
+          backgroundColor: '#535353',
+          position: 'relative'
         }}
       >
         <div
@@ -35,19 +37,26 @@ class Left extends Component<LeftProp> {
           Sparrow
         </div>
         <FixedFolders />
-        <span
+        <div
           style={{
-            display: 'block',
-            color: '#a0a0a0',
-            fontSize: 10,
-            // position: 'absolute',
-            marginLeft: 12,
-            marginTop: 8,
-            textAlign: 'left'
+            height: 18,
+            // backgroundColor: 'red'
           }}
-        >Folder (11)
-        </span>
-        <Folders size={1} />
+        >
+          <div
+            style={{
+              color: '#a0a0a0',
+              fontSize: 10,
+              lineHeight: '18px',
+              marginLeft: 12,
+              float: 'left',
+              height: 18
+            }}
+          >Folder (11)
+          </div>
+          <CreateFolder />
+        </div>
+        <Folders />
       </div>));
   }
 }
