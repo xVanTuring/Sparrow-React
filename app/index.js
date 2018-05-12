@@ -8,15 +8,20 @@ import { addImages } from './actions/image';
 import './app.global.css';
 import App from './containers/App';
 import { configureStore } from './store/configureStore';
+import { setFolders } from './actions/folder';
 
 const { ipcRenderer } = require('electron');
 
 const store = configureStore();
 ipcRenderer.on('metaLoaded', (event, data) => {
+  // full app
   store.dispatch(resetApp(data));
 });
 ipcRenderer.on('addImages', (event, images) => {
   store.dispatch(addImages(images));
+});
+ipcRenderer.on('setFolders', (event, folders) => {
+  store.dispatch(setFolders(folders));
 });
 
 render(

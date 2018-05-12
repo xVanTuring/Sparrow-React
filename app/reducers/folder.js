@@ -1,5 +1,5 @@
 import { List } from 'immutable';
-import { SELECT_FOLDER, SET_FOLDERS } from '../actions/folder';
+import { SELECT_FOLDER, SET_FOLDERS, FOLDER_RENAMING } from '../actions/folder';
 import { RESET_APP } from '../actions/app';
 
 export const selectFolder = (state = 'ALL', action) => {
@@ -8,6 +8,12 @@ export const selectFolder = (state = 'ALL', action) => {
   }
   return state;
 };
+export const renamingFolder = (state = '', action) => {
+  if (action.type === FOLDER_RENAMING) {
+    return action.id;
+  }
+  return state;
+}
 
 export const folders = (state = List([]), action) => {
   if (action.type === SET_FOLDERS) {

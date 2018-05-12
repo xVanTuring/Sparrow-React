@@ -4,7 +4,9 @@ const path = require('path');
 const os = require('os');
 const uuid = require('uuid/v1');
 
-export const readMeta = (cb: (res: { folders: FolderType[] }) => void) => {
+type metaCallBack = (res: { folders: FolderType[] }) => void;
+
+export const readMeta = (cb: metaCallBack) => {
   fs.readFile(path.join(os.homedir(), 'Sparrow', 'metadata.json'), (err, data) => {
     if (err == null) {
       cb(JSON.parse(data.toString()));
@@ -105,7 +107,7 @@ type FolderType = {
   id: string,
   children: FolderType[]
 };
-export const addFolder = (name, parentId, cb: (res: { folders: FolderType[] }) => void) => {
+export const addFolder = (name, parentId, cb: metaCallBack) => {
   const id = uuid();
   readMeta((res) => {
     console.log('readMetaDone');
@@ -149,4 +151,17 @@ export const saveMeta = (obj, cb) => {
       }
     }
   );
+};
+export const renameFolder = (id, newName, cb: metaCallBack) => {
+  readMeta((res) => {
+    for (let index = 0; index < res.folders.length; index += 1) {
+      const element = res.folders[index];
+      if (element.id === id) {
+        element.name = newName;
+      }
+    }
+    saveMeta(res, () => {
+      cb(res);
+    });
+  });
 };

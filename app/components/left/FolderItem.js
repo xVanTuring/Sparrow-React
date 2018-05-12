@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { DragSource } from 'react-dnd';
-import { selectFolder } from '../../actions/folder';
-import FolderDropArea from './FolderDropArea';
+import { selectFolder, setFolderRenaming } from '../../actions/folder';
+// import FolderDropArea from './FolderDropArea';
+import NameInput from './NameInput';
 
-// TODO: Add Support for Mutli-Select
+const { ipcRenderer } = require('electron');
+
+// TODO: Add Support for Multi-Select
 // extra FixedFolderItem
 // add drop layer and drag.
 export type FolderType = {
@@ -16,6 +19,7 @@ export const FolderModel = 'FolderItem';
 type FolderItemProps = {
   id?: string,
   onFolderClick: (id: string) => void,
+  onRenaming: (id: string) => void,
   level?: number,
   name: string,
   size?: number,
@@ -23,7 +27,9 @@ type FolderItemProps = {
   select_folder_id?: string,
   connectDragSource: any,
   isDragging: boolean,
-  fixedFolder?: boolean
+  fixedFolder?: boolean,
+  renamingFolderId: string
+
 };
 class FolderItem extends Component<FolderItemProps> {
   constructor(props) {
@@ -31,12 +37,12 @@ class FolderItem extends Component<FolderItemProps> {
     this.id = this.props.id;
     this.state = {
       hover: false,
-      collpased: false,
-      isEditing: false,
+      collapsed: false,
       newName: this.props.name
     };
     this.input = null;
   }
+
   handleEnter = () => {
     this.setState({ hover: true });
   }
@@ -46,43 +52,39 @@ class FolderItem extends Component<FolderItemProps> {
   handleClick = () => {
     this.props.onFolderClick(this.id);
     this.setState({
-      collpased: !this.state.collpased
+      collapsed: !this.state.collapsed
     });
   }
   handleDoubleClick = () => {
-    // if (this.input) {
-    // don't know why
-    // setTimeout(() => {
+    this.props.onRenaming(this.id);
+    // this.setState({
+    //   isEditing: true
+    // }, () => {
+    //   // this works 😀
     //   this.input.focus();
-    // }, 100);
-    // }
-    this.setState({
-      isEditing: true
-    }, () => {
-      // this works 😀
-      this.input.focus();
-      this.input.select();
-    });
+    //   this.input.select();
+    // });
   }
-  handleOnBlur = () => {
-    console.log('BLUR');
+  handleOnChange = (value) => {
+    // notify ipcMain to update file
     this.setState({
-      isEditing: false
-    });
-  }
-  handleOnChange = (event) => {
-    this.setState({
-      newName: event.target.value
-    });
-  }
-  handleOnKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      this.input.blur();
+      newName: value
+    })
+    if (value !== this.props.name) {
+      ipcRenderer.send('renameFolder', [this.id, value]);
     }
   }
+
   render() {
-    const { connectDragSource, isDragging, fixedFolder } = this.props;
-    const { hover, isEditing, newName } = this.state;
+    const {
+      connectDragSource,
+      isDragging,
+      fixedFolder,
+      renamingFolderId,
+      id,
+      name
+    } = this.props;
+    const { hover, newName } = this.state;
     const nameLeft = 40 + ((this.props.level || 0) * 14);
     const imgLeft = 16 + ((this.props.level || 0) * 14);
     let visibility = false;
@@ -148,7 +150,11 @@ class FolderItem extends Component<FolderItemProps> {
                 lineHeight: '28px',
                 fontSize: 13,
                 position: 'absolute',
-                left: nameLeft
+                left: nameLeft,
+                right: 38,
+                textAlign: 'left',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap'
               }}
               onDoubleClick={this.handleDoubleClick}
             >
@@ -166,41 +172,13 @@ class FolderItem extends Component<FolderItemProps> {
             >
               {this.props.size || 0}
             </span>
-            <div
-              style={{
-                position: 'absolute',
-                left: nameLeft - 4,
-                right: 6,
-                top: 0,
-                bottom: 0,
-                display: isEditing ? '' : 'none',
-              }}
-            >
-              <input
-                ref={(e) => { this.input = e; }}
-                style={{
-                  width: '100%',
-                  display: 'block',
-                  position: 'absolute',
-                  border: '0px',
-                  outline: 'none',
-                  fontSize: '13px',
-                  borderRadius: 4,
-                  paddingLeft: 4,
-                  height: 22,
-                  top: 3,
-                  boxSizing: 'border-box',
-                  backgroundColor: '#a1a1a1',
-                  color: 'white',
-                  lineHeight: '22px'
-                }}
-                value={newName}
-                type="text"
-                onBlur={this.handleOnBlur}
-                onChange={this.handleOnChange}
-                onKeyPress={this.handleOnKeyPress}
-              />
-            </div>
+            <NameInput
+              nameLeft={nameLeft}
+              value={name}
+              setFolderRenaming={this.props.onRenaming}
+              onChange={this.handleOnChange}
+              editing={renamingFolderId === id}
+            />
 
           </div>
           {/* <FolderDropArea selfDragging={isDragging} fixedFolder={fixedFolder} /> */}
@@ -208,7 +186,7 @@ class FolderItem extends Component<FolderItemProps> {
         </div>
         <div
           style={{
-            display: this.state.collpased ? '' : 'none'
+            display: this.state.collapsed ? '' : 'none'
           }}
         >
 
@@ -241,13 +219,17 @@ const generateFolder = (subFolders?: FolderType[], level: number) => {
 };
 const mapStateToProps = (state) => {
   return {
-    select_folder_id: state.selectFolder
+    select_folder_id: state.selectFolder,
+    renamingFolderId: state.renamingFolder
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
     onFolderClick: (id) => {
       dispatch(selectFolder(id));
+    },
+    onRenaming: (id) => {
+      dispatch(setFolderRenaming(id));
     }
   };
 };
@@ -256,6 +238,12 @@ const imageSource = {
   beginDrag(props, monitor, component) {
     // console.log(component);
     return { id: '123' };
+  },
+  canDrag(props, monitor) {
+    if (props.id === props.renamingFolderId) {
+      return false;
+    }
+    return true;
   }
 };
 function collect(connect, monitor) {

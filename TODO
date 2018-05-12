@@ -1,6 +1,7 @@
 add 'add Folder'
 add 'move to folder'
 add 'arrange folder'
+[✅]add 'rename folder'
 add 'init'
 add 'shift select' (try to use global listener)
 [✅]fix image drag preview
