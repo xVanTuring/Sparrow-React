@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { DragSource } from 'react-dnd';
 import { selectFolder, setFolderRenaming } from '../../actions/folder';
-// import FolderDropArea from './FolderDropArea';
+import FolderDropArea from './FolderDropArea';
 import NameInput from './NameInput';
+import { List } from 'immutable';
+import { PRESET_FOLDER_ID } from '../center/Center';
 
 const { ipcRenderer } = require('electron');
 
@@ -22,14 +24,14 @@ type FolderItemProps = {
   onRenaming: (id: string) => void,
   level?: number,
   name: string,
-  size?: number,
   subFolders?: FolderType[],
   select_folder_id?: string,
   connectDragSource: any,
   isDragging: boolean,
   fixedFolder?: boolean,
-  renamingFolderId: string
-
+  renamingFolderId: string,
+  isOverLeft: boolean,
+  size: number
 };
 class FolderItem extends Component<FolderItemProps> {
   constructor(props) {
@@ -41,6 +43,11 @@ class FolderItem extends Component<FolderItemProps> {
       newName: this.props.name
     };
     this.input = null;
+  }
+  componentDidMount() {
+    if (this.props.name === '--RENAME--') {
+      this.props.onRenaming(this.id);
+    }
   }
 
   handleEnter = () => {
@@ -69,7 +76,7 @@ class FolderItem extends Component<FolderItemProps> {
     // notify ipcMain to update file
     this.setState({
       newName: value
-    })
+    });
     if (value !== this.props.name) {
       ipcRenderer.send('renameFolder', [this.id, value]);
     }
@@ -82,17 +89,21 @@ class FolderItem extends Component<FolderItemProps> {
       fixedFolder,
       renamingFolderId,
       id,
-      name
+      name,
+      isOverLeft,
+      size
     } = this.props;
     const { hover, newName } = this.state;
     const nameLeft = 40 + ((this.props.level || 0) * 14);
     const imgLeft = 16 + ((this.props.level || 0) * 14);
     let visibility = false;
+
     if (this.props.select_folder_id === this.id) {
       visibility = true;
     } else if (hover) {
       visibility = true;
     }
+
     return connectDragSource((
       <div>
         <div
@@ -170,18 +181,29 @@ class FolderItem extends Component<FolderItemProps> {
                 textAlign: 'right'
               }}
             >
-              {this.props.size || 0}
+              {size}
             </span>
-            <NameInput
-              nameLeft={nameLeft}
-              value={name}
-              setFolderRenaming={this.props.onRenaming}
-              onChange={this.handleOnChange}
-              editing={renamingFolderId === id}
-            />
+            {
+              fixedFolder ? '' :
+                (<NameInput
+                  nameLeft={nameLeft}
+                  value={name === '--RENAME--' ? 'New Folder' : newName}
+                  setFolderRenaming={this.props.onRenaming}
+                  onChange={this.handleOnChange}
+                  editing={renamingFolderId === id}
+                  isNewFolder={name === '--RENAME--'}
+                  id={this.id}
+                />)
+            }
+
 
           </div>
-          {/* <FolderDropArea selfDragging={isDragging} fixedFolder={fixedFolder} /> */}
+          {
+            isOverLeft ? (
+              <FolderDropArea selfDragging={isDragging} fixedFolder={fixedFolder} id={this.id} />
+            ) : ''
+          }
+
 
         </div>
         <div
@@ -240,7 +262,7 @@ const imageSource = {
     return { id: '123' };
   },
   canDrag(props, monitor) {
-    if (props.id === props.renamingFolderId) {
+    if (props.id === props.renamingFolderId || props.fixedFolder) {
       return false;
     }
     return true;

@@ -4,14 +4,14 @@ import { List } from 'immutable';
 import FolderItem, { FolderType } from './FolderItem';
 
 type Prop = {
-  folders?: List<FolderType>
+  folders?: List<FolderType>,
+  isOverLeft: boolean,
+  counter: { [x: string]: number }
 };
 
 class Folders extends Component<Prop> {
-  // constructor(props) {
-  //   super(props);
-  // }
   render() {
+    const { folders, counter } = this.props;
     return (
       <div
         style={{
@@ -19,8 +19,15 @@ class Folders extends Component<Prop> {
         }}
       >
         {
-          this.props.folders.map((item) => (
-            <FolderItem name={item.name} id={item.id} key={item.id} subFolders={item.children} />
+          folders.map((item) => (
+            <FolderItem
+              name={item.name}
+              id={item.id}
+              key={item.id}
+              subFolders={item.children}
+              isOverLeft={this.props.isOverLeft}
+              size={counter[item.id] || 0}
+            />
           ))
         }
 
@@ -30,13 +37,8 @@ class Folders extends Component<Prop> {
 }
 
 const mapStateToProps = (state) => ({
-  folders: state.folders
+  folders: state.folders,
 });
-const mapDispatchToProps = (dispatch) => (
-  {
-    // onFolderClick: (id) => {
-    //   // dispatch(selectFolder(id));
-    // }
-  });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Folders);
+
+export default connect(mapStateToProps)(Folders);

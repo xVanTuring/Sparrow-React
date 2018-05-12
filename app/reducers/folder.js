@@ -1,8 +1,9 @@
 import { List } from 'immutable';
 import { SELECT_FOLDER, SET_FOLDERS, FOLDER_RENAMING } from '../actions/folder';
 import { RESET_APP } from '../actions/app';
+import { PRESET_FOLDER_ID } from '../components/center/Center';
 
-export const selectFolder = (state = 'ALL', action) => {
+export const selectFolder = (state = PRESET_FOLDER_ID[0], action) => {
   if (action.type === SELECT_FOLDER) {
     return action.id;
   }

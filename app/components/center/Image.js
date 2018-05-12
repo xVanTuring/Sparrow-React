@@ -14,7 +14,7 @@ type ImageProp = {
   src: string,
   name: string,
   connectDragSource: any,
-  connectDragPreview: any,
+  // connectDragPreview: any,
   selectedImgs: List<string>,
   hoveredImgs: string[]
 };
@@ -29,10 +29,15 @@ class Image extends Component<ImageProp> {
     this.props.onImageClick([this.id]);
   }
   handleMouseDown = (e) => {
+    // this.props.onImageClick([this.id]);
+    // if already selected,do nothing else set drag
+    if (!this.isSelected()) {
+      this.props.onImageClick([this.id]);
+    }
     e.stopPropagation();
   }
-  render() {
-    const { connectDragSource, selectedImgs, hoveredImgs } = this.props;
+  isSelected = () => {
+    const { selectedImgs } = this.props;
     let selected = false;
     if (selectedImgs != null) {
       selectedImgs.forEach((value) => {
@@ -41,6 +46,11 @@ class Image extends Component<ImageProp> {
         }
       });
     }
+    return selected;
+  }
+  render() {
+    const { connectDragSource, hoveredImgs } = this.props;
+    let selected = this.isSelected();
     if (hoveredImgs != null) {
       hoveredImgs.forEach((value) => {
         if (value === this.props.id) {
@@ -125,8 +135,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 const imageSource = {
   beginDrag(props, monitor, component) {
-    // console.log(component);
-    return { id: '123' };
+    return { images: props.selectedImgs };
   }
 };
 function collect(connect, monitor) {

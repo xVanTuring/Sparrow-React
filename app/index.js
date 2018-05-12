@@ -4,7 +4,7 @@ import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
 import { resetApp } from './actions/app';
-import { addImages } from './actions/image';
+import { addImages, updateImages } from './actions/image';
 import './app.global.css';
 import App from './containers/App';
 import { configureStore } from './store/configureStore';
@@ -22,6 +22,10 @@ ipcRenderer.on('addImages', (event, images) => {
 });
 ipcRenderer.on('setFolders', (event, folders) => {
   store.dispatch(setFolders(folders));
+});
+ipcRenderer.on('updateImages', (event, updated) => {
+  store.dispatch(updateImages(updated));
+  // console.log(updated);
 });
 
 render(

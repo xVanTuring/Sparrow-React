@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
+import { connect } from 'react-redux';
+import { List } from 'immutable';
 import FixedFolders from './FixedFolder';
 import Folders from './Folders';
 import { ImageModel } from '../center/Image';
 import CreateFolder from './CreateFolder';
+import { ImageType } from '../../types/app';
+import { PRESET_FOLDER_ID } from '../center/Center';
 
 type LeftProp = {
-  connectDropTarget: any
+  connectDropTarget: (e) => any,
+  isOver: boolean,
+  counter: { [x: string]: number }
 };
 class Left extends Component<LeftProp> {
   render() {
-    const { connectDropTarget } = this.props;
+    const { connectDropTarget, isOver, counter } = this.props;
     return connectDropTarget((
       <div
         className="right_border"
@@ -36,7 +42,7 @@ class Left extends Component<LeftProp> {
         >
           Sparrow
         </div>
-        <FixedFolders />
+        <FixedFolders counter={counter} />
         <div
           style={{
             height: 18,
@@ -56,7 +62,7 @@ class Left extends Component<LeftProp> {
           </div>
           <CreateFolder />
         </div>
-        <Folders />
+        <Folders isOverLeft={isOver} counter={counter} />
       </div>));
   }
 }
@@ -74,7 +80,34 @@ function collect(_connect, monitor) {
     itemType: monitor.getItemType()
   };
 }
-export default DropTarget([ImageModel], areaTarget, collect)(Left);
+const mapStateToProps = (state) => {
+  return {
+    counter: counter(state.images)
+  };
+};
+const counter = (images: List<ImageType>) => {
+  const count = {};
+  count[PRESET_FOLDER_ID[0]] = 0;
+  count[PRESET_FOLDER_ID[3]] = 0;
+  images.forEach((item) => {
+    if (item.isDeleted) {
+      count[PRESET_FOLDER_ID[3]] += 1;
+    } else {
+      count[PRESET_FOLDER_ID[0]] += 1;
 
-
-// export default Left;
+      if (item.folders.length > 0) {
+        item.folders.forEach(id => {
+          if (count[id] == null) {
+            count[id] = 1;
+          } else {
+            count[id] += 1;
+          }
+        });
+      }
+    }
+  });
+  console.log(count);
+  return count;
+};
+const DropLeft = DropTarget([ImageModel], areaTarget, collect)(Left);
+export default connect(mapStateToProps)(DropLeft);

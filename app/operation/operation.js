@@ -13,6 +13,37 @@ export const readMeta = (cb: metaCallBack) => {
     }
   });
 };
+export const saveMeta = (obj, cb) => {
+  fs.writeFile(
+    path.join(
+      os.homedir(),
+      'Sparrow',
+      'metadata.json'
+    ),
+    JSON.stringify(obj), (err) => {
+      if (!err) {
+        console.log('MetaData File Writing Done!');
+        cb();
+      }
+    }
+  );
+};
+
+const readImageMeta = (id, cb: (res: ImageType) => void) => {
+  fs.readFile(path.join(os.homedir(), 'Sparrow', 'images', id, 'metadata.json'), (err, buf) => {
+    // const obj: ImageType = buf.toString();
+    if (err == null) {
+      cb(JSON.parse(buf.toString()));
+    }
+  });
+};
+const saveImageMeta = (id, obj, cb) => {
+  fs.writeFile(path.join(os.homedir(), 'Sparrow', 'images', id, 'metadata.json'), JSON.stringify(obj), (err) => {
+    if (err == null) {
+      cb();
+    }
+  });
+};
 
 export const readImages = (cb) => {
   const targetpath = path.join(os.homedir(), 'Sparrow', 'images');
@@ -52,6 +83,7 @@ const readImage = (dirPaths, arr, cb) => {
     cb(arr);
   }
 };
+
 export const addImages = (fileObjArr = [], targetPathId, cb) => {
   addImage(fileObjArr, [], targetPathId, (imgObjs) => {
     cb(imgObjs);
@@ -107,6 +139,18 @@ type FolderType = {
   id: string,
   children: FolderType[]
 };
+type ImageType = {
+  name: string,
+  size: number,
+  modificationTime: number,
+  folders: string[],
+  width: number,
+  height: number,
+  isDeleted: boolean,
+  ext: string
+  // tags: string[]
+};
+
 export const addFolder = (name, parentId, cb: metaCallBack) => {
   const id = uuid();
   readMeta((res) => {
@@ -137,21 +181,7 @@ export const addFolder = (name, parentId, cb: metaCallBack) => {
     });
   });
 };
-export const saveMeta = (obj, cb) => {
-  fs.writeFile(
-    path.join(
-      os.homedir(),
-      'Sparrow',
-      'metadata.json'
-    ),
-    JSON.stringify(obj), (err) => {
-      if (!err) {
-        console.log('MetaData File Writing Done!');
-        cb();
-      }
-    }
-  );
-};
+
 export const renameFolder = (id, newName, cb: metaCallBack) => {
   readMeta((res) => {
     for (let index = 0; index < res.folders.length; index += 1) {
@@ -165,3 +195,33 @@ export const renameFolder = (id, newName, cb: metaCallBack) => {
     });
   });
 };
+export const addImagesToFolder = (ids: string[], targetId, setFolder, cb) => {
+  addImageToFolder(ids, targetId, setFolder, [], (updatedItem: ImageType[]) => {
+    // TODO: use cb
+    cb(updatedItem);
+  });
+};
+export const addImageToFolder =
+  (
+    ids: string[],
+    targetId: string, setFolder: boolean, updated: [],
+    cb: (updatedItem: ImageType[]) => void
+  ) => {
+    if (ids.length > 0) {
+      const id = ids.pop();
+      readImageMeta(id, (res) => {
+        if (setFolder) {
+          res.folders = [targetId];
+        } else {
+          res.folders.push(targetId);
+        }
+        updated.push(res);
+        saveImageMeta(id, res, () => {
+          addImageToFolder(ids, targetId, setFolder, updated, cb);
+        });
+      });
+    } else {
+      cb(updated);
+    }
+  };
+

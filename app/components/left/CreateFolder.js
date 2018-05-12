@@ -31,7 +31,7 @@ class CreateFolder extends Component {
     });
   }
   handleAddClick = () => {
-    ipcRenderer.send('addFolder', ['Material Design', '']);
+    ipcRenderer.send('addFolder', ['--RENAME--', '']);
   }
   render() {
     return (

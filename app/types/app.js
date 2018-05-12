@@ -6,7 +6,7 @@ export type ImageType = {
   folders: string[],
   width: number,
   height: number,
-  isDelited: boolean,
+  isDeleted: boolean,
   ext: string
   // tags: string[]
 };

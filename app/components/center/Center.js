@@ -259,14 +259,14 @@ const isIntersect = (item1, item2) => {
   }
   return true;
 };
-export const PRESET_FOLDER_ID = ['ALL', 'UNCAT', 'UNTAG', 'TRASH'];
+export const PRESET_FOLDER_ID = ['--ALL--', '--UNCAT--', '--UNTAG--', '--TRASH--'];
 const filter = (imgs: List, folderId) => {
   switch (folderId) {
-    case 'ALL':
+    case PRESET_FOLDER_ID[0]:
       return imgs.filter((item) => {
         return !item.isDeleted;
       });
-    case 'TRASH':
+    case PRESET_FOLDER_ID[3]:
       return imgs.filter((item) => {
         return item.isDeleted;
       });

@@ -4,13 +4,16 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { ImageModel } from '../center/Image';
 // import { FolderModel } from './FolderItem'; ??
 
+const { ipcRenderer } = require('electron');
+
 type AreaProp = {
   connectDropTarget: any,
   isOver: boolean,
   // isOverCurrent: boolean,
   canDrop: boolean,
   selfDragging: boolean,
-  fixedFolder?: boolean
+  fixedFolder?: boolean,
+  id: string
   // itemType?: string
 };
 class FolderDropArea extends Component<AreaProp> {
@@ -20,9 +23,7 @@ class FolderDropArea extends Component<AreaProp> {
       isOver,
       canDrop,
       selfDragging,
-      // fixedFolder
     } = this.props;
-    // console.log(isOver && canDrop);
     return connectDropTarget(<div
       className="drop_indicator"
       style={{
@@ -41,7 +42,11 @@ class FolderDropArea extends Component<AreaProp> {
 
 const areaTarget = {
   drop(props, monitor) {
-    console.log('DROP!');
+    // use ctrl to copy to other folder,
+    // should always have from folder id in case we want move only ,not effect others
+    if (monitor.getItem().images != null) {
+      ipcRenderer.send('addImagesToFolder', [monitor.getItem().images.toArray(), props.id, true]);
+    }
   },
 };
 function collect(_connect, monitor) {
