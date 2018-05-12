@@ -7,3 +7,4 @@ add 'init'
 add 'shift select' (try to use global listener)
 [✅]fix image drag preview
 add thumb support
+add support for download url image from web

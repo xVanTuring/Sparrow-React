@@ -25,7 +25,6 @@ class Image extends Component<ImageProp> {
     this.imgRef = null;
   }
   handleClick = () => {
-    console.log('Click');
     this.props.onImageClick([this.id]);
   }
   handleMouseDown = (e) => {

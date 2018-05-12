@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const uuid = require('uuid/v1');
+const _ = require('lodash');
 
 type metaCallBack = (res: { folders: FolderType[] }) => void;
 
@@ -154,7 +155,6 @@ type ImageType = {
 export const addFolder = (name, parentId, cb: metaCallBack) => {
   const id = uuid();
   readMeta((res) => {
-    console.log('readMetaDone');
     if (parentId === '') {
       res.folders.push({
         id,
@@ -162,19 +162,17 @@ export const addFolder = (name, parentId, cb: metaCallBack) => {
         children: []
       });
     } else {
-      for (let i = 0; i < res.folders.length; i += 1) {
-        if (res.folders[i].id === parentId) {
-          res.folders[i].children.push({
-            id,
-            name,
-            children: []
-          });
-          break;
-        }
+      const ele = findFolder(parentId, res.folders);
+      if (ele == null) {
+        console.error('NULL FOLDER');
+      } else {
+        ele.children.push({
+          id,
+          name,
+          children: []
+        });
       }
     }
-    console.log('setMeta');
-    console.log(res);
     saveMeta(res, () => {
       console.log('saveMetaDone');
       cb(res);
@@ -184,16 +182,70 @@ export const addFolder = (name, parentId, cb: metaCallBack) => {
 
 export const renameFolder = (id, newName, cb: metaCallBack) => {
   readMeta((res) => {
-    for (let index = 0; index < res.folders.length; index += 1) {
-      const element = res.folders[index];
-      if (element.id === id) {
-        element.name = newName;
-      }
+    const element = findFolder(id, res.folders);
+    element.name = newName;
+    saveMeta(res, () => {
+      cb(res);
+    });
+  });
+};
+export const moveFolder = (id, targetParentId, cb: metaCallBack) => {
+  readMeta((res) => {
+    let oldParent = null;
+    let targetParent = null;
+    let source = null;
+    if (targetParentId === '') {
+      targetParent = '';
+    } else {
+      targetParent = findFolder(targetParentId, res.folders);
+    }
+    // source = findFolder(id, res.folders);
+    if (targetParent == null) {
+      cb(res);
+      return;
+    }
+    oldParent = findParentFolder(id, res.folders) || '';
+    if (oldParent === '') {
+      source = _.remove(res.folders, (v) => v.id === id)[0];
+    } else {
+      source = _.remove(oldParent.children, (v) => v.id === id)[0];
+    }
+    if (targetParent !== '') {
+      targetParent.children.push(source);
+    } else {
+      res.folders.push(source);
     }
     saveMeta(res, () => {
       cb(res);
     });
   });
+};
+const findParentFolder = (id, folders: FolderType[]) => {
+  for (let index = 0; index < folders.length; index += 1) {
+    const element = folders[index];
+    const filtered = element.children.filter(item => {
+      return item.id === id;
+    });
+    if (filtered.length === 1) {
+      return element;
+    }
+    const res = findParentFolder(id, element.children);
+    if (res != null) {
+      return res;
+    }
+  }
+};
+const findFolder = (id, folders: FolderType[]) => {
+  for (let index = 0; index < folders.length; index += 1) {
+    const element = folders[index];
+    if (element.id === id) {
+      return element;
+    }
+    const res = findFolder(id, element.children);
+    if (res != null) {
+      return res;
+    }
+  }
 };
 export const addImagesToFolder = (ids: string[], targetId, setFolder, cb) => {
   addImageToFolder(ids, targetId, setFolder, [], (updatedItem: ImageType[]) => {

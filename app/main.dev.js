@@ -12,7 +12,7 @@
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
 import MenuBuilder from './menu';
-import { readMeta, readImages, addImages, addFolder, renameFolder, addImagesToFolder } from './operation/operation';
+import { readMeta, readImages, addImages, addFolder, renameFolder, addImagesToFolder, moveFolder } from './operation/operation';
 
 const path = require('path');
 const os = require('os');
@@ -44,6 +44,12 @@ ipcMain.on('renameFolder', (event, arg) => {
 ipcMain.on('addImagesToFolder', (event, arg) => {
   addImagesToFolder(arg[0], arg[1], arg[2], (updated) => {
     event.sender.send('updateImages', updated);
+  });
+});
+// id targetId
+ipcMain.on('moveFolder', (event, arg) => {
+  moveFolder(arg[0], arg[1], (res) => {
+    event.sender.send('setFolders', res.folders);
   });
 });
 

@@ -13,11 +13,9 @@ type Prop = {
   images: List | [],
   connectDropTarget: any,
   isOver: boolean,
-  // isOverCurrent: boolean,
   canDrop: boolean,
   basePath: string,
   setSelected: (ids: []) => void
-  // itemType: any
 };
 class Center extends Component<Prop> {
   constructor(props) {
@@ -136,98 +134,100 @@ class Center extends Component<Prop> {
       startMousePos.x : currentMousePos.x;
     const top = startMousePos.y < updatedY ?
       startMousePos.y : updatedY;
-    return connectDropTarget(<div
-      className="right_border"
-      style={{
-        position: 'absolute',
-        backgroundColor: '#535353',
-        left: 230,
-        right: 200,
-        top: 0,
-        bottom: 0,
-      }}
-    >
+    return connectDropTarget((
       <div
-        className="bottom_border"
-        style={{
-          height: 32,
-          background: '#535353',
-        }}
-      />
-
-      <div
+        className="right_border"
         style={{
           position: 'absolute',
-          top: 32,
+          backgroundColor: '#535353',
+          left: 230,
+          right: 200,
+          top: 0,
           bottom: 0,
-          right: 0,
-          left: 0,
-          backgroundColor: '#303030',
-          overflow: 'auto'
         }}
-        onMouseDown={this.handleMouseDown}
-        onMouseMove={this.handleMouseMove}
-        onMouseUp={this.handleMouseUp}
-        onMouseLeave={this.handleMouseUp}
-        onScroll={this.handleSroll}
-        ref={(ref) => { this.scroller = ref; }}
       >
-        <Masonry
-          ref={(ref) => {
-            this.masonry = this.masonry || ref.masonry;
-          }}
+        <div
+          className="bottom_border"
           style={{
-            margin: 'auto',
+            height: 32,
+            background: '#535353',
           }}
-          options={{
-            fitWidth: true,
-          }}
+        />
 
-        >
-          {
-            this.props.images.map((item) => {
-              return (<Image
-                src={`${this.props.basePath}/images/${item.id}/${item.name}.${item.ext}`}
-                key={item.id}
-                size={`${item.width}x${item.height}`}
-                name={item.name}
-                id={item.id}
-                hoveredImgs={this.state.hoveredImgs}
-              />);
-            })
-          }
-        </Masonry>
         <div
           style={{
             position: 'absolute',
-            left: left - 230,
-            top: top - 32,
-            width,
-            height,
-            backgroundColor: 'rgba(58,201,223,0.44)',
-            display: isDragging ? '' : 'none',
-            border: '1px solid rgba(58,201,223,0.7)',
-            pointerEvents: 'none',
-            boxSizing: 'border-box',
+            top: 32,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            backgroundColor: '#303030',
+            overflow: 'auto'
           }}
-        />
-      </div>
+          onMouseDown={this.handleMouseDown}
+          onMouseMove={this.handleMouseMove}
+          onMouseUp={this.handleMouseUp}
+          onMouseLeave={this.handleMouseUp}
+          onScroll={this.handleSroll}
+          ref={(ref) => { this.scroller = ref; }}
+        >
+          <Masonry
+            ref={(ref) => {
+              this.masonry = this.masonry || ref.masonry;
+            }}
+            style={{
+              margin: 'auto',
+            }}
+            options={{
+              fitWidth: true,
+            }}
 
-      <div
-        className="drop_mask"
-        style={{
-          position: 'absolute',
-          top: 30,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: isOver && canDrop ? '' : 'none'
-        }}
-      >
-        <DropArea />
-      </div>
-    </div >);
+          >
+            {
+              this.props.images.map((item) => {
+                return (<Image
+                  src={`${this.props.basePath}/images/${item.id}/${item.name}.${item.ext}`}
+                  key={item.id}
+                  size={`${item.width}x${item.height}`}
+                  name={item.name}
+                  id={item.id}
+                  hoveredImgs={this.state.hoveredImgs}
+                />);
+              })
+            }
+          </Masonry>
+          <div
+            style={{
+              position: 'absolute',
+              left: left - 230,
+              top: top - 32,
+              width,
+              height,
+              backgroundColor: 'rgba(58,201,223,0.44)',
+              display: isDragging ? '' : 'none',
+              border: '1px solid rgba(58,201,223,0.7)',
+              pointerEvents: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+        </div>
+
+        <div
+          className="drop_mask"
+          style={{
+            position: 'absolute',
+            top: 30,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: isOver && canDrop ? '' : 'none'
+          }}
+        >
+          <DropArea />
+        </div>
+      </div >
+    ));
   }
 }
 const convertPos = (item, marMarginL, marMarginT) => {
@@ -318,6 +318,6 @@ function collect(_connect, monitor) {
     canDrop: monitor.canDrop(),
   };
 }
-const DropCenter = DropTarget([NativeTypes.FILE], centerTarget, collect)(Center);
+const DropCenter = DropTarget([NativeTypes.FILE, NativeTypes.URL], centerTarget, collect)(Center);
 export default connect(mapStateToProps, mapDispatchToProps)(DropCenter);
 

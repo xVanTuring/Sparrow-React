@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { PRESET_FOLDER_ID } from '../center/Center';
 
 const { ipcRenderer } = require('electron');
 
-class CreateFolder extends Component {
+type CreateFolderProps = {
+  selectedFolder: string
+};
+class CreateFolder extends Component<CreateFolderProps> {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,12 +36,25 @@ class CreateFolder extends Component {
     });
   }
   handleAddClick = () => {
-    ipcRenderer.send('addFolder', ['--RENAME--', '']);
+    let selectedId = '';
+    const { selectedFolder } = this.props;
+    switch (selectedFolder) {
+      case PRESET_FOLDER_ID[0]:
+      case PRESET_FOLDER_ID[1]:
+      case PRESET_FOLDER_ID[2]:
+      case PRESET_FOLDER_ID[3]:
+        break;
+      default:
+        selectedId = selectedFolder;
+        break;
+    }
+    ipcRenderer.send('addFolder', ['--RENAME--', selectedId]);
   }
   render() {
     return (
       [
         <div
+          key="1"
           style={{
             height: 18,
             float: 'right',
@@ -52,6 +70,7 @@ class CreateFolder extends Component {
           hide
         </div>,
         <img
+          key="2"
           style={{
             height: 16,
             width: 16,
@@ -67,4 +86,10 @@ class CreateFolder extends Component {
         />]);
   }
 }
-export default CreateFolder;
+
+const mapStateToProps = (state) => (
+  {
+    selectedFolder: state.selectFolder
+  }
+);
+export default connect(mapStateToProps)(CreateFolder);

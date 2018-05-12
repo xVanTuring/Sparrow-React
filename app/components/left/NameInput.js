@@ -33,6 +33,7 @@ class NameInput extends Component<NameInputProps> {
   }
   handleOnBlur = () => {
     this.props.setFolderRenaming('');
+    console.log(this.state.value.trim());
     this.props.onChange(this.state.value.trim());
     this.setState({
       value: this.state.value.trim()

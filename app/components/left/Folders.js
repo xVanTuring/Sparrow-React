@@ -26,7 +26,8 @@ class Folders extends Component<Prop> {
               key={item.id}
               subFolders={item.children}
               isOverLeft={this.props.isOverLeft}
-              size={counter[item.id] || 0}
+              size={counter[item.id] || 0} // TODO: remove size
+              counter={counter}
             />
           ))
         }

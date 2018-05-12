@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
+import { NativeTypes } from 'react-dnd-html5-backend';
 import FixedFolders from './FixedFolder';
 import Folders from './Folders';
 import { ImageModel } from '../center/Image';
 import CreateFolder from './CreateFolder';
 import { ImageType } from '../../types/app';
 import { PRESET_FOLDER_ID } from '../center/Center';
+import { FolderModel } from './FolderItem';
 
 type LeftProp = {
   connectDropTarget: (e) => any,
@@ -75,16 +77,15 @@ function collect(_connect, monitor) {
   return {
     connectDropTarget: _connect.dropTarget(),
     isOver: monitor.isOver(),
-    isOverCurrent: monitor.isOver({ shallow: true }),
     canDrop: monitor.canDrop(),
     itemType: monitor.getItemType()
   };
 }
-const mapStateToProps = (state) => {
-  return {
+const mapStateToProps = (state) => (
+  {
     counter: counter(state.images)
-  };
-};
+  }
+);
 const counter = (images: List<ImageType>) => {
   const count = {};
   count[PRESET_FOLDER_ID[0]] = 0;
@@ -106,8 +107,8 @@ const counter = (images: List<ImageType>) => {
       }
     }
   });
-  console.log(count);
+  // console.log(count);
   return count;
 };
-const DropLeft = DropTarget([ImageModel], areaTarget, collect)(Left);
+const DropLeft = DropTarget([ImageModel, FolderModel, NativeTypes.FILE], areaTarget, collect)(Left);
 export default connect(mapStateToProps)(DropLeft);

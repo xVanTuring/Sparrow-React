@@ -4,14 +4,9 @@ import { DragSource } from 'react-dnd';
 import { selectFolder, setFolderRenaming } from '../../actions/folder';
 import FolderDropArea from './FolderDropArea';
 import NameInput from './NameInput';
-import { List } from 'immutable';
-import { PRESET_FOLDER_ID } from '../center/Center';
 
 const { ipcRenderer } = require('electron');
 
-// TODO: Add Support for Multi-Select
-// extra FixedFolderItem
-// add drop layer and drag.
 export type FolderType = {
   name: string,
   id: string,
@@ -31,7 +26,8 @@ type FolderItemProps = {
   fixedFolder?: boolean,
   renamingFolderId: string,
   isOverLeft: boolean,
-  size: number
+  size: number,
+  counter?: { [x: string]: number }
 };
 class FolderItem extends Component<FolderItemProps> {
   constructor(props) {
@@ -78,6 +74,7 @@ class FolderItem extends Component<FolderItemProps> {
       newName: value
     });
     if (value !== this.props.name) {
+      console.log(this.id);
       ipcRenderer.send('renameFolder', [this.id, value]);
     }
   }
@@ -89,9 +86,9 @@ class FolderItem extends Component<FolderItemProps> {
       fixedFolder,
       renamingFolderId,
       id,
-      name,
       isOverLeft,
-      size
+      size,
+      counter
     } = this.props;
     const { hover, newName } = this.state;
     const nameLeft = 40 + ((this.props.level || 0) * 14);
@@ -187,11 +184,11 @@ class FolderItem extends Component<FolderItemProps> {
               fixedFolder ? '' :
                 (<NameInput
                   nameLeft={nameLeft}
-                  value={name === '--RENAME--' ? 'New Folder' : newName}
+                  value={newName === '--RENAME--' ? 'New Folder' : newName}
                   setFolderRenaming={this.props.onRenaming}
                   onChange={this.handleOnChange}
                   editing={renamingFolderId === id}
-                  isNewFolder={name === '--RENAME--'}
+                  isNewFolder={newName === '--RENAME--'}
                   id={this.id}
                 />)
             }
@@ -213,53 +210,54 @@ class FolderItem extends Component<FolderItemProps> {
         >
 
           {
-            generateFolder(this.props.subFolders, (this.props.level || 0) + 1)
+            generateFolder(this.props.subFolders, (this.props.level || 0) + 1, counter, isOverLeft)
           }
         </div>
       </div>
     ));
   }
 }
-const generateFolder = (subFolders?: FolderType[], level: number) => {
+const generateFolder = (subFolders?: FolderType[], level: number, counter, isOverLeft) => {
   if (subFolders == null || subFolders.length === 0) {
     return '';
   }
   // console.log(subFolders);
-  return subFolders.map((item) => {
-
-    return (
+  return subFolders.map((item) => (
+    (
       <RFolderItem
         name={item.name}
         id={item.id}
-        // size={item.size}
+        size={counter[item.id] || 0}
         key={item.id}
         level={level}
+        isOverLeft={isOverLeft}
         subFolders={item.children}
+        counter={counter}
       />
-    );
-  });
+    )
+  ));
 };
-const mapStateToProps = (state) => {
-  return {
+const mapStateToProps = (state) => (
+  {
     select_folder_id: state.selectFolder,
     renamingFolderId: state.renamingFolder
-  };
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
+  }
+);
+const mapDispatchToProps = (dispatch) => (
+  {
     onFolderClick: (id) => {
       dispatch(selectFolder(id));
     },
     onRenaming: (id) => {
       dispatch(setFolderRenaming(id));
     }
-  };
-};
+  }
+);
 
 const imageSource = {
   beginDrag(props, monitor, component) {
     // console.log(component);
-    return { id: '123' };
+    return { folder: props.id };
   },
   canDrag(props, monitor) {
     if (props.id === props.renamingFolderId || props.fixedFolder) {

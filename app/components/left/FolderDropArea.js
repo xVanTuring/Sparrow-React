@@ -47,6 +47,10 @@ const areaTarget = {
     if (monitor.getItem().images != null) {
       ipcRenderer.send('addImagesToFolder', [monitor.getItem().images.toArray(), props.id, true]);
     }
+    if (monitor.getItem().folder != null) {
+      ipcRenderer.send('moveFolder', [monitor.getItem().folder, props.id]);
+    }
+    console.log(monitor.getItem());
   },
 };
 function collect(_connect, monitor) {
