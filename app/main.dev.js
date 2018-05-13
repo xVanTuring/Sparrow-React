@@ -26,19 +26,19 @@ ipcMain.on('addImages', (event, arg) => {
 });
 // name parentFolderId
 ipcMain.on('addFolder', (event, arg) => {
-  const name = arg[0];
-  const parentId = arg[1];
-  addFolder(name, parentId, (res) => {
-    event.sender.send('setFolders', res.folders);
-  });
+  // const name = arg[0];
+  // const parentId = arg[1];
+  // addFolder(name, parentId, (res) => {
+  //   event.sender.send('setFolders', res.folders);
+  // });
 });
 // id newName
 ipcMain.on('renameFolder', (event, arg) => {
-  const id = arg[0];
-  const newName = arg[1];
-  renameFolder(id, newName, (res) => {
-    event.sender.send('setFolders', res.folders);
-  });
+  // const id = arg[0];
+  // const newName = arg[1];
+  // renameFolder(id, newName, (res) => {
+  //   event.sender.send('setFolders', res.folders);
+  // });
 });
 // ids[] targetId setFolder
 ipcMain.on('addImagesToFolder', (event, arg) => {
@@ -48,9 +48,9 @@ ipcMain.on('addImagesToFolder', (event, arg) => {
 });
 // id targetId
 ipcMain.on('moveFolder', (event, arg) => {
-  moveFolder(arg[0], arg[1], (res) => {
-    event.sender.send('setFolders', res.folders);
-  });
+  // moveFolder(arg[0], arg[1], (res) => {
+  //   event.sender.send('setFolders', res.folders);
+  // });
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -112,15 +112,15 @@ app.on('ready', async () => {
     }
     mainWindow.show();
     // mainWindow.focus();
-    readMeta((projMeta) => {
-      readImages((imgs) => {
-        mainWindow.webContents.send('metaLoaded', {
-          folders: projMeta.folders,
-          images: imgs,
-          basePath: path.join(os.homedir(), 'Sparrow')
-        });
-      });
-    });
+    // readMeta((projMeta) => {
+    //   readImages((imgs) => {
+    //     mainWindow.webContents.send('metaLoaded', {
+    //       folders: projMeta.folders,
+    //       images: imgs,
+    //       basePath: path.join(os.homedir(), 'Sparrow')
+    //     });
+    //   });
+    // });
   });
 
   mainWindow.on('closed', () => {
