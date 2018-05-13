@@ -23,7 +23,6 @@ export const saveMeta = (obj, cb) => {
     ),
     JSON.stringify(obj), (err) => {
       if (!err) {
-        console.log('MetaData File Writing Done!');
         cb();
       }
     }
@@ -174,7 +173,6 @@ export const addFolder = (name, parentId, cb: metaCallBack) => {
       }
     }
     saveMeta(res, () => {
-      console.log('saveMetaDone');
       cb(res);
     });
   });

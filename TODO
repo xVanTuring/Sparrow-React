@@ -1,6 +1,8 @@
+Rewrite FolderItem 
+
 [✅]add 'add Folder'
 add 'add Folder to targetFolder'
-add 'move to folder'
+[✅]add 'move to folder'
 add 'arrange folder'
 [✅]add 'rename folder'
 add 'init'
