@@ -292,7 +292,7 @@ const filter = (imgs: List, folderId) => {
 };
 const mapStateToProps = (state) => {
   return {
-    images: filter(state.images, state.selectFolder),
+    images: filter(state.images, state.selectedFolder),
     basePath: state.basePath
     // with filter
   };

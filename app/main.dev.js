@@ -47,11 +47,6 @@ ipcMain.on('addImagesToFolder', (event, arg) => {
   });
 });
 // id targetId
-ipcMain.on('moveFolder', (event, arg) => {
-  // moveFolder(arg[0], arg[1], (res) => {
-  //   event.sender.send('setFolders', res.folders);
-  // });
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -111,16 +106,16 @@ app.on('ready', async () => {
       throw new Error('"mainWindow" is not defined');
     }
     mainWindow.show();
-    // mainWindow.focus();
-    // readMeta((projMeta) => {
-    //   readImages((imgs) => {
-    //     mainWindow.webContents.send('metaLoaded', {
-    //       folders: projMeta.folders,
-    //       images: imgs,
-    //       basePath: path.join(os.homedir(), 'Sparrow')
-    //     });
-    //   });
-    // });
+    mainWindow.focus();
+    readMeta((projMeta) => {
+      readImages((imgs) => {
+        mainWindow.webContents.send('metaLoaded', {
+          folders: projMeta.folders,
+          images: imgs,
+          basePath: path.join(os.homedir(), 'Sparrow')
+        });
+      });
+    });
   });
 
   mainWindow.on('closed', () => {

@@ -3,16 +3,40 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 
-/* @import "~font-awesome/css/font-awesome.css"; */
+@import '~antd/dist/antd.css';
+
+
+.draggable-tree .ant-tree-node-content-wrapper {
+  width: calc(100% - 38px);
+  /* margin-right: 16px; */
+}
+.ant-tree li .ant-tree-node-content-wrapper:hover {
+  background-color: rgba(192, 192, 192, 0.2);
+}
+.ant-tree li .ant-tree-node-content-wrapper .file-drag-over{
+  border: 1px solid blue;
+}
+.ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected{
+  background-color:rgba(207, 207, 207, 0.3);
+  
+}
+.ant-tree li .ant-tree-node-content-wrapper{
+  height: 28px;
+  line-height: 28px;
+  color: white;
+}
+
+.ant-tree li span.ant-tree-switcher {
+  color: white;
+}
+
+
 ::selection {
   background:#757575; 
   color:rgb(221, 221, 221);
 }
 div{
   cursor: default;
-}
-.App {
-  text-align: center;
 }
 
 ::-webkit-scrollbar {
@@ -49,17 +73,16 @@ body {
 .right_border {
   box-sizing: border-box;
   border-right: 2px solid #424242;
-  /*4c*/
 }
-
+/* 
 ul {
   margin: 0;
   padding: 0;
-}
+} */
 
-li {
+/* li {
   margin: 0;
   padding: 0;
   list-style-type: none;
   list-style: none;
-}
+} */

@@ -13,7 +13,10 @@ export type ImageType = {
 export type FolderType = {
   name: string,
   id: string,
-  children: FolderType[]
+  children: FolderType[],
+  parent?: string,
+  collapsed?: boolean,
+  childrenId?: string[]
 };
 
 export type ProjectModel = {

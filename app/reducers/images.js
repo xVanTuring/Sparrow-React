@@ -1,5 +1,5 @@
 import { List } from 'immutable';
-import { SELECT_IMAGE, SET_IMAGE, ADD_IMAGE, UPDATE_IMAGES, updateImages } from '../actions/image';
+import { SELECT_IMAGE, SET_IMAGE, ADD_IMAGE, UPDATE_IMAGES } from '../actions/image';
 import { RESET_APP } from '../actions/app';
 
 export const selectedImgs = (state = List([]), action) => {

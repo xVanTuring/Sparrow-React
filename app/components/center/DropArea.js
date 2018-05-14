@@ -66,7 +66,7 @@ function collect(_connect, monitor) {
 }
 const mapStateToProps = (state) => (
   {
-    selectedFolder: state.selectFolder
+    selectedFolder: state.selectedFolder
   }
 );
 const DropDropArea = DropTarget([NativeTypes.FILE, NativeTypes.URL], areaTarget, collect)(DropArea);
