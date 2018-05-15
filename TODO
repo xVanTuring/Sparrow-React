@@ -1,5 +1,4 @@
-Rewrite FolderItem 
-
+fix some folder problem
 [✅]add 'add Folder'
 add 'add Folder to targetFolder'
 [✅]add 'move to folder'
