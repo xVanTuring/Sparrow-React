@@ -43,7 +43,7 @@ class Center extends Component<Prop> {
     const height = Math.abs(startMousePos.y - updatedY);
     const width = Math.abs(startMousePos.x - currentMousePos.x);
     const left = (startMousePos.x < currentMousePos.x ?
-      startMousePos.x : currentMousePos.x) - 230;
+      startMousePos.x : currentMousePos.x) - 200;
     const top = (startMousePos.y < updatedY ?
       startMousePos.y : updatedY) - 32;
     const selectionRect = {
@@ -201,7 +201,7 @@ class Center extends Component<Prop> {
           <div
             style={{
               position: 'absolute',
-              left: left - 230,
+              left: left - 200,
               top: top - 32,
               width,
               height,

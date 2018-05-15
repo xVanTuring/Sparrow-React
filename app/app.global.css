@@ -10,11 +10,7 @@
 }
 
 .tree .ant-tree-node-content-wrapper {
-  width: calc(100% - 38px);
-  /* margin-right: 16px; */
-}
-.fixed-tree .ant-tree-node-content-wrapper{
-  width: calc(100% - 14px);
+  width: calc(100% - 24px);
 }
 .ant-tree li .ant-tree-node-content-wrapper:hover {
   background-color: rgba(192, 192, 192, 0.2);

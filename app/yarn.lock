@@ -2,3 +2,134 @@
 # yarn lockfile v1
 
 
+address@>=0.0.1:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/address/-/address-1.0.3.tgz#b5f50631f8d6cec8bd20c963963afb55e06cbce9"
+
+buffer-equal@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/buffer-equal/-/buffer-equal-0.0.1.tgz#91bc74b11ea405bc916bc6aa908faafa5b4aac4b"
+
+iconv-lite@0.2.11, iconv-lite@~0.2.11:
+  version "0.2.11"
+  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.2.11.tgz#1ce60a3a57864a292d1321ff4609ca4bb965adc8"
+
+image-type@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/image-type/-/image-type-1.0.0.tgz#de74656481f0ff70d28797d05aa459416dbfca67"
+  dependencies:
+    is-bmp "^1.0.0"
+    is-gif "^1.0.0"
+    is-jpg "^1.0.0"
+    is-jxr "^1.0.0"
+    is-png "^1.0.0"
+    is-psd "^1.0.0"
+    is-tif "^1.0.0"
+    is-webp "^1.0.0"
+
+is-bmp@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-bmp/-/is-bmp-1.0.1.tgz#eec4e8620a2da9c89c7d99782688e41c41b9d589"
+
+is-gif@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/is-gif/-/is-gif-1.0.0.tgz#a6d2ae98893007bffa97a1d8c01d63205832097e"
+
+is-jpg@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-jpg/-/is-jpg-1.0.1.tgz#296d57fdd99ce010434a7283e346ab9a1035e975"
+
+is-jxr@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-jxr/-/is-jxr-1.0.1.tgz#cc3412cfe0cb784590c5cbfced0d13c0347ff029"
+
+is-png@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/is-png/-/is-png-1.1.0.tgz#d574b12bf275c0350455570b0e5b57ab062077ce"
+
+is-psd@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-psd/-/is-psd-1.0.1.tgz#b021d9e2ed2e31deda497c95ba94745e2c46e2b8"
+
+is-tif@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-tif/-/is-tif-1.0.1.tgz#a0b887b90518a5ba0c7cd4b0aed2b2294702ed0d"
+
+is-webp@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-webp/-/is-webp-1.0.1.tgz#2e5165cea41eb795d2348df2c31c1602bfb43896"
+
+isnumber@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/isnumber/-/isnumber-1.0.0.tgz#0e3f9759b581d99dd85086f0ec2a74909cfadd01"
+
+jpeg-js@0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/jpeg-js/-/jpeg-js-0.0.4.tgz#06aaf47efec7af0b1924a59cd695a6d2b5ed870e"
+
+jpeg-js@~0.1.1:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/jpeg-js/-/jpeg-js-0.1.2.tgz#135b992c0575c985cfa0f494a3227ed238583ece"
+
+nan@^2.6.2:
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
+
+omggif@^1.0.5:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/omggif/-/omggif-1.0.9.tgz#dcb7024dacd50c52b4d303f04802c91c057c765f"
+
+pixel-getter@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/pixel-getter/-/pixel-getter-0.0.5.tgz#1ed9aaf07262487bcba8b5c1667273ea1fef67dd"
+  dependencies:
+    image-type "~1.0.0"
+    jpeg-js "~0.1.1"
+    png-js "~0.1.1"
+    readimage "~1.1.1"
+    spidex "~2.0.1"
+
+png-js@~0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/png-js/-/png-js-0.1.1.tgz#1cc7c212303acabe74263ec3ac78009580242d93"
+
+pngparse@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/pngparse/-/pngparse-2.0.1.tgz#86852de4de349f4efb1e852e7525655e5ac5dfb8"
+
+readimage@~1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/readimage/-/readimage-1.1.1.tgz#4cd23652a7bdea595d521fd254feea2692e5c35c"
+  dependencies:
+    buffer-equal "0.0.1"
+    isnumber "^1.0.0"
+    jpeg-js "0.0.4"
+    omggif "^1.0.5"
+    pngparse "^2.0.1"
+
+spidex@~2.0.1:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/spidex/-/spidex-2.0.5.tgz#740c42e33ab0432f63801f262da9eef3e78cbdd2"
+  dependencies:
+    iconv-lite "~0.2.11"
+    urlencode "~0.2.0"
+
+thmclrx@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/thmclrx/-/thmclrx-1.0.0.tgz#f43d305cceb595c9c004c3b742d20b4f8e0b39a8"
+  dependencies:
+    nan "^2.6.2"
+    pixel-getter "^0.0.5"
+
+urlencode@~0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/urlencode/-/urlencode-0.2.0.tgz#057c2cd99e5b8aa437f4210e649f4a5e578deafa"
+  dependencies:
+    iconv-lite "0.2.11"
+    utility "0.1.13"
+
+utility@0.1.13:
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/utility/-/utility-0.1.13.tgz#1a45215b9dd22db7bb4e32a4818740e00b2dd014"
+  dependencies:
+    address ">=0.0.1"

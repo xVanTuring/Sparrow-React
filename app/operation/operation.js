@@ -4,6 +4,7 @@ const path = require('path');
 const os = require('os');
 const uuid = require('uuid/v1');
 const gm = require('gm');
+const thmclrx = require('thmclrx');
 
 type metaCallBack = (res: { folders: FolderType[] }) => void;
 
@@ -99,7 +100,6 @@ const addImage = (fileObjArr = [], arr, targetPathId, cb) => {
 
     const thumbBaseName =
       `${targetImgPath.replace(path.extname(targetImgPath), '')}_thumb${path.extname(targetImgPath)}`;
-    // console.log(thumbBaseName);
 
     const folders = [];
     if (targetPathId !== '') {
@@ -120,7 +120,8 @@ const addImage = (fileObjArr = [], arr, targetPathId, cb) => {
                   name: path.basename(targetImgPath).replace(path.extname(targetImgPath), ''),
                   size: fileObj.size,
                   isDeleted: false,
-                  modificationTime: fileObj.lastModified
+                  modificationTime: fileObj.lastModified,
+                  palette: []
                 };
                 // TODO: format
                 const img = gm(targetImgPath);
@@ -132,12 +133,23 @@ const addImage = (fileObjArr = [], arr, targetPathId, cb) => {
                       .resize(600)
                       .write(thumbBaseName, (err4) => {
                         if (err4 == null) {
-                          // write meta
-                          fs.writeFile(targetMetaPath, JSON.stringify(imgObj), (err5) => {
-                            if (err5 == null) {
-                              arr.push(imgObj);
+                          thmclrx.octree(thumbBaseName, 8, (err9, values) => {
+                            if (err9 == null) {
+                              imgObj.palette = [
+                                `#${values[0].color}`,
+                                `#${values[1].color}`,
+                                `#${values[2].color}`,
+                                `#${values[3].color}`,
+                                `#${values[4].color}`];
+                              fs.writeFile(targetMetaPath, JSON.stringify(imgObj), (err5) => {
+                                if (err5 == null) {
+                                  arr.push(imgObj);
+                                }
+                                addImage(fileObjArr, arr, targetPathId, cb);
+                              });
+                            } else {
+                              console.log(err9);
                             }
-                            addImage(fileObjArr, arr, targetPathId, cb);
                           });
                         }
                       });

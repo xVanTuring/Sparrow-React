@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 
-class ColorPan extends Component {
+type ColorPanType = {
+  colorPan: string[]
+};
+class ColorPan extends Component<ColorPanType> {
   render() {
-    const colorPan = ['#eae725', '#ffbd60', '#878787', '#65757a', '#f76a6a'];
+    const { colorPan } = this.props;
     return (
       <div
         style={{
@@ -13,18 +16,16 @@ class ColorPan extends Component {
         }}
       >
         {
-          colorPan.map((item) => {
-            return (
-              <div
-                style={{
-                  display: 'inline-block',
-                  width: '20%',
-                  height: 12,
-                  backgroundColor: item
-                }}
-              />
-            );
-          })
+          colorPan.map((item) => (
+            <div
+              style={{
+                display: 'inline-block',
+                width: '20%',
+                height: 12,
+                backgroundColor: item
+              }}
+            />
+          ))
         }
       </div>
     );

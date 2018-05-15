@@ -8,7 +8,7 @@ export const selectedImgs = (state = List([]), action) => {
   }
   return state;
 };
-export const images = (state = List(), action) => {
+export const images = (state = List([]), action) => {
   if (action.type === SET_IMAGE) {
     return List(action.images);
   }
