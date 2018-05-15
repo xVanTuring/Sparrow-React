@@ -9,17 +9,6 @@ import Right from '../components/right/Right';
 type Props = {
 };
 class App extends Component<Props> {
-  // componentDidMount() {
-  //   document.addEventListener('keydown', this.escFunction, false);
-  // }
-  // componentWillUnmount() {
-  //   document.addEventListener('keydown', this.escFunction, false);
-  // }
-  // escFunction = (event) => {
-  //   if (event.keyCode === 27) {
-  //     console.log('ESC');
-  //   }
-  // }
   render() {
     return (
       <div className="App">

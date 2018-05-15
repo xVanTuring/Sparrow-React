@@ -127,7 +127,7 @@ class Center extends Component<Prop> {
       currentMousePos,
       offset
     } = this.state;
-
+    const filterOpen = false;
     const updatedY = currentMousePos.y + offset;
     const height = isDragging ? Math.abs(startMousePos.y - updatedY) : 0;
     const width = isDragging ? Math.abs(startMousePos.x - currentMousePos.x) : 0;
@@ -141,7 +141,7 @@ class Center extends Component<Prop> {
         style={{
           position: 'absolute',
           backgroundColor: '#535353',
-          left: 230,
+          left: 200,
           right: 200,
           top: 0,
           bottom: 0,
@@ -161,7 +161,7 @@ class Center extends Component<Prop> {
             position: 'absolute',
             top: 32,
             bottom: 0,
-            right: 200,
+            right: filterOpen ? 200 : 0,
             left: 0,
             backgroundColor: '#303030',
             overflow: 'auto'
@@ -220,7 +220,7 @@ class Center extends Component<Prop> {
             position: 'absolute',
             top: 32,
             left: 0,
-            right: 200,
+            right: filterOpen ? 200 : 0,
             bottom: 0,
             backgroundColor: 'rgba(0,0,0,0.5)',
             display: isOver && canDrop ? '' : 'none'

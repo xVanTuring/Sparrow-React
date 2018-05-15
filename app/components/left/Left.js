@@ -91,7 +91,7 @@ class Left extends Component<LeftProp> {
       <div
         className="right_border"
         style={{
-          width: 230,
+          width: 200,
           height: '100vh',
           backgroundColor: '#535353',
           position: 'relative'

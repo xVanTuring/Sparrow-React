@@ -5,7 +5,9 @@
 
 
 @import '~antd/dist/antd.css';
-
+.ant-tag{
+  margin-bottom: 8px
+}
 
 .tree .ant-tree-node-content-wrapper {
   width: calc(100% - 38px);
