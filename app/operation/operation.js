@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const uuid = require('uuid/v1');
-// const _ = require('lodash');
+const gm = require('gm');
 
 type metaCallBack = (res: { folders: FolderType[] }) => void;
 
@@ -96,6 +96,11 @@ const addImage = (fileObjArr = [], arr, targetPathId, cb) => {
     const targetPath = path.join(os.homedir(), 'Sparrow', 'images', id);
     const targetImgPath = path.join(targetPath, fileObj.name);
     const targetMetaPath = path.join(targetPath, 'metadata.json');
+
+    const thumbBaseName =
+      `${targetImgPath.replace(path.extname(targetImgPath), '')}_thumb${path.extname(targetImgPath)}`;
+    // console.log(thumbBaseName);
+
     const folders = [];
     if (targetPathId !== '') {
       folders.push(targetPathId);
@@ -109,19 +114,34 @@ const addImage = (fileObjArr = [], arr, targetPathId, cb) => {
                 const imgObj = {
                   ext: path.extname(targetImgPath).replace('.', ''),
                   folders,
-                  height: 1234,
-                  width: 2345,
+                  height: 0,
+                  width: 0,
                   id,
                   name: path.basename(targetImgPath).replace(path.extname(targetImgPath), ''),
                   size: fileObj.size,
                   isDeleted: false,
                   modificationTime: fileObj.lastModified
                 };
-                fs.writeFile(targetMetaPath, JSON.stringify(imgObj), (err4) => {
-                  if (err4 == null) {
-                    arr.push(imgObj);
+                // TODO: format
+                const img = gm(targetImgPath);
+                img.size((err6, size) => {
+                  if (err6 == null) {
+                    imgObj.width = size.width;
+                    imgObj.height = size.height;
+                    img
+                      .resize(600)
+                      .write(thumbBaseName, (err4) => {
+                        if (err4 == null) {
+                          // write meta
+                          fs.writeFile(targetMetaPath, JSON.stringify(imgObj), (err5) => {
+                            if (err5 == null) {
+                              arr.push(imgObj);
+                            }
+                            addImage(fileObjArr, arr, targetPathId, cb);
+                          });
+                        }
+                      });
                   }
-                  addImage(fileObjArr, arr, targetPathId, cb);
                 });
               }
             });

@@ -24,22 +24,6 @@ ipcMain.on('addImages', (event, arg) => {
     event.sender.send('addImages', res);
   });
 });
-// name parentFolderId
-ipcMain.on('addFolder', (event, arg) => {
-  // const name = arg[0];
-  // const parentId = arg[1];
-  // addFolder(name, parentId, (res) => {
-  //   event.sender.send('setFolders', res.folders);
-  // });
-});
-// id newName
-ipcMain.on('renameFolder', (event, arg) => {
-  // const id = arg[0];
-  // const newName = arg[1];
-  // renameFolder(id, newName, (res) => {
-  //   event.sender.send('setFolders', res.folders);
-  // });
-});
 // ids[] targetId setFolder
 ipcMain.on('addImagesToFolder', (event, arg) => {
   addImagesToFolder(arg[0], arg[1], arg[2], (updated) => {

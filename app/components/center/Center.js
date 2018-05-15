@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { List } from 'immutable';
+import { Slider } from 'antd';
 import Masonry from 'react-masonry-component';
 import { connect } from 'react-redux';
 import { DropTarget } from 'react-dnd';
@@ -151,6 +152,7 @@ class Center extends Component<Prop> {
           style={{
             height: 32,
             background: '#535353',
+
           }}
         />
 
@@ -159,7 +161,7 @@ class Center extends Component<Prop> {
             position: 'absolute',
             top: 32,
             bottom: 0,
-            right: 0,
+            right: 200,
             left: 0,
             backgroundColor: '#303030',
             overflow: 'auto'
@@ -186,7 +188,7 @@ class Center extends Component<Prop> {
             {
               this.props.images.map((item) => {
                 return (<Image
-                  src={`${this.props.basePath}/images/${item.id}/${item.name}.${item.ext}`}
+                  src={`${this.props.basePath}/images/${item.id}/${item.name}_thumb.${item.ext}`}
                   key={item.id}
                   size={`${item.width}x${item.height}`}
                   name={item.name}
@@ -210,15 +212,15 @@ class Center extends Component<Prop> {
               boxSizing: 'border-box',
             }}
           />
-        </div>
 
+        </div>
         <div
           className="drop_mask"
           style={{
             position: 'absolute',
-            top: 30,
+            top: 32,
             left: 0,
-            right: 0,
+            right: 200,
             bottom: 0,
             backgroundColor: 'rgba(0,0,0,0.5)',
             display: isOver && canDrop ? '' : 'none'
@@ -290,21 +292,20 @@ const filter = (imgs: List, folderId) => {
       });
   }
 };
-const mapStateToProps = (state) => {
-  return {
+const mapStateToProps = (state) => (
+  {
     images: filter(state.images, state.selectedFolder),
     basePath: state.basePath
     // with filter
-  };
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
+  }
+);
+const mapDispatchToProps = (dispatch) => (
+  {
     setSelected: (ids) => {
       dispatch(selectImage(ids));
     }
-  };
-};
-
+  }
+);
 const centerTarget = {
   drop(props, monitor) {
 
