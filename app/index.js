@@ -12,30 +12,7 @@ import { setFolders } from './actions/folder';
 
 const { ipcRenderer } = require('electron');
 
-const root = [
-  {
-    id: '1',
-    name: 'xVan',
-    children: [
-      {
-        id: '2',
-        name: 'ling',
-        children: [
-          { id: '777', name: 'ling', children: [] },
-          { id: '77', name: 'ling', children: [] }
-        ]
-      }
-    ]
-  },
-  {
-    id: '4',
-    name: 'Chou',
-    children: [{ id: '20', name: 'Bai', children: [] }]
-  }
-];
-const store = configureStore({
-  folders: root
-});
+const store = configureStore();
 ipcRenderer.on('metaLoaded', (event, data) => {
   // full app
   store.dispatch(resetApp(data));
@@ -48,7 +25,6 @@ ipcRenderer.on('setFolders', (event, folders) => {
 });
 ipcRenderer.on('updateImages', (event, updated) => {
   store.dispatch(updateImages(updated));
-  // console.log(updated);
 });
 
 render(

@@ -59,6 +59,7 @@ class Image extends Component<ImageProp> {
     }
     return connectDragSource((
       <div
+        className="Image"
         style={{
           margin: '8px',
           pointerEvents: 'auto'
@@ -73,7 +74,6 @@ class Image extends Component<ImageProp> {
             borderRadius: '4px',
             marginBottom: 8,
             pointerEvents: 'none',
-            width: this.props.width || 200,
           }}
         >
           <img
@@ -82,10 +82,8 @@ class Image extends Component<ImageProp> {
               width: this.props.width || 200,
               verticalAlign: 'bottom',
               borderRadius: '2px',
-              // display: 'block'
             }}
             alt="img"
-          // ref={(e) => { this.props.connectDragPreview(e); }}
           />
         </div>
         <div
@@ -111,6 +109,7 @@ class Image extends Component<ImageProp> {
             style={{
               color: '#686868',
               fontSize: 10,
+              textAlign: 'right'
             }}
           >
             {this.props.size}
@@ -133,18 +132,18 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 const imageSource = {
-  beginDrag(props, monitor, component) {
+  beginDrag(props, monitor) {
     return { images: props.selectedImgs };
   }
 };
-function collect(connect, monitor) {
+function collect(_connect, monitor) {
   return {
     // Call this function inside render()
     // to let React DnD handle the drag events:
-    connectDragSource: connect.dragSource(),
+    connectDragSource: _connect.dragSource(),
     // You can ask the monitor about the current drag state:
     isDragging: monitor.isDragging(),
-    connectDragPreview: connect.dragPreview(),
+    // connectDragPreview: _connect.dragPreview(),
   };
 }
 const DragImage = DragSource(ImageModel, imageSource, collect)(Image);

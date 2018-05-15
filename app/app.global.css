@@ -3,12 +3,16 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 
+
 @import '~antd/dist/antd.css';
 
 
-.draggable-tree .ant-tree-node-content-wrapper {
+.tree .ant-tree-node-content-wrapper {
   width: calc(100% - 38px);
   /* margin-right: 16px; */
+}
+.fixed-tree .ant-tree-node-content-wrapper{
+  width: calc(100% - 14px);
 }
 .ant-tree li .ant-tree-node-content-wrapper:hover {
   background-color: rgba(192, 192, 192, 0.2);
@@ -24,12 +28,17 @@
   height: 28px;
   line-height: 28px;
   color: white;
+  padding: 0 2px;
 }
 
 .ant-tree li span.ant-tree-switcher {
   color: white;
+  height: 20px;
+  width: 20px;
 }
-
+.fixed-tree.ant-tree li span.ant-tree-switcher.ant-tree-switcher-noop{
+  display: none;
+}
 
 ::selection {
   background:#757575; 
@@ -62,7 +71,6 @@ body {
   user-select: none;
   height: 100vh;
   overflow: hidden;
-  /* min-width: 650px; */
 }
 
 .bottom_border {
@@ -74,15 +82,18 @@ body {
   box-sizing: border-box;
   border-right: 2px solid #424242;
 }
-/* 
+
 ul {
   margin: 0;
   padding: 0;
-} */
+}
 
-/* li {
+li {
   margin: 0;
   padding: 0;
   list-style-type: none;
   list-style: none;
-} */
+}
+.Image{
+  text-align: center;
+}

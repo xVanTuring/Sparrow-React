@@ -16,7 +16,7 @@ export function addFolder(name, id, parentId) {
     parentId
   };
 }
-export function setFolders(folders) {
+export function setFolders(folders: []) {
   return {
     type: SET_FOLDERS,
     folders
