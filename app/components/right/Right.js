@@ -1,13 +1,23 @@
 import React, { Component } from 'react';
-import { Input, Tag, Divider } from 'antd';
+import { Input, Tag, Divider, Popover, Icon } from 'antd';
 import { connect } from 'react-redux';
 import ColorPan from './ColorPan';
+import STag from './STag';
 
 type RightProps = {
   images: any,
   basePath: string
 };
 class Right extends Component<RightProps> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      color: '#333'
+    };
+  }
+  handleOnClick = (e) => {
+    e.stopPropagation();
+  }
   render() {
     const { images, basePath } = this.props;
     let imgPath = null;
@@ -85,50 +95,100 @@ class Right extends Component<RightProps> {
                 <Input
                   style={{
                     marginTop: 16,
-                    height: 24,
-                    backgroundColor: '#333',
-                    color: 'white',
-                    border: '0px',
-                    outline: 'none'
+
                   }}
-                  defaultValue={img.name}
+                  value={img.name}
                 />
                 <Input
                   style={{
                     marginTop: 16,
-                    height: 24,
-                    backgroundColor: '#333',
-                    color: 'white',
-                    border: '0px',
-                    outline: 'none',
-                    lineHeight: '24px'
                   }}
                 />
-                <div
+                <Popover
                   style={{
-                    marginTop: 16,
-                    backgroundColor: '#333',
-                    height: 90,
-                    padding: 8,
-                    cursor: 'text',
-                    borderRadius: '4px',
-                    overflow: 'scroll',
-                    overflowX: 'hidden'
+                    backgroundColor: '#333'
                   }}
+                  placement="left"
+                  trigger="click"
+                  title={
+                    <div
+                      style={{
+                        textAlign: 'center'
+                      }}
+                    >
+                      Tags
+                    </div>
+                  }
+                  content={
+                    <div
+                      style={{
+                        padding: '0px 4px',
+                        minWidth: 300,
+                        minHeight: 300
+                      }}
+                    >
+                      <Input.Search placeholder="Search yours tags" onSearch={value => console.log(value)} />
+                      <div
+                        style={{
+                          marginTop: 12
+                        }}
+                      >
+                        <STag
+                          color={this.state.color}
+                          onClick={() => {
+                            this.setState({
+                              color: '#2db7f5'
+                            });
+                          }}
+                        >
+                          <Icon type="plus" style={{ margin: '0 4px 0 0' }} />
+                          Night
+                        </STag>
+                        <STag
+                          color="#333"
+                        >
+                          <Icon type="plus" style={{ margin: '0 4px 0 0' }} />
+                          Night
+                        </STag>
+                        <STag
+                          color="#333"
+                        >
+                          <Icon type="plus" style={{ margin: '0 4px 0 0' }} />
+                          Night
+                        </STag>
+                      </div>
+                    </div>
+                  }
                 >
-                  <Tag closable color="#2db7f5">Night</Tag>
-                  <Tag closable color="#2db7f5">Temple</Tag>
-                  <Tag closable color="#2db7f5">Lake</Tag>
-                </div>
+                  <div
+                    style={{
+                      marginTop: 16,
+                      backgroundColor: '#333',
+                      height: 90,
+                      padding: 8,
+                      cursor: 'text',
+                      borderRadius: '4px',
+                      overflow: 'scroll',
+                      overflowX: 'hidden'
+                    }}
+                  >
+                    <STag color="#2db7f5" value="Night" closable />
+                    <STag color="#2db7f5" value="Lake" closable />
+                    <STag color="#2db7f5" value="Temp" closable />
+                  </div>
+                </Popover>
+
                 <Input.TextArea
                   style={{
                     height: 90,
                     marginTop: 16,
                     backgroundColor: '#333',
                     color: 'white',
-                    border: '0px',
                     outline: 'none',
-                    resize: 'none'
+                    resize: 'none',
+                    fontSize: '12px',
+                    boxSizing: 'border-box',
+                    // border: '1px solid transparent'
                   }}
                   placeholder="Add Annotation"
                 />
@@ -147,8 +207,22 @@ class Right extends Component<RightProps> {
                     }}
                   >
                     In Folders
-                </div>
-                  <Tag closable color="#2db7f5">Night</Tag>
+                  </div>
+                  <Tag
+                    closable
+                    color="#2db7f5"
+                  >
+                    <Icon type="folder" />
+                    Night
+                  </Tag>
+                  <Tag
+                    closable
+                    color="#2db7f5"
+                  >
+                    <Icon type="folder" />
+                    Night
+                  </Tag>
+
                 </div>
                 <Divider style={{
                   backgroundColor: '#333',

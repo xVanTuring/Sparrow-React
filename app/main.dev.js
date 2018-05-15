@@ -12,7 +12,7 @@
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
 import MenuBuilder from './menu';
-import { readMeta, readImages, addImages, addFolder, renameFolder, addImagesToFolder, moveFolder } from './operation/operation';
+import { readMeta, readImages, addImages, addImagesToFolder } from './operation/operation';
 
 const path = require('path');
 const os = require('os');

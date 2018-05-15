@@ -86,13 +86,14 @@ const readImage = (dirPaths, arr, cb) => {
 };
 
 export const addImages = (fileObjArr = [], targetPathId, cb) => {
-  addImage(fileObjArr, [], targetPathId, (imgObjs) => {
+  addImage(fileObjArr, targetPathId, (imgObjs) => {
     cb(imgObjs);
   });
 };
-const addImage = (fileObjArr = [], arr, targetPathId, cb) => {
+const addImage = (fileObjArr = [], targetPathId, cb) => {
   if (fileObjArr.length > 0) {
     const fileObj = fileObjArr.pop();
+    addImage(fileObjArr, targetPathId, cb);
     const id = uuid();
     const targetPath = path.join(os.homedir(), 'Sparrow', 'images', id);
     const targetImgPath = path.join(targetPath, fileObj.name);
@@ -143,12 +144,12 @@ const addImage = (fileObjArr = [], arr, targetPathId, cb) => {
                                 `#${values[4].color}`];
                               fs.writeFile(targetMetaPath, JSON.stringify(imgObj), (err5) => {
                                 if (err5 == null) {
-                                  arr.push(imgObj);
+                                  // arr.push(imgObj);
+                                  cb([imgObj]);
                                 }
-                                addImage(fileObjArr, arr, targetPathId, cb);
                               });
                             } else {
-                              console.log(err9);
+                              console.error(err9);
                             }
                           });
                         }
@@ -161,9 +162,10 @@ const addImage = (fileObjArr = [], arr, targetPathId, cb) => {
         });
       }
     });
-  } else if (cb) {
-    cb(arr);
   }
+  //  else if (cb) {
+  //   cb(arr);
+  // }
 };
 type ImageType = {
   name: string,
