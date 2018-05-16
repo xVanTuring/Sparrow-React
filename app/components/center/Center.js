@@ -33,6 +33,7 @@ class Center extends Component<Prop> {
     this.initScrollTop = 0;
   }
   handleHover = (newOffset) => {
+    // console.log(this.masonry.items[0].element.childNodes[0].offsetHeight);
     const imgPos = this.masonry.items.map(item => {
       return convertPos(item, this.masonry.size.marginLeft, 0);
     });
@@ -233,9 +234,10 @@ class Center extends Component<Prop> {
   }
 }
 const convertPos = (item, marMarginL, marMarginT) => {
+  // console.log(item);
   return {
     width: item.size.width,
-    height: item.size.height,
+    height: item.element.childNodes[0].offsetHeight,
     x: item.position.x + marMarginL + 8,
     y: item.position.y + marMarginT + 8
   };

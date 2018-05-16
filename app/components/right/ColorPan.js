@@ -31,6 +31,7 @@ class ColorPan extends Component<ColorPanType> {
             // try with pop and show rgb hsv ...
             <Tooltip
               title={item}
+              key={item}
             >
               <div
                 style={{
@@ -39,7 +40,6 @@ class ColorPan extends Component<ColorPanType> {
                   height: 12,
                   backgroundColor: item,
                 }}
-                key={item}
                 onClick={() => { this.handleColorClick(item) }}
               />
             </Tooltip>

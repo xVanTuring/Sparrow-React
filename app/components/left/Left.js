@@ -4,18 +4,24 @@ import _ from 'lodash';
 import { Tree, Icon } from 'antd';
 import { PRESET_FOLDER_ID } from '../center/Center';
 import { selectFolder, setFolders } from '../../actions/folder';
+import DropTreeNode from './DropTreeNode';
+// import DropTreeNode from './DropTreeNode';
 
 const { TreeNode } = Tree;
 
 type LeftProp = {
   folders: [],
+  selectedFolder: string,
   setFolders: (folders: []) => void,
   selectFolder: (id: string) => void
 };
 class Left extends Component<LeftProp> {
-  // constructor(props) {
-  //   super(props);
-  // }
+  constructor(props) {
+    super(props);
+    this.state = {
+      expandedKeys: []
+    };
+  }
   onDrop = info => {
     console.log(info);
     const dropKey = info.node.props.eventKey;
@@ -62,6 +68,22 @@ class Left extends Component<LeftProp> {
       this.props.selectFolder(ids[0]);
     } else {
       this.props.selectFolder('');
+    }
+  }
+  handleExpand = (keys, event: { node: any, expanded: boolean }) => {
+    console.log(keys);
+    // expand
+    if (event.expanded) {
+      this.state.expandedKeys.push(keys[0]);
+      this.setState({
+        expandedKeys: this.state.expandedKeys
+      });
+    } else {
+      const index = this.state.expandedKeys.indexOf(keys[0]);
+      this.state.expandedKeys.splice(index, 1);
+      this.setState({
+        expandedKeys: this.state.expandedKeys
+      });
     }
   }
   render() {
@@ -113,28 +135,17 @@ class Left extends Component<LeftProp> {
           Sparrow
         </div>
         {/* TODO: fix some style problem and multi-tree selection */}
-        {/* <div>
-          <Tree
-            showIcon
-            className="tree fixed-tree"
-            onSelect={this.onClick}
-          >
-
-          </Tree>
-        </div> */}
-
         <div>
           <Tree
-            autoExpandParent
             showIcon
-            className="tree"
-            draggable
-            onDrop={this.onDrop}
+            className="tree "
             onSelect={this.onClick}
+            selectedKeys={[this.props.selectedFolder]}
+            onDragOver={(e) => { console.log(e); }}
           >
             <TreeNode
               key={PRESET_FOLDER_ID[0]}
-              title="All"
+              title="ALL"
               icon={
                 <Icon type="folder" />
               }
@@ -146,17 +157,33 @@ class Left extends Component<LeftProp> {
                 <Icon type="folder" />
               }
             />
-            <div
-              style={{
-                color: '#a0a0a0',
-                fontSize: 10,
-                lineHeight: '18px',
-                marginLeft: 12,
-                height: 18
-              }}
-            >
-              Folder (11)
-            </div>
+          </Tree>
+        </div>
+
+
+        <div>
+          <div
+            style={{
+              color: '#a0a0a0',
+              fontSize: 10,
+              lineHeight: '18px',
+              marginLeft: 12,
+              height: 18
+            }}
+          >
+            Folder (11)
+          </div>
+          <Tree
+            showIcon
+            className="tree"
+            draggable
+            onDrop={this.onDrop}
+            onSelect={this.onClick}
+            selectedKeys={[this.props.selectedFolder]}
+            // expandedKeys={this.state.expandedKeys}
+            // onExpand={this.handleExpand}
+          >
+
             {loop(this.props.folders)}
           </Tree>
         </div>
@@ -166,7 +193,8 @@ class Left extends Component<LeftProp> {
 }
 const mapStateToProps = (state) => (
   {
-    folders: state.folders
+    folders: state.folders,
+    selectedFolder: state.selectedFolder
   }
 );
 const mapDispatchToProps = (dispatch) => (

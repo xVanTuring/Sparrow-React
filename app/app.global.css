@@ -54,7 +54,7 @@
   color: white;
 }
 .tree .ant-tree-node-content-wrapper {
-  width: calc(100% - 24px);
+  width: calc(100% - 16px);
 }
 .ant-tree li .ant-tree-node-content-wrapper:hover {
   background-color: rgba(192, 192, 192, 0.2);
@@ -75,8 +75,8 @@
 
 .ant-tree li span.ant-tree-switcher {
   color: white;
-  height: 20px;
-  width: 20px;
+  /* height: 20px; */
+  width: 12px;
 }
 .fixed-tree.ant-tree li span.ant-tree-switcher.ant-tree-switcher-noop{
   display: none;

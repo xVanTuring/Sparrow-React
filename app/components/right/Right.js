@@ -98,6 +98,7 @@ class Right extends Component<RightProps> {
 
                   }}
                   value={img.name}
+                  onChange={() => { }}
                 />
                 <Input
                   style={{

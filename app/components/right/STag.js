@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { Tag, Icon } from 'antd';
 type STagProps = {
   color: string,
-  onClose: Function,
+  onClose?: Function,
   onClick?: Function,
   value?: string,
-  closable: boolean,
+  closable?: boolean,
   type?: string // 0 1 2
 };
 class STag extends Component<STagProps> {
@@ -30,9 +30,9 @@ class STag extends Component<STagProps> {
         }}
       >
         <Tag
-          closable={closable}
+          // closable={closable}
           color={color}
-          onClose={onClose}
+        // onClose={onClose}
         >
           {value == null ? this.props.children : value}
         </Tag>
