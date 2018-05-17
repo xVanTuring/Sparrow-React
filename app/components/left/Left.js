@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 // import _ from 'lodash';
 import { PRESET_FOLDER_ID } from '../center/Center';
 import { selectFolder, setFolders } from '../../actions/folder';
-// import DropTreeNode from './DropTreeNode';
 import DragFolderItem from './FolderItem';
 
 type LeftProp = {
@@ -55,8 +54,35 @@ class Left extends Component<LeftProp> {
         >
           Sparrow
         </div>
-        {/* TODO: fix some style problem and multi-tree selection */}
-        <div>
+        <div
+          style={{
+            marginTop: 8
+          }}
+        >
+          <DragFolderItem
+            item={{
+              id: PRESET_FOLDER_ID[0],
+              name: 'All',
+              children: []
+            }}
+            key={PRESET_FOLDER_ID[0]}
+            onClick={this.handleFolderItemClick}
+            selectedFolder={selectedFolder}
+            setDraggingNodeId={this.setDraggingNodeId}
+            draggingNodeId={this.state.draggingNodeId}
+          />
+          <DragFolderItem
+            item={{
+              id: PRESET_FOLDER_ID[3],
+              name: 'Trash',
+              children: []
+            }}
+            key={PRESET_FOLDER_ID[0]}
+            onClick={this.handleFolderItemClick}
+            selectedFolder={selectedFolder}
+            setDraggingNodeId={this.setDraggingNodeId}
+            draggingNodeId={this.state.draggingNodeId}
+          />
         </div>
 
 

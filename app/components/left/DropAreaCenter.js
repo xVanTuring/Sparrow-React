@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { FolderType } from '../../types/app';
+import { ImageModel } from '../center/Image';
 
 type DropAreaCenterProps = {
   connectDropTarget: any,
@@ -75,4 +76,4 @@ function collect(_connect, monitor) {
     canDrop: monitor.canDrop(),
   };
 }
-export default DropTarget(['FolderItem', NativeTypes.FILE], areaTarget, collect)(DropAreaCenter);
+export default DropTarget(['FolderItem', NativeTypes.FILE, ImageModel], areaTarget, collect)(DropAreaCenter);

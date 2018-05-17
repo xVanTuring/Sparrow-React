@@ -52,7 +52,7 @@ class FolderItem extends Component<FolderItemProps> {
               style={{
                 height: 30,
                 position: 'relative',
-                marginBottom: 4
+                marginBottom: 2
               }}
               onMouseEnter={() => { this.setState({ isHover: true }); }}
               onMouseLeave={() => { this.setState({ isHover: false }); }}

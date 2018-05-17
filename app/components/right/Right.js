@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Input, Tag, Divider, Popover, Icon } from 'antd';
 import { connect } from 'react-redux';
+import AlphabetList from 'react-alphabet-list';
+import randomWords from 'random-words';
 import ColorPan from './ColorPan';
 import STag from './STag';
 
@@ -11,9 +13,8 @@ type RightProps = {
 class Right extends Component<RightProps> {
   constructor(props) {
     super(props);
-    this.state = {
-      color: '#333'
-    };
+    this.data = randomWords(70).concat(['233', '😀', '💛', '🔞🈲', 'city', 'brave']);
+    this.selected = ['brave', 'bowl', 'at', 'city'];
   }
   handleOnClick = (e) => {
     e.stopPropagation();
@@ -124,8 +125,8 @@ class Right extends Component<RightProps> {
                     <div
                       style={{
                         padding: '0px 4px',
-                        minWidth: 300,
-                        minHeight: 300
+                        width: 300,
+                        // height: 400
                       }}
                     >
                       <Input.Search placeholder="Search yours tags" onSearch={value => console.log(value)} />
@@ -134,21 +135,26 @@ class Right extends Component<RightProps> {
                           marginTop: 12
                         }}
                       >
-                        <STag
-                          type="3"
-                        >
-                          Night
-                        </STag>
-                        <STag
-                          type="2"
-                        >
-                          Animal
-                        </STag>
-                        <STag
-                          type="2"
-                        >
-                          City
-                        </STag>
+                        <AlphabetList
+                          style={{
+                            width: 300,
+                            height: 360
+                          }}
+                          data={this.data}
+                          generateFn={
+                            (item, index) => {
+                              return (
+                                <Tag
+                                  color={item === 'city' ? '#2db7f5' : 'rgb(42, 42, 42)'}
+                                  key={item + index}
+                                >
+                                  <Icon type={item === 'city' ? 'check' : 'plus'} style={{ margin: '0 4px 0 0' }} />
+                                  {item}
+                                </Tag>
+                              );
+                            }
+                          }
+                        />
                       </div>
                     </div>
                   }
@@ -168,6 +174,7 @@ class Right extends Component<RightProps> {
                     <STag color="#2db7f5" value="Night" type="1" />
                     <STag color="#2db7f5" value="Lake" type="1" />
                     <STag color="#2db7f5" value="Temp" type="1" />
+                    <STag color="#2db7f5" value="City" type="1" />
                   </div>
                 </Popover>
 
