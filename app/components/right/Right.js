@@ -135,27 +135,19 @@ class Right extends Component<RightProps> {
                         }}
                       >
                         <STag
-                          color={this.state.color}
-                          onClick={() => {
-                            this.setState({
-                              color: '#2db7f5'
-                            });
-                          }}
+                          type="3"
                         >
-                          <Icon type="plus" style={{ margin: '0 4px 0 0' }} />
                           Night
                         </STag>
                         <STag
-                          color="#333"
+                          type="2"
                         >
-                          <Icon type="plus" style={{ margin: '0 4px 0 0' }} />
-                          Night
+                          Animal
                         </STag>
                         <STag
-                          color="#333"
+                          type="2"
                         >
-                          <Icon type="plus" style={{ margin: '0 4px 0 0' }} />
-                          Night
+                          City
                         </STag>
                       </div>
                     </div>
@@ -173,9 +165,9 @@ class Right extends Component<RightProps> {
                       overflowX: 'hidden'
                     }}
                   >
-                    <STag color="#2db7f5" value="Night" closable />
-                    <STag color="#2db7f5" value="Lake" closable />
-                    <STag color="#2db7f5" value="Temp" closable />
+                    <STag color="#2db7f5" value="Night" type="1" />
+                    <STag color="#2db7f5" value="Lake" type="1" />
+                    <STag color="#2db7f5" value="Temp" type="1" />
                   </div>
                 </Popover>
 
@@ -209,21 +201,9 @@ class Right extends Component<RightProps> {
                   >
                     In Folders
                   </div>
-                  <Tag
-                    closable
-                    color="#2db7f5"
-                  >
-                    <Icon type="folder" />
-                    Night
-                  </Tag>
-                  <Tag
-                    closable
-                    color="#2db7f5"
-                  >
-                    <Icon type="folder" />
-                    Night
-                  </Tag>
-
+                  <STag value="Night" />
+                  <STag value="Night" />
+                  <STag value="Night" />
                 </div>
                 <Divider style={{
                   backgroundColor: '#333',
@@ -249,8 +229,4 @@ const mapStateToProps = (state) => (
     basePath: state.basePath
   }
 );
-// const mapDispatchToProps = (dispatch) => (
-//   {
-//   }
-// );
 export default connect(mapStateToProps)(Right);

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Tag, Icon } from 'antd';
+
 type STagProps = {
-  color: string,
+  color?: string,
   onClose?: Function,
   onClick?: Function,
   value?: string,
-  closable?: boolean,
-  type?: string // 0 1 2
+  type: string // 0 1 2
 };
 class STag extends Component<STagProps> {
   render() {
@@ -15,29 +15,100 @@ class STag extends Component<STagProps> {
       onClose,
       onClick,
       value,
-      closable
+      type
     } = this.props;
-    return (
-      <div
-        style={{
-          display: 'inline-block'
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (onClick != null) {
-            onClick(e);
-          }
-        }}
-      >
-        <Tag
-          // closable={closable}
-          color={color}
-        // onClose={onClose}
-        >
-          {value == null ? this.props.children : value}
-        </Tag>
-      </div>
-    );
+    switch (type) {
+      case '1':
+        // closeable
+        return (
+          <div
+            style={{
+              display: 'inline-block'
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onClick != null) {
+                onClick(e);
+              }
+            }}
+          >
+            <Tag
+              closable
+              color={color}
+              onClose={onClose}
+            >
+              {value == null ? this.props.children : value}
+            </Tag>
+          </div>
+        );
+      case '2':
+        // add
+        return (
+          <div
+            style={{
+              display: 'inline-block'
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onClick != null) {
+                onClick(e);
+              }
+            }}
+          >
+            <Tag
+              color={color ? color : 'rgb(51, 51, 51)'}
+            >
+              <Icon type="plus" style={{ margin: '0 4px 0 0' }} />
+              {value == null ? this.props.children : value}
+            </Tag>
+          </div>
+        );
+      case '3':
+        return (
+          <div
+            style={{
+              display: 'inline-block'
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onClick != null) {
+                onClick(e);
+              }
+            }}
+          >
+            <Tag
+              color={color ? color : 'rgb(45, 183, 245)'}
+            >
+              <Icon type="check" style={{ margin: '0 4px 0 0' }} />
+              {value == null ? this.props.children : value}
+            </Tag>
+          </div>
+        );
+      default:
+        // folder closeable
+        return (
+          <div
+            style={{
+              display: 'block'
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onClick != null) {
+                onClick(e);
+              }
+            }}
+          >
+            <Tag
+              color={color ? color : 'rgb(45, 183, 245)'}
+              closable
+              onClose={onClose}
+            >
+              <Icon type="folder" style={{ margin: '0 4px 0 0' }} />
+              {value == null ? this.props.children : value}
+            </Tag>
+          </div>
+        );
+    }
   }
 }
 export default STag;

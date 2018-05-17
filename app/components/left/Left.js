@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import _ from 'lodash';
-import { Tree, Icon } from 'antd';
+// import _ from 'lodash';
 import { PRESET_FOLDER_ID } from '../center/Center';
 import { selectFolder, setFolders } from '../../actions/folder';
-import DropTreeNode from './DropTreeNode';
 // import DropTreeNode from './DropTreeNode';
-
-const { TreeNode } = Tree;
+import DragFolderItem from './FolderItem';
 
 type LeftProp = {
   folders: [],
@@ -19,96 +16,20 @@ class Left extends Component<LeftProp> {
   constructor(props) {
     super(props);
     this.state = {
-      expandedKeys: []
+      draggingNodeId: ''
     };
   }
-  onDrop = info => {
-    console.log(info);
-    const dropKey = info.node.props.eventKey;
-    const dragKey = info.dragNode.props.eventKey;
-    const { dropPosition } = info;
-    const loop = (data, id, callback) => {
-      data.forEach((item, index, arr) => {
-        if (item.id === id) {
-          return callback(item, index, arr);
-        }
-        if (item.children) {
-          return loop(item.children, id, callback);
-        }
-      });
-    };
-    const data = _.clone(this.props.folders); // [...this.state.gData];
-    let dragObj;
-    loop(data, dragKey, (item, index, arr) => {
-      arr.splice(index, 1);
-      dragObj = item;
+  handleFolderItemClick = (id) => {
+    this.props.selectFolder(id);
+  }
+  setDraggingNodeId = (id) => {
+    this.setState({
+      draggingNodeId: id
     });
-    if (info.dropToGap) {
-      let ar;
-      let i;
-      loop(data, dropKey, (item, index, arr) => {
-        ar = arr;
-        i = index;
-      });
-      if (dropPosition === -1) {
-        ar.splice(i, 0, dragObj);
-      } else {
-        ar.splice(i + 1, 0, dragObj);
-      }
-    } else {
-      loop(data, dropKey, item => {
-        item.children = item.children || [];
-        item.children.push(dragObj);
-      });
-    }
-    this.props.setFolders(data);
-  };
-  onClick = (ids: []) => {
-    if (ids.length > 0) {
-      this.props.selectFolder(ids[0]);
-    } else {
-      this.props.selectFolder('');
-    }
   }
-  handleExpand = (keys, event: { node: any, expanded: boolean }) => {
-    console.log(keys);
-    // expand
-    if (event.expanded) {
-      this.state.expandedKeys.push(keys[0]);
-      this.setState({
-        expandedKeys: this.state.expandedKeys
-      });
-    } else {
-      const index = this.state.expandedKeys.indexOf(keys[0]);
-      this.state.expandedKeys.splice(index, 1);
-      this.setState({
-        expandedKeys: this.state.expandedKeys
-      });
-    }
-  }
+
   render() {
-    const loop = data =>
-      data.map(item => {
-        if (item.children && item.children.length) {
-          return (
-            <TreeNode
-              key={item.id}
-              title={item.name}
-              icon={
-                ({ expanded }) => (<Icon type={expanded ? 'folder-open' : 'folder'} />)
-              }
-            >
-              {loop(item.children)}
-            </TreeNode>
-          );
-        }
-        return (<TreeNode
-          icon={({ expanded }) => (<Icon type={expanded ? 'folder-open' : 'folder'} />)
-          }
-          key={item.id}
-          title={item.name}
-        />);
-      });
+    const { selectedFolder } = this.props;
     return ((
       <div
         className="right_border"
@@ -136,56 +57,40 @@ class Left extends Component<LeftProp> {
         </div>
         {/* TODO: fix some style problem and multi-tree selection */}
         <div>
-          <Tree
-            showIcon
-            className="tree "
-            onSelect={this.onClick}
-            selectedKeys={[this.props.selectedFolder]}
-            onDragOver={(e) => { console.log(e); }}
-          >
-            <TreeNode
-              key={PRESET_FOLDER_ID[0]}
-              title="ALL"
-              icon={
-                <Icon type="folder" />
-              }
-            />
-            <TreeNode
-              key={PRESET_FOLDER_ID[3]}
-              title="Trash"
-              icon={
-                <Icon type="folder" />
-              }
-            />
-          </Tree>
         </div>
 
 
-        <div>
+        <div
+          style={{
+            marginRight: 4
+          }}
+        >
           <div
             style={{
               color: '#a0a0a0',
               fontSize: 10,
               lineHeight: '18px',
-              marginLeft: 12,
-              height: 18
+              height: 18,
+              marginLeft: 16
             }}
           >
             Folder (11)
           </div>
-          <Tree
-            showIcon
-            className="tree"
-            draggable
-            onDrop={this.onDrop}
-            onSelect={this.onClick}
-            selectedKeys={[this.props.selectedFolder]}
-            // expandedKeys={this.state.expandedKeys}
-            // onExpand={this.handleExpand}
-          >
-
-            {loop(this.props.folders)}
-          </Tree>
+          {
+            // "\E606"
+            this.props.folders.map(item => {
+              return (
+                <DragFolderItem
+                  item={item}
+                  key={item.id}
+                  onClick={this.handleFolderItemClick}
+                  selectedFolder={selectedFolder}
+                  setDraggingNodeId={this.setDraggingNodeId}
+                  draggingNodeId={this.state.draggingNodeId}
+                />
+              );
+            })
+          }
         </div>
 
       </div>));
