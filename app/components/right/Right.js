@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Input, Tag, Divider, Popover, Icon } from 'antd';
+import { Input, Divider, } from 'antd';
 import { connect } from 'react-redux';
-import AlphabetList from 'react-alphabet-list';
 import randomWords from 'random-words';
 import ColorPan from './ColorPan';
 import STag from './STag';
+import TagArea from './TagArea';
 
 type RightProps = {
   images: any,
@@ -15,9 +15,17 @@ class Right extends Component<RightProps> {
     super(props);
     this.data = randomWords(70).concat(['233', '😀', '💛', '🔞🈲', 'city', 'brave']);
     this.selected = ['brave', 'bowl', 'at', 'city'];
+    this.state = {
+      tags: this.data
+    };
   }
   handleOnClick = (e) => {
     e.stopPropagation();
+  }
+  handleCreateTag = (name) => {
+    this.setState({
+      tags: this.state.tags.concat([name])
+    });
   }
   render() {
     const { images, basePath } = this.props;
@@ -107,77 +115,7 @@ class Right extends Component<RightProps> {
                     marginTop: 16,
                   }}
                 />
-                <Popover
-                  style={{
-                    backgroundColor: '#333'
-                  }}
-                  placement="left"
-                  trigger="click"
-                  title={
-                    <div
-                      style={{
-                        textAlign: 'center'
-                      }}
-                    >
-                      Tags
-                    </div>
-                  }
-                  content={
-                    <div
-                      style={{
-                        padding: '0px 4px',
-                        width: 300,
-                        // height: 400
-                      }}
-                    >
-                      <Input.Search placeholder="Search yours tags" onSearch={value => console.log(value)} />
-                      <div
-                        style={{
-                          marginTop: 12
-                        }}
-                      >
-                        <AlphabetList
-                          style={{
-                            width: 300,
-                            height: 360
-                          }}
-                          data={this.data}
-                          generateFn={
-                            (item, index) => {
-                              return (
-                                <Tag
-                                  color={item === 'city' ? '#2db7f5' : 'rgb(42, 42, 42)'}
-                                  key={item + index}
-                                >
-                                  <Icon type={item === 'city' ? 'check' : 'plus'} style={{ margin: '0 4px 0 0' }} />
-                                  {item}
-                                </Tag>
-                              );
-                            }
-                          }
-                        />
-                      </div>
-                    </div>
-                  }
-                >
-                  <div
-                    style={{
-                      marginTop: 16,
-                      backgroundColor: '#333',
-                      height: 90,
-                      padding: 8,
-                      cursor: 'text',
-                      borderRadius: '4px',
-                      overflow: 'scroll',
-                      overflowX: 'hidden'
-                    }}
-                  >
-                    <STag color="#2db7f5" value="Night" type="1" />
-                    <STag color="#2db7f5" value="Lake" type="1" />
-                    <STag color="#2db7f5" value="Temp" type="1" />
-                    <STag color="#2db7f5" value="City" type="1" />
-                  </div>
-                </Popover>
+                <TagArea tags={this.state.tags} onCreateTag={this.handleCreateTag} />
 
                 <Input.TextArea
                   style={{

@@ -4,7 +4,8 @@ import DropAreaTop from './DropAreaTop';
 import DropAreaBottom from './DropAreaBottom';
 import DropAreaCenter from './DropAreaCenter';
 import { FolderType } from '../../types/app';
-// TODO: fix folder edit the droppable
+import { PRESET_FOLDER_ID } from '../center/Center';
+// TODO: fix folder edit the drapeable
 type FolderItemProps = {
   connectDragSource: Function,
   connectDragPreview: Function,
@@ -17,7 +18,7 @@ type FolderItemProps = {
   draggingNodeId: string,
   isParentDragging?: boolean,
 
-  onDropFolder: Function
+  onDropFolder?: Function
 };
 class FolderItem extends Component<FolderItemProps> {
   constructor(props) {
@@ -91,16 +92,28 @@ class FolderItem extends Component<FolderItemProps> {
                 isDragging={isDragging}
                 onDropFolder={onDropFolder}
               />
-              <DropAreaTop
-                item={item}
-                isDragging={isDragging}
-                onDropFolder={onDropFolder}
-              />
-              <DropAreaBottom
-                item={item}
-                isDragging={isDragging}
-                onDropFolder={onDropFolder}
-              />
+              {/* TODO: make top bottom able to drop img */}
+              {
+                (item.id === PRESET_FOLDER_ID[0] || item.id === PRESET_FOLDER_ID[3]) ? '' :
+                  (
+                    <DropAreaTop
+                      item={item}
+                      isDragging={isDragging}
+                      onDropFolder={onDropFolder}
+                    />
+                  )
+              }
+              {
+                (item.id === PRESET_FOLDER_ID[0] || item.id === PRESET_FOLDER_ID[3]) ? '' :
+                  (
+                    <DropAreaBottom
+                      item={item}
+                      isDragging={isDragging}
+                      onDropFolder={onDropFolder}
+                    />
+                  )
+              }
+
             </div>
           ))
         }

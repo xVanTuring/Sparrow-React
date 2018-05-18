@@ -11,7 +11,8 @@ type DropAreaCenterProps = {
   item: FolderType,
   isHover: boolean,
   selectedFolder: string,
-  isDragging: boolean
+  isDragging: boolean,
+  onDropFolder?: Function
 };
 class DropAreaCenter extends Component<DropAreaCenterProps> {
   render() {
@@ -22,11 +23,12 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
       item,
       isHover,
       selectedFolder,
-      isDragging
+      isDragging,
+      onDropFolder
     } = this.props;
     const hoverColor = (isHover ? 'rgba(192, 192, 192, 0.2)' : '');
     const selectedColor = (selectedFolder === item.id ? 'rgba(192, 192, 192, 0.3)' : hoverColor);
-    const overColor = isOver ? 'rgb(25, 153, 238)' : selectedColor;
+    const overColor = (isOver && onDropFolder) ? 'rgb(25, 153, 238)' : selectedColor;
     const backgroundColor = isDragging ? '' : overColor;
     return connectDropTarget((
       <div
@@ -60,15 +62,16 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
 }
 const areaTarget = {
   drop(props, monitor) {
-    // console.log(monitor.getItem());
-    props.onDropFolder({
-      dropId: props.item.id,
-      dragData: monitor.getItem(),
-      type: 'CenterDrop'
-    });
+    if (props.onDropFolder) {
+      props.onDropFolder({
+        dropId: props.item.id,
+        dragData: monitor.getItem(),
+        type: 'CenterDrop'
+      });
+    }
   },
   canDrop(props) {
-    if (props.isDragging) {
+    if (props.isDragging && props.onDropFolder) {
       return false;
     }
     return true;

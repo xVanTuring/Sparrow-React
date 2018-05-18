@@ -1,4 +1,7 @@
 // @flow
+
+import { ImageType, FolderType } from '../types/app';
+
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -130,7 +133,8 @@ const addImage = (fileObjArr = [], targetPathId, cb) => {
                   size: fileObj.size,
                   isDeleted: false,
                   modificationTime: fileObj.lastModified,
-                  palette: []
+                  palette: [],
+                  tags: []
                 };
                 // TODO: format
                 const img = gm(targetImgPath);
@@ -171,20 +175,6 @@ const addImage = (fileObjArr = [], targetPathId, cb) => {
       }
     });
   }
-  //  else if (cb) {
-  //   cb(arr);
-  // }
-};
-type ImageType = {
-  name: string,
-  size: number,
-  modificationTime: number,
-  folders: string[],
-  width: number,
-  height: number,
-  isDeleted: boolean,
-  ext: string
-  // tags: string[]
 };
 export const addImagesToFolder = (ids: string[], targetId, setFolder, cb) => {
   addImageToFolder(ids, targetId, setFolder, [], (updatedItem: ImageType[]) => {

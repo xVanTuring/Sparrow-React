@@ -30,6 +30,9 @@ class Left extends Component<LeftProp> {
     });
   }
   onDropFolder = (e: { dropId: string, dragData: {}, type: string }) => {
+    if (e.dropId === PRESET_FOLDER_ID[3]) {
+      return;
+    }
     if (e.dragData.folders != null) {
       let data = this.props.folders;
       const { dropId, dragData, type } = e;
@@ -54,7 +57,8 @@ class Left extends Component<LeftProp> {
       ipcRenderer.send('saveFolders', [fileData]);
       // save
     } else if (e.dragData.images != null) {
-      console.log('images');
+      // console.log(e.dragData.images);
+      ipcRenderer.send('addImagesToFolder', [e.dragData.images, e.dropId, true]);
     }
   };
   render() {
@@ -101,7 +105,6 @@ class Left extends Component<LeftProp> {
             setDraggingNodeId={this.setDraggingNodeId}
             draggingNodeId={this.state.draggingNodeId}
             fixed
-            onDropFolder={this.onDropFolder}
           />
           <DragFolderItem
             item={{

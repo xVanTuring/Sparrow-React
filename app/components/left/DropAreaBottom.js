@@ -4,16 +4,18 @@ import { DropTarget } from 'react-dnd';
 type DropAreaBottomProps = {
   connectDropTarget: any,
   isOver: boolean,
-  isDragging: boolean
+  isDragging: boolean,
+  onDropFolder?: Function
 };
 class DropAreaBottom extends Component<DropAreaBottomProps> {
   render() {
     const {
       connectDropTarget,
       isOver,
-      isDragging
+      isDragging,
+      onDropFolder
     } = this.props;
-    const basicColor = isOver ? 'rgb(25, 153, 238)' : 'transparent';
+    const basicColor = (isOver && onDropFolder) ? 'rgb(25, 153, 238)' : 'transparent';
     const backgroundColor = isDragging ? '' : basicColor;
     return connectDropTarget((
       <div
@@ -42,14 +44,17 @@ class DropAreaBottom extends Component<DropAreaBottomProps> {
 }
 const areaTarget = {
   drop(props, monitor) {
-    props.onDropFolder({
-      dropId: props.item.id,
-      dragData: monitor.getItem(),
-      type: 'BottomDrop'
-    });
+    if (props.onDropFolder) {
+      props.onDropFolder({
+        dropId: props.item.id,
+        dragData: monitor.getItem(),
+        type: 'BottomDrop'
+      });
+    }
+
   },
   canDrop(props) {
-    if (props.isDragging) {
+    if (props.isDragging && props.onDropFolder) {
       return false;
     }
     return true;
