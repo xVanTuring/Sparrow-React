@@ -87,7 +87,7 @@ class Center extends Component<Prop> {
       currentMousePos: { x: e.clientX, y: e.clientY + top },
     });
     this.initScrollTop = top;
-    this.props.setSelected([]);
+    this.props.setSelected([]);// with comparing
   }
   handleMouseMove = (e) => {
     if (this.state.isDragging) {

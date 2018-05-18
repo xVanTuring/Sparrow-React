@@ -77,7 +77,8 @@ class Right extends Component<RightProps> {
                   src={imgPath == null ? '' : imgPath}
                   alt="detail"
                   style={{
-                    width: 140,
+                    maxWidth: 140,
+                    maxHeight: 180,
                     display: 'block',
                     margin: 'auto',
                     boxShadow: '0 2px 6px rgba(0,0,0,0.16), 0 2px 6px rgba(0,0,0,0.23)'

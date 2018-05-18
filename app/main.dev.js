@@ -12,7 +12,7 @@
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
 import MenuBuilder from './menu';
-import { readMeta, readImages, addImages, addImagesToFolder } from './operation/operation';
+import { readMeta, readImages, addImages, addImagesToFolder, saveFolders } from './operation/operation';
 
 const path = require('path');
 const os = require('os');
@@ -30,7 +30,10 @@ ipcMain.on('addImagesToFolder', (event, arg) => {
     event.sender.send('updateImages', updated);
   });
 });
-// id targetId
+ipcMain.on('saveFolders', (event, arg) => {
+  // console.log(arg[0]);
+  saveFolders(arg[0]);
+});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');

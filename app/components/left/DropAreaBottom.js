@@ -42,7 +42,11 @@ class DropAreaBottom extends Component<DropAreaBottomProps> {
 }
 const areaTarget = {
   drop(props, monitor) {
-    console.log(monitor.getItem());
+    props.onDropFolder({
+      dropId: props.item.id,
+      dragData: monitor.getItem(),
+      type: 'BottomDrop'
+    });
   },
   canDrop(props) {
     if (props.isDragging) {

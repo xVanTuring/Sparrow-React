@@ -133,7 +133,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 const imageSource = {
   beginDrag(props, monitor) {
-    return { images: props.selectedImgs };
+    return { images: props.selectedImgs.toArray() };
   }
 };
 function collect(_connect, monitor) {

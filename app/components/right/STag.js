@@ -6,7 +6,7 @@ type STagProps = {
   onClose?: Function,
   onClick?: Function,
   value?: string,
-  type: string // 0 1 2
+  type?: string // 0 1 2
 };
 class STag extends Component<STagProps> {
   render() {

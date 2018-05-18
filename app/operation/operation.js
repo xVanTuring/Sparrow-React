@@ -29,6 +29,14 @@ export const saveMeta = (obj, cb) => {
     }
   );
 };
+export const saveFolders = (folders) => {
+  readMeta((res) => {
+    res.folders = folders;
+    saveMeta(res, () => {
+      console.log('Folder Saved');
+    });
+  });
+};
 
 const readImageMeta = (id, cb: (res: ImageType) => void) => {
   fs.readFile(path.join(os.homedir(), 'Sparrow', 'images', id, 'metadata.json'), (err, buf) => {

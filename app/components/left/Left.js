@@ -4,6 +4,9 @@ import { connect } from 'react-redux';
 import { PRESET_FOLDER_ID } from '../center/Center';
 import { selectFolder, setFolders } from '../../actions/folder';
 import DragFolderItem from './FolderItem';
+import { movePrepend, moveAfter, moveBefore, toFileData } from '../../utils/utils';
+
+const { ipcRenderer } = require('electron');
 
 type LeftProp = {
   folders: [],
@@ -26,7 +29,34 @@ class Left extends Component<LeftProp> {
       draggingNodeId: id
     });
   }
-
+  onDropFolder = (e: { dropId: string, dragData: {}, type: string }) => {
+    if (e.dragData.folders != null) {
+      let data = this.props.folders;
+      const { dropId, dragData, type } = e;
+      const dragId = dragData.folders[0];
+      switch (type) {
+        case 'CenterDrop':
+          data = movePrepend(dragId, dropId, data);
+          this.props.setFolders(data);
+          break;
+        case 'TopDrop':
+          data = moveBefore(dragId, dropId, data);
+          this.props.setFolders(data);
+          break;
+        case 'BottomDrop':
+          data = moveAfter(dragId, dropId, data);
+          this.props.setFolders(data);
+          break;
+        default:
+          break;
+      }
+      const fileData = toFileData(data);
+      ipcRenderer.send('saveFolders', [fileData]);
+      // save
+    } else if (e.dragData.images != null) {
+      console.log('images');
+    }
+  };
   render() {
     const { selectedFolder } = this.props;
     return ((
@@ -70,6 +100,8 @@ class Left extends Component<LeftProp> {
             selectedFolder={selectedFolder}
             setDraggingNodeId={this.setDraggingNodeId}
             draggingNodeId={this.state.draggingNodeId}
+            fixed
+            onDropFolder={this.onDropFolder}
           />
           <DragFolderItem
             item={{
@@ -77,11 +109,13 @@ class Left extends Component<LeftProp> {
               name: 'Trash',
               children: []
             }}
-            key={PRESET_FOLDER_ID[0]}
+            key={PRESET_FOLDER_ID[3]}
             onClick={this.handleFolderItemClick}
             selectedFolder={selectedFolder}
             setDraggingNodeId={this.setDraggingNodeId}
             draggingNodeId={this.state.draggingNodeId}
+            fixed
+            onDropFolder={this.onDropFolder}
           />
         </div>
 
@@ -97,7 +131,7 @@ class Left extends Component<LeftProp> {
               fontSize: 10,
               lineHeight: '18px',
               height: 18,
-              marginLeft: 16
+              marginLeft: 8
             }}
           >
             Folder (11)
@@ -113,6 +147,7 @@ class Left extends Component<LeftProp> {
                   selectedFolder={selectedFolder}
                   setDraggingNodeId={this.setDraggingNodeId}
                   draggingNodeId={this.state.draggingNodeId}
+                  onDropFolder={this.onDropFolder}
                 />
               );
             })

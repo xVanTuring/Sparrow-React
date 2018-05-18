@@ -1,5 +1,5 @@
 import React from 'react';
-// import { Map } from 'immutable';
+import _ from 'lodash';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
@@ -9,13 +9,15 @@ import './app.global.css';
 import App from './containers/App';
 import { configureStore } from './store/configureStore';
 import { setFolders } from './actions/folder';
+import updateFolders from './utils/utils';
 
 const { ipcRenderer } = require('electron');
 
 const store = configureStore();
 ipcRenderer.on('metaLoaded', (event, data) => {
-  // full app
-  store.dispatch(resetApp(data));
+  const newData = _.cloneDeep(data);
+  updateFolders(newData.folders);
+  store.dispatch(resetApp(newData));
 });
 ipcRenderer.on('addImages', (event, images) => {
   store.dispatch(addImages(images));

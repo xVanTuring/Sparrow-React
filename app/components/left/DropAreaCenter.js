@@ -60,7 +60,12 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
 }
 const areaTarget = {
   drop(props, monitor) {
-    console.log(monitor.getItem());
+    // console.log(monitor.getItem());
+    props.onDropFolder({
+      dropId: props.item.id,
+      dragData: monitor.getItem(),
+      type: 'CenterDrop'
+    });
   },
   canDrop(props) {
     if (props.isDragging) {

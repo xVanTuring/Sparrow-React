@@ -4,17 +4,20 @@ import DropAreaTop from './DropAreaTop';
 import DropAreaBottom from './DropAreaBottom';
 import DropAreaCenter from './DropAreaCenter';
 import { FolderType } from '../../types/app';
-
+// TODO: fix folder edit the droppable
 type FolderItemProps = {
   connectDragSource: Function,
   connectDragPreview: Function,
 
+  fixed?: boolean,
   item: FolderType,
   onClick: Function,
   setDraggingNodeId: Function,
   selectedFolder: string,
   draggingNodeId: string,
-  isParentDragging?: boolean
+  isParentDragging?: boolean,
+
+  onDropFolder: Function
 };
 class FolderItem extends Component<FolderItemProps> {
   constructor(props) {
@@ -25,11 +28,12 @@ class FolderItem extends Component<FolderItemProps> {
     };
   }
   handleClick = () => {
-    this.setState({
-      collapsed: !this.state.collapsed
-    });
+    if (this.props.item.children && this.props.item.children.length > 0) {
+      this.setState({
+        collapsed: !this.state.collapsed
+      });
+    }
     this.props.onClick(this.props.item.id);
-    console.log(this.state.collapsed);
   }
   render() {
     const {
@@ -41,7 +45,8 @@ class FolderItem extends Component<FolderItemProps> {
       selectedFolder,
       setDraggingNodeId,
       draggingNodeId,
-      isParentDragging
+      isParentDragging,
+      onDropFolder
     } = this.props;
     const isDragging = !!isParentDragging || (draggingNodeId === item.id);
     return connectDragSource((
@@ -52,7 +57,7 @@ class FolderItem extends Component<FolderItemProps> {
               style={{
                 height: 30,
                 position: 'relative',
-                marginBottom: 2
+                marginBottom: 4
               }}
               onMouseEnter={() => { this.setState({ isHover: true }); }}
               onMouseLeave={() => { this.setState({ isHover: false }); }}
@@ -71,7 +76,9 @@ class FolderItem extends Component<FolderItemProps> {
                 <img
                   style={{
                     height: 12,
-                    width: 12
+                    width: 12,
+                    transform: this.state.collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+                    WebkitTransition: 'all .3s'
                   }}
                   alt="icon"
                   src="./dist/folder_indicator.svg"
@@ -82,14 +89,17 @@ class FolderItem extends Component<FolderItemProps> {
                 isHover={this.state.isHover}
                 selectedFolder={selectedFolder}
                 isDragging={isDragging}
+                onDropFolder={onDropFolder}
               />
               <DropAreaTop
                 item={item}
                 isDragging={isDragging}
+                onDropFolder={onDropFolder}
               />
               <DropAreaBottom
                 item={item}
                 isDragging={isDragging}
+                onDropFolder={onDropFolder}
               />
             </div>
           ))
@@ -111,6 +121,7 @@ class FolderItem extends Component<FolderItemProps> {
                   setDraggingNodeId={setDraggingNodeId}
                   draggingNodeId={draggingNodeId}
                   isParentDragging={isDragging}
+                  onDropFolder={onDropFolder}
                 />
               );
             })
@@ -122,9 +133,15 @@ class FolderItem extends Component<FolderItemProps> {
 }
 
 const folderSource = {
+  canDrag(props) {
+    if (props.fixed) {
+      return false;
+    }
+    return true;
+  },
   beginDrag(props) {
     props.setDraggingNodeId(props.item.id);
-    return { ids: [props.item.id] };
+    return { folders: [props.item.id] };
   },
   endDrag(props) {
     props.setDraggingNodeId('');
