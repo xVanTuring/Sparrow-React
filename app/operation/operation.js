@@ -1,5 +1,5 @@
 // @flow
-
+import { Set } from 'immutable';
 import { ImageType, FolderType } from '../types/app';
 
 const fs = require('fs');
@@ -32,6 +32,28 @@ export const saveMeta = (obj, cb) => {
     }
   );
 };
+export const readTags = (cb: (res: { historyTag: string[] }) => void) => {
+  fs.readFile(path.join(os.homedir(), 'Sparrow', 'tags.json'), (err, data) => {
+    if (err == null) {
+      cb(JSON.parse(data.toString()));
+    }
+  });
+};
+export const saveTags = (obj, cb) => {
+  fs.writeFile(
+    path.join(
+      os.homedir(),
+      'Sparrow',
+      'tags.json'
+    ),
+    JSON.stringify(obj), (err) => {
+      if (!err) {
+        cb();
+      }
+    }
+  );
+};
+
 export const saveFolders = (folders) => {
   readMeta((res) => {
     res.folders = folders;
@@ -206,3 +228,36 @@ export const addImageToFolder =
     }
   };
 
+export const addImageTag = (id, tag, cb) => {
+  readImageMeta(id, (res) => {
+    res.tags.push(tag);
+    saveImageMeta(id, res, () => {
+      addHistoryTags(tag, (updatedHistTags) => {
+        cb([res], updatedHistTags);
+      });
+    });
+  });
+};
+export const removeImageTag = (id, tag, cb) => {
+  // add to history
+  readImageMeta(id, (imageMeta) => {
+    const index = imageMeta.tags.indexOf(tag);
+    if (index >= 0) {
+      imageMeta.tags.splice(index, 1);
+      saveImageMeta(id, imageMeta, () => {
+        cb([imageMeta]);
+      });
+    }
+  });
+};
+const addHistoryTags = (tag, cb) => {
+  readTags((res) => {
+    let tags = Set(res.historyTags);
+    tags = tags.add(tag);
+    res.historyTags = tags.toArray();
+    console.log(res);
+    saveTags(res, () => {
+      cb(res.historyTags);
+    });
+  });
+};

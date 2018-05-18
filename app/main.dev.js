@@ -12,7 +12,7 @@
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
 import MenuBuilder from './menu';
-import { readMeta, readImages, addImages, addImagesToFolder, saveFolders } from './operation/operation';
+import { readMeta, readImages, addImages, addImagesToFolder, saveFolders, addImageTag, removeImageTag, readTags } from './operation/operation';
 
 const path = require('path');
 const os = require('os');
@@ -27,12 +27,22 @@ ipcMain.on('addImages', (event, arg) => {
 // ids[] targetId setFolder
 ipcMain.on('addImagesToFolder', (event, arg) => {
   addImagesToFolder(arg[0], arg[1], arg[2], (updated) => {
-    event.sender.send('updateImages', updated);
+    event.sender.send('updateImages', [updated]);
   });
 });
 ipcMain.on('saveFolders', (event, arg) => {
-  // console.log(arg[0]);
   saveFolders(arg[0]);
+});
+// id tag
+ipcMain.on('addTag', (event, arg) => {
+  addImageTag(arg[0], arg[1], (updated, updatedHistTags) => {
+    event.sender.send('updateImages', [updated, updatedHistTags]);
+  });
+});
+ipcMain.on('removeTag', (event, arg) => {
+  removeImageTag(arg[0], arg[1], (updatedImg) => {
+    event.sender.send('updateImages', [updatedImg]);
+  });
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -96,10 +106,13 @@ app.on('ready', async () => {
     mainWindow.focus();
     readMeta((projMeta) => {
       readImages((imgs) => {
-        mainWindow.webContents.send('metaLoaded', {
-          folders: projMeta.folders,
-          images: imgs,
-          basePath: path.join(os.homedir(), 'Sparrow')
+        readTags((res) => {
+          mainWindow.webContents.send('metaLoaded', {
+            folders: projMeta.folders,
+            images: imgs,
+            basePath: path.join(os.homedir(), 'Sparrow'),
+            historyTags: res.historyTags
+          });
         });
       });
     });

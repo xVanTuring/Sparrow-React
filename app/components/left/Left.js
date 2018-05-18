@@ -90,7 +90,8 @@ class Left extends Component<LeftProp> {
         </div>
         <div
           style={{
-            marginTop: 8
+            marginTop: 8,
+            marginRight: 4
           }}
         >
           <DragFolderItem

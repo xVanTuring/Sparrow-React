@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Input, Divider, } from 'antd';
 import { connect } from 'react-redux';
-import randomWords from 'random-words';
 import ColorPan from './ColorPan';
 import STag from './STag';
 import TagArea from './TagArea';
@@ -13,19 +12,11 @@ type RightProps = {
 class Right extends Component<RightProps> {
   constructor(props) {
     super(props);
-    this.data = randomWords(70).concat(['233', '😀', '💛', '🔞🈲', 'city', 'brave']);
+    // this.data = randomWords(70).concat(['233', '😀', '💛', '🔞🈲', 'city', 'brave']);
     this.selected = ['brave', 'bowl', 'at', 'city'];
-    this.state = {
-      tags: this.data
-    };
   }
   handleOnClick = (e) => {
     e.stopPropagation();
-  }
-  handleCreateTag = (name) => {
-    this.setState({
-      tags: this.state.tags.concat([name])
-    });
   }
   render() {
     const { images, basePath } = this.props;
@@ -115,7 +106,10 @@ class Right extends Component<RightProps> {
                     marginTop: 16,
                   }}
                 />
-                <TagArea tags={this.state.tags} onCreateTag={this.handleCreateTag} />
+                <TagArea
+                  imgTags={img.tags}
+                  currentId={img.id}
+                />
 
                 <Input.TextArea
                   style={{
@@ -127,7 +121,6 @@ class Right extends Component<RightProps> {
                     resize: 'none',
                     fontSize: '12px',
                     boxSizing: 'border-box',
-                    // border: '1px solid transparent'
                   }}
                   placeholder="Add Annotation"
                 />

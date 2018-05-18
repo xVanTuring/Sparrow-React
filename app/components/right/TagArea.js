@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
-import { Input, Tag, Popover, Icon } from 'antd';
+import { connect } from 'react-redux';
+import { Input, Popover, } from 'antd';
 import AlphabetList from 'react-alphabet-list';
 import STag from './STag';
 
+const { ipcRenderer } = require('electron');
+
 type TagAreaProps = {
+  currentId: string,
   tags: [],
-  onCreateTag: (id: string) => void
+  imgTags: string[]
+
 };
 class TagArea extends Component<TagAreaProps> {
   constructor(props) {
@@ -13,9 +18,23 @@ class TagArea extends Component<TagAreaProps> {
     this.state = {
       searchContent: ''
     };
+    this.focused = false;
+  }
+  handleTagClick = (tag, type) => {
+    if (type === 'add') {
+      ipcRenderer.send('addTag', [this.props.currentId, tag]);
+    } else {
+      this.handleOnClose(tag);
+    }
+  }
+  handleOnClose = (value) => {
+    ipcRenderer.send('removeTag', [this.props.currentId, value]);
   }
   render() {
-    const { tags, onCreateTag } = this.props;
+    const {
+      tags,
+      imgTags
+    } = this.props;
     const { searchContent } = this.state;
     const filteredTags = tagFilter(searchContent, tags);
     return (
@@ -39,13 +58,14 @@ class TagArea extends Component<TagAreaProps> {
             style={{
               padding: '0px 4px',
               width: 300,
+              minHeight: 420,
             }}
           >
             <Input.Search
               placeholder="Search yours tags"
               onPressEnter={() => {
                 if (!(filteredTags.length > 0 && filteredTags.indexOf(searchContent) > -1)) {
-                  onCreateTag(searchContent);
+                  this.handleTagClick(searchContent, 'add');
                 }
               }}
               value={searchContent}
@@ -54,32 +74,55 @@ class TagArea extends Component<TagAreaProps> {
                   searchContent: e.target.value
                 });
               }}
+              ref={ref => {
+                if (ref && !this.focused) {
+                  ref.focus();
+                  this.focused = true;
+                }
+              }}
             />
             <div
               style={{
                 marginTop: 12
               }}
             >
-              <AlphabetList
-                style={{
-                  width: 300,
-                  height: 360
-                }}
-                data={filteredTags}
-                generateFn={
-                  (item, index) => {
-                    return (
-                      <Tag
-                        color={item === 'city' ? '#2db7f5' : 'rgb(42, 42, 42)'}
-                        key={item + index}
-                      >
-                        <Icon type={item === 'city' ? 'check' : 'plus'} style={{ margin: '0 4px 0 0' }} />
-                        {item}
-                      </Tag>
-                    );
-                  }
-                }
-              />
+              {
+                filteredTags.length > 0 ? (
+                  <AlphabetList
+                    style={{
+                      width: 300,
+                      height: 360
+                    }}
+                    data={filteredTags}
+                    generateFn={
+                      (item, index) => {
+                        if (imgTags.indexOf(item) >= 0) {
+                          return (
+                            <STag key={item + index} value={item} type="3" onClick={this.handleTagClick} />
+                          );
+                        }
+                        return (
+                          <STag key={item + index} value={item} type="2" onClick={this.handleTagClick} />
+                        );
+                      }
+                    }
+                  />
+                ) :
+                  (
+
+                    <div
+                      style={{
+                        color: 'white',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {
+                        searchContent !== '' ? 'Press Enter to Create tag' : 'Type tag to create'
+                      }
+                    </div>
+                  )
+              }
+
             </div>
           </div>
         }
@@ -93,13 +136,19 @@ class TagArea extends Component<TagAreaProps> {
             cursor: 'text',
             borderRadius: '4px',
             overflow: 'scroll',
-            overflowX: 'hidden'
+            overflowX: 'hidden',
+            color: 'white',
+            fontSize: 12
           }}
         >
-          <STag color="#2db7f5" value="Night" type="1" />
-          <STag color="#2db7f5" value="Lake" type="1" />
-          <STag color="#2db7f5" value="Temp" type="1" />
-          <STag color="#2db7f5" value="City" type="1" />
+          {
+            imgTags.length > 0 ?
+              imgTags.map((item) => (
+                <STag key={item} color="#2db7f5" value={item} type="1" onClose={this.handleOnClose} />
+              ))
+              :
+              'Click To Add Tag'
+          }
         </div>
       </Popover>
     );
@@ -113,4 +162,10 @@ const tagFilter = (key: string, tags: string[]) => {
     return item.indexOf(key) >= 0;
   });
 };
-export default TagArea;
+const mapStateToProps = (state) => (
+  {
+    tags: state.tags
+  }
+);
+export default connect(mapStateToProps)(TagArea);
+

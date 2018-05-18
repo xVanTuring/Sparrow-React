@@ -35,7 +35,7 @@ class STag extends Component<STagProps> {
             <Tag
               closable
               color={color}
-              onClose={onClose}
+              onClose={() => { onClose(value); }}
             >
               {value == null ? this.props.children : value}
             </Tag>
@@ -51,12 +51,16 @@ class STag extends Component<STagProps> {
             onClick={(e) => {
               e.stopPropagation();
               if (onClick != null) {
-                onClick(e);
+                onClick(this.props.value, 'add');
               }
+            }}
+            onContextMenu={(e) => {
+              // delete without save to history
+              e.preventDefault();
             }}
           >
             <Tag
-              color={color ? color : 'rgb(51, 51, 51)'}
+              color={color || 'rgb(51, 51, 51)'}
             >
               <Icon type="plus" style={{ margin: '0 4px 0 0' }} />
               {value == null ? this.props.children : value}
@@ -64,6 +68,7 @@ class STag extends Component<STagProps> {
           </div>
         );
       case '3':
+        // added with check icon
         return (
           <div
             style={{
@@ -72,12 +77,16 @@ class STag extends Component<STagProps> {
             onClick={(e) => {
               e.stopPropagation();
               if (onClick != null) {
-                onClick(e);
+                onClick(value, 'remove');
               }
+            }}
+            onContextMenu={(e) => {
+              // delete without save to history
+              e.preventDefault();
             }}
           >
             <Tag
-              color={color ? color : 'rgb(45, 183, 245)'}
+              color={color || 'rgb(45, 183, 245)'}
             >
               <Icon type="check" style={{ margin: '0 4px 0 0' }} />
               {value == null ? this.props.children : value}
