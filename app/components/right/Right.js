@@ -5,6 +5,8 @@ import ColorPan from './ColorPan';
 import STag from './STag';
 import TagArea from './TagArea';
 
+const { ipcRenderer } = require('electron');
+
 type RightProps = {
   images: any,
   basePath: string
@@ -37,11 +39,14 @@ class Right extends Component<RightProps> {
       currentName: this.img ? this.img.name : ''
     });
   }
-  // handleOnClick = (e) => {
-  //   e.stopPropagation();
-  // }
   handleNameBlur = (name) => {
-
+    if (name !== '') {
+      ipcRenderer.send('setImageName', [this.img.id, name]);
+    } else {
+      this.setState({
+        currentName: this.img ? this.img.name : ''
+      });
+    }
   }
 
   render() {
@@ -127,9 +132,7 @@ class Right extends Component<RightProps> {
                     this.handleNameBlur(this.state.currentName);
                   }}
                   onBlur={() => {
-                    console.log('OnBlur');
                     this.handleNameBlur(this.state.currentName);
-                    // save
                   }}
                 />
                 <Input

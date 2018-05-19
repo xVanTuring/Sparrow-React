@@ -12,7 +12,7 @@
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
 import MenuBuilder from './menu';
-import { readMeta, readImages, addImages, addImagesToFolder, saveFolders, addImageTag, removeImageTag, readTags, deleteImages } from './operation/operation';
+import { readMeta, readImages, addImages, addImagesToFolder, saveFolders, addImageTag, removeImageTag, readTags, deleteImages, setImageName } from './operation/operation';
 
 const path = require('path');
 const os = require('os');
@@ -48,6 +48,12 @@ ipcMain.on('removeTag', (event, arg) => {
 ipcMain.on('deleteImages', (event, arg) => {
   console.log(arg[0]);
   deleteImages(arg[0], (updatedImageMeta) => {
+    event.sender.send('updateImages', [[updatedImageMeta]]);
+  });
+});
+// id name
+ipcMain.on('setImageName', (event, arg) => {
+  setImageName(arg[0], arg[1], (updatedImageMeta) => {
     event.sender.send('updateImages', [[updatedImageMeta]]);
   });
 });

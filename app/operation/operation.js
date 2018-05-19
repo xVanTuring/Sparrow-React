@@ -260,8 +260,37 @@ const addHistoryTags = (tag, cb: (historyTags: string[]) => void) => {
     });
   });
 };
-export const setImageName = (id, name, cb) => {
+export const setImageName = (id, name, cb: (imageMeta: ImageType) => void) => {
+  readImageMeta(id, (imgMeta) => {
+    const basePath = path.join(os.homedir(), 'Sparrow', 'images', id);
+    const imgPath = path.join(basePath, `${imgMeta.name}.${imgMeta.ext}`);
+    const thumbPath = path.join(basePath, `${imgMeta.name}_thumb.${imgMeta.ext}`);
 
+    const newImgPath = path.join(basePath, `${name}.${imgMeta.ext}`);
+    const newThumbPath = path.join(basePath, `${name}_thumb.${imgMeta.ext}`);
+    imgMeta.name = name;
+    fs.rename(imgPath, newImgPath, (err) => {
+      if (!err) {
+        fs.rename(thumbPath, newThumbPath, (err2) => {
+          if (!err2) {
+            cb(imgMeta);
+          }
+        });
+      }
+    });
+    saveImageMeta(id, imgMeta, () => {
+    });
+  });
+};
+export const setImageNames = (ids: [], names: [], cb) => {
+  if (ids.length > 0) {
+    const id = ids.pop();
+    const name = names.pop();
+    setImageNames(ids, names, cb);
+    setImageName(id, name, (meta) => {
+      cb(meta);
+    });
+  }
 };
 export const deleteImages = (ids, cb: (imgMeta: ImageType) => void) => {
   deleteImage(ids, (imgMeta) => {
