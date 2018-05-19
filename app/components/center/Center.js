@@ -8,10 +8,11 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import Image from './Image';
 import DropArea from './DropArea';
 import { selectImage } from '../../actions/image';
+import { ImageType } from '../../types/app';
 // TODO: move ALL EVENT TO document and use state to tell actions.
 
 type Prop = {
-  images: List | [],
+  images: List<ImageType>,
   connectDropTarget: any,
   isOver: boolean,
   canDrop: boolean,
@@ -195,6 +196,7 @@ class Center extends Component<Prop> {
                   name={item.name}
                   id={item.id}
                   hoveredImgs={this.state.hoveredImgs}
+                  displayImages={this.props.images}
                 />);
               })
             }
@@ -269,13 +271,13 @@ const filter = (imgs: List, folderId) => {
     case PRESET_FOLDER_ID[0]:
       return imgs.filter((item) => {
         return !item.isDeleted;
-      });
+      }).toList();
     case PRESET_FOLDER_ID[3]:
       return imgs.filter((item) => {
         return item.isDeleted;
-      });
+      }).toList();
     case '':
-      return [];
+      return List([]);
     default:
       return imgs.filter((item) => {
         if (item.isDeleted) {
@@ -291,7 +293,7 @@ const filter = (imgs: List, folderId) => {
           return inFolder;
         }
         return false;
-      });
+      }).toList();
   }
 };
 const mapStateToProps = (state) => (

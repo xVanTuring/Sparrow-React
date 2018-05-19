@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import { DragSource } from 'react-dnd';
 import { selectImage } from '../../actions/image';
+import { List } from 'immutable';
+import { ImageType } from '../../types/app';
 
 // TODO: set selectedImg when drag(down)
 // fix landscape img border
@@ -16,24 +19,80 @@ type ImageProp = {
   connectDragSource: any,
   // connectDragPreview: any,
   selectedImgs: List<string>,
-  hoveredImgs: string[]
+  hoveredImgs: string[],
+
+  displayImages: List<ImageType>
 };
 class Image extends Component<ImageProp> {
   constructor(props) {
     super(props);
     this.id = this.props.id;
     this.imgRef = null;
+    this.regionSelection = false;
   }
   handleClick = () => {
-    this.props.onImageClick([this.id]);
-  }
-  handleMouseDown = (e) => {
-    // this.props.onImageClick([this.id]);
-    // if already selected,do nothing else set drag
-    if (!this.isSelected()) {
+    if (!this.regionSelection) {
       this.props.onImageClick([this.id]);
     }
+    this.regionSelection = false;
+  }
+  handleMouseDown = (e) => {
     e.stopPropagation();
+    if (e.shiftKey) {
+      // lose the first selectedKey
+      this.regionSelection = true;
+      const {
+        displayImages,
+        selectedImgs
+      } = this.props;
+      let startIndex = Infinity;
+      let endIndex = Infinity;
+      let selectedImgIndexes = [];
+      const displayImagesId = displayImages.map((item) => {
+        return item.id;
+      }).toArray();
+      selectedImgs.forEach(item => {
+        selectedImgIndexes.push(displayImagesId.indexOf(item));
+      });
+      if (selectedImgs.indexOf(this.props.id) === -1) {
+        selectedImgIndexes.push(displayImagesId.indexOf(this.props.id));
+        selectedImgIndexes = selectedImgIndexes.sort((a, b) => {
+          return a - b;
+        });
+        [startIndex] = selectedImgIndexes;
+        endIndex = selectedImgIndexes[selectedImgIndexes.length - 1];
+      } else {
+        // maybe not ness
+        selectedImgIndexes = selectedImgIndexes.sort((a, b) => {
+          return a - b;
+        });
+        [startIndex] = selectedImgIndexes;
+        endIndex = displayImagesId.indexOf(this.props.id);
+        if (startIndex > endIndex) {
+          startIndex = endIndex;
+          [endIndex] = selectedImgIndexes;
+        }
+      }
+      const newSelection = displayImagesId.slice(startIndex, endIndex + 1);
+
+      this.props.onImageClick(newSelection);
+    } else if (e.ctrlKey) {
+      this.regionSelection = true;
+      const {
+        selectedImgs,
+        id
+      } = this.props;
+      if (selectedImgs.indexOf(id) === -1) {
+        const newSelected = selectedImgs.push(id);
+        this.props.onImageClick(newSelected);
+      } else {
+        const newSelected = selectedImgs.splice(selectedImgs.indexOf(id), 1);
+        this.props.onImageClick(newSelected);
+      }
+    } else if (!this.isSelected()) {
+      this.regionSelection = false;
+      this.props.onImageClick([this.id]);
+    }
   }
   isSelected = () => {
     const { selectedImgs } = this.props;
@@ -121,7 +180,7 @@ class Image extends Component<ImageProp> {
 
 const mapStateToProps = (state) => {
   return {
-    selectedImgs: state.selectedImgs
+    selectedImgs: state.selectedImgs,
   };
 };
 const mapDispatchToProps = (dispatch) => {

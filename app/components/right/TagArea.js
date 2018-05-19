@@ -4,6 +4,7 @@ import { Input, Popover, } from 'antd';
 import AlphabetList from 'react-alphabet-list';
 import STag from './STag';
 // TODO: right click to delete tag
+// TODO: add pin icon
 const { ipcRenderer } = require('electron');
 
 type TagAreaProps = {
@@ -16,9 +17,11 @@ class TagArea extends Component<TagAreaProps> {
   constructor(props) {
     super(props);
     this.state = {
-      searchContent: ''
+      searchContent: '',
+      // focused: false
     };
-    this.focused = false;
+    // this.focused = false;
+    // this.input = null;
   }
   handleTagClick = (tag, type) => {
     if (type === 'add') {
@@ -29,6 +32,12 @@ class TagArea extends Component<TagAreaProps> {
   }
   handleOnClose = (value) => {
     ipcRenderer.send('removeTag', [this.props.currentId, value]);
+  }
+  handleVisibleChange = (visible) => {
+    console.log(visible);
+    // if (visible && this.input != null) {
+    //   this.input.input.focus();
+    // }
   }
   render() {
     const {
@@ -42,6 +51,7 @@ class TagArea extends Component<TagAreaProps> {
         style={{
           backgroundColor: '#333'
         }}
+        onVisibleChange={this.handleVisibleChange}
         placement="left"
         trigger="click"
         title={
@@ -62,6 +72,7 @@ class TagArea extends Component<TagAreaProps> {
             }}
           >
             <Input.Search
+              autoFocus
               placeholder="Search yours tags"
               onPressEnter={() => {
                 if (!(filteredTags.length > 0 && filteredTags.indexOf(searchContent) > -1)) {
@@ -73,12 +84,6 @@ class TagArea extends Component<TagAreaProps> {
                 this.setState({
                   searchContent: e.target.value
                 });
-              }}
-              ref={ref => {
-                if (ref && !this.focused) {
-                  ref.focus();
-                  this.focused = true;
-                }
               }}
             />
             <div
@@ -139,7 +144,7 @@ class TagArea extends Component<TagAreaProps> {
             overflowX: 'hidden',
             color: 'white',
             fontSize: 12,
-            border: '1px solid #0988ff'
+            // border: '1px solid #0988ff'
           }}
         >
           {
