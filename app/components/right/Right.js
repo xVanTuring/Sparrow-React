@@ -12,20 +12,39 @@ type RightProps = {
 class Right extends Component<RightProps> {
   constructor(props) {
     super(props);
-    // this.data = randomWords(70).concat(['233', '😀', '💛', '🔞🈲', 'city', 'brave']);
-    this.selected = ['brave', 'bowl', 'at', 'city'];
-  }
-  handleOnClick = (e) => {
-    e.stopPropagation();
-  }
-  render() {
+
     const { images, basePath } = this.props;
-    let imgPath = null;
-    let img = null;
+    this.imgPath = null;
+    this.img = null;
     if (images != null && images.size > 0) {
-      img = images.get(0);
-      imgPath = `${basePath}/images/${img.id}/${img.name}_thumb.${img.ext}`;
+      this.img = images.get(0);
+      this.imgPath = `${basePath}/images/${this.img.id}/${this.img.name}_thumb.${this.img.ext}`;
     }
+    this.state = {
+      currentName: this.img ? this.img.name : ''
+    };
+  }
+  componentWillReceiveProps(nextProps) {
+    const { images, basePath } = nextProps;
+    if (images != null && images.size > 0) {
+      this.img = images.get(0);
+      this.imgPath = `${basePath}/images/${this.img.id}/${this.img.name}_thumb.${this.img.ext}`;
+    } else {
+      this.img = null;
+      this.imgPath = null;
+    }
+    this.setState({
+      currentName: this.img ? this.img.name : ''
+    });
+  }
+  // handleOnClick = (e) => {
+  //   e.stopPropagation();
+  // }
+  handleNameBlur = (name) => {
+
+  }
+
+  render() {
     return (
       <div
         style={{
@@ -52,7 +71,7 @@ class Right extends Component<RightProps> {
           Detail
         </div>
         {
-          img == null ?
+          this.img == null ?
             (
               <div
                 style={{
@@ -73,7 +92,7 @@ class Right extends Component<RightProps> {
                 }}
               >
                 <img
-                  src={imgPath == null ? '' : imgPath}
+                  src={this.imgPath}
                   alt="detail"
                   style={{
                     maxWidth: 140,
@@ -83,7 +102,7 @@ class Right extends Component<RightProps> {
                     boxShadow: '0 2px 6px rgba(0,0,0,0.16), 0 2px 6px rgba(0,0,0,0.23)'
                   }}
                 />
-                <ColorPan colorPan={img.palette} />
+                <ColorPan colorPan={this.img.palette} />
                 <div
                   style={{
                     textAlign: 'center',
@@ -98,8 +117,20 @@ class Right extends Component<RightProps> {
                     marginTop: 16,
 
                   }}
-                  value={img.name}
-                  onChange={() => { }}
+                  value={this.state.currentName}
+                  onChange={(e) => {
+                    this.setState({
+                      currentName: e.target.value
+                    });
+                  }}
+                  onPressEnter={() => {
+                    this.handleNameBlur(this.state.currentName);
+                  }}
+                  onBlur={() => {
+                    console.log('OnBlur');
+                    this.handleNameBlur(this.state.currentName);
+                    // save
+                  }}
                 />
                 <Input
                   style={{
@@ -107,8 +138,8 @@ class Right extends Component<RightProps> {
                   }}
                 />
                 <TagArea
-                  imgTags={img.tags}
-                  currentId={img.id}
+                  imgTags={this.img.tags}
+                  currentId={this.img.id}
                 />
 
                 <Input.TextArea

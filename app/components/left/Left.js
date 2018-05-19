@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { List } from 'immutable';
 // import _ from 'lodash';
 import { PRESET_FOLDER_ID } from '../center/Center';
 import { selectFolder, setFolders } from '../../actions/folder';
 import DragFolderItem from './FolderItem';
 import { movePrepend, moveAfter, moveBefore, toFileData } from '../../utils/utils';
+import { ImageType } from '../../types/app';
+
 
 const { ipcRenderer } = require('electron');
 
@@ -12,7 +15,8 @@ type LeftProp = {
   folders: [],
   selectedFolder: string,
   setFolders: (folders: []) => void,
-  selectFolder: (id: string) => void
+  selectFolder: (id: string) => void,
+  counter: { [x: string]: number }
 };
 class Left extends Component<LeftProp> {
   constructor(props) {
@@ -31,6 +35,10 @@ class Left extends Component<LeftProp> {
   }
   onDropFolder = (e: { dropId: string, dragData: {}, type: string }) => {
     if (e.dropId === PRESET_FOLDER_ID[3]) {
+      if (e.dragData.images != null) {
+        ipcRenderer.send('deleteImages', [e.dragData.images]);
+      }
+
       return;
     }
     if (e.dragData.folders != null) {
@@ -62,7 +70,11 @@ class Left extends Component<LeftProp> {
     }
   };
   render() {
-    const { selectedFolder } = this.props;
+    const {
+      selectedFolder,
+      counter
+    } = this.props;
+    console.log(counter);
     return ((
       <div
         className="right_border"
@@ -106,6 +118,7 @@ class Left extends Component<LeftProp> {
             setDraggingNodeId={this.setDraggingNodeId}
             draggingNodeId={this.state.draggingNodeId}
             fixed
+            counter={counter}
           />
           <DragFolderItem
             item={{
@@ -120,6 +133,7 @@ class Left extends Component<LeftProp> {
             draggingNodeId={this.state.draggingNodeId}
             fixed
             onDropFolder={this.onDropFolder}
+            counter={counter}
           />
         </div>
 
@@ -141,7 +155,6 @@ class Left extends Component<LeftProp> {
             Folder (11)
           </div>
           {
-            // "\E606"
             this.props.folders.map(item => {
               return (
                 <DragFolderItem
@@ -152,6 +165,7 @@ class Left extends Component<LeftProp> {
                   setDraggingNodeId={this.setDraggingNodeId}
                   draggingNodeId={this.state.draggingNodeId}
                   onDropFolder={this.onDropFolder}
+                  counter={counter}
                 />
               );
             })
@@ -161,10 +175,34 @@ class Left extends Component<LeftProp> {
       </div>));
   }
 }
+const calcFolderSize = (images: List<ImageType>) => {
+  const counter = {
+
+  };
+  counter[PRESET_FOLDER_ID[3]] = 0;
+
+  counter[PRESET_FOLDER_ID[0]] = 0;
+  images.forEach((item) => {
+    if (item.isDeleted) {
+      counter[PRESET_FOLDER_ID[3]] += 1;
+    } else {
+      item.folders.forEach((name) => {
+        counter[PRESET_FOLDER_ID[0]] += 1;
+        if (counter[name]) {
+          counter[name] += 1;
+        } else {
+          counter[name] = 1;
+        }
+      });
+    }
+  });
+  return counter;
+};
 const mapStateToProps = (state) => (
   {
     folders: state.folders,
-    selectedFolder: state.selectedFolder
+    selectedFolder: state.selectedFolder,
+    counter: calcFolderSize(state.images)
   }
 );
 const mapDispatchToProps = (dispatch) => (

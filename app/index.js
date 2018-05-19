@@ -34,6 +34,7 @@ ipcRenderer.on('addImages', (event, data) => {
 ipcRenderer.on('setFolders', (event, folders) => {
   store.dispatch(setFolders(folders));
 });
+// [updatedImageMeta:[],updatedHistoryTags]
 ipcRenderer.on('updateImages', (event, data) => {
   store.dispatch(updateImages(data[0]));
   let tags = Set(store.getState().tags);

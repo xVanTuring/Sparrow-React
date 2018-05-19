@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
 import { connect } from 'react-redux';
 import { NativeTypes } from 'react-dnd-html5-backend';
+import { PRESET_FOLDER_ID } from './Center';
 
 const { ipcRenderer } = require('electron');
 
@@ -40,7 +41,6 @@ class DropArea extends Component<AreaProp> {
 
 const areaTarget = {
   drop(props, monitor) {
-    console.log(monitor.getItem());
     if (monitor.getItem().files != null) {
       const filtered = monitor.getItem().files.map((item) => {
         if (item.type.indexOf('image') !== -1) {
@@ -53,7 +53,11 @@ const areaTarget = {
           };
         }
       });
-      ipcRenderer.send('addImages', [filtered, props.selectedFolder || '']);
+      const targetFolder = (!props.selectedFolder ||
+        props.selectedFolder === PRESET_FOLDER_ID[0] ||
+        props.selectedFolder === PRESET_FOLDER_ID[3])
+        ? '' : props.selectedFolder;
+      ipcRenderer.send('addImages', [filtered, targetFolder]);
     }
   },
 };

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
+import { PRESET_FOLDER_ID } from '../center/Center';
 
 type DropAreaBottomProps = {
   connectDropTarget: any,
@@ -67,4 +68,12 @@ function collect(_connect, monitor) {
     canDrop: monitor.canDrop(),
   };
 }
-export default DropTarget('FolderItem', areaTarget, collect)(DropAreaBottom);
+const calcType = (props) => {
+  if (props.item.id === PRESET_FOLDER_ID[0] ||
+    props.item.id === PRESET_FOLDER_ID[3] ||
+    props.isDragging || (!props.onDropFolder)) {
+    return [];
+  }
+  return ['FolderItem'];
+};
+export default DropTarget(calcType, areaTarget, collect)(DropAreaBottom);

@@ -3,6 +3,7 @@ import { DropTarget } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { FolderType } from '../../types/app';
 import { ImageModel } from '../center/Image';
+import { PRESET_FOLDER_ID } from '../center/Center';
 
 type DropAreaCenterProps = {
   connectDropTarget: any,
@@ -12,7 +13,8 @@ type DropAreaCenterProps = {
   isHover: boolean,
   selectedFolder: string,
   isDragging: boolean,
-  onDropFolder?: Function
+  onDropFolder?: Function,
+  size: number
 };
 class DropAreaCenter extends Component<DropAreaCenterProps> {
   render() {
@@ -24,7 +26,8 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
       isHover,
       selectedFolder,
       isDragging,
-      onDropFolder
+      onDropFolder,
+      size
     } = this.props;
     const hoverColor = (isHover ? 'rgba(192, 192, 192, 0.2)' : '');
     const selectedColor = (selectedFolder === item.id ? 'rgba(192, 192, 192, 0.3)' : hoverColor);
@@ -54,7 +57,7 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
             marginRight: 12
           }}
         >
-          10
+          {size}
         </span>
       </div>
     ));
@@ -69,12 +72,6 @@ const areaTarget = {
         type: 'CenterDrop'
       });
     }
-  },
-  canDrop(props) {
-    if (props.isDragging && props.onDropFolder) {
-      return false;
-    }
-    return true;
   }
 };
 function collect(_connect, monitor) {
@@ -84,4 +81,13 @@ function collect(_connect, monitor) {
     canDrop: monitor.canDrop(),
   };
 }
-export default DropTarget(['FolderItem', NativeTypes.FILE, ImageModel], areaTarget, collect)(DropAreaCenter);
+const calcType = (props) => {
+  if (props.item.id === PRESET_FOLDER_ID[0] || props.isDragging || (!props.onDropFolder)) {
+    return [];
+  }
+  if (props.item.id === PRESET_FOLDER_ID[3]) {
+    return ['FolderItem', ImageModel];
+  }
+  return ['FolderItem', NativeTypes.FILE, ImageModel];
+};
+export default DropTarget(calcType, areaTarget, collect)(DropAreaCenter);

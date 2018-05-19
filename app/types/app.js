@@ -8,7 +8,8 @@ export type ImageType = {
   height: number,
   isDeleted: boolean,
   ext: string,
-  tags: string[]
+  tags: string[],
+  id: string
 };
 export type FolderType = {
   name: string,

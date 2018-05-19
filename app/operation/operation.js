@@ -8,7 +8,7 @@ const os = require('os');
 const uuid = require('uuid/v1');
 const gm = require('gm');
 const thmclrx = require('thmclrx');
-
+// TODO: delete some func
 type metaCallBack = (res: { folders: FolderType[] }) => void;
 
 export const readMeta = (cb: metaCallBack) => {
@@ -118,12 +118,12 @@ const readImage = (dirPaths, arr, cb) => {
   }
 };
 
-export const addImages = (fileObjArr = [], targetPathId, cb) => {
+export const addImages = (fileObjArr = [], targetPathId, cb: (imgMeta: ImageType) => void) => {
   addImage(fileObjArr, targetPathId, (imgObjs) => {
     cb(imgObjs);
   });
 };
-const addImage = (fileObjArr = [], targetPathId, cb) => {
+const addImage = (fileObjArr = [], targetPathId, cb: (res: ImageType) => void) => {
   if (fileObjArr.length > 0) {
     const fileObj = fileObjArr.pop();
     addImage(fileObjArr, targetPathId, cb);
@@ -145,7 +145,7 @@ const addImage = (fileObjArr = [], targetPathId, cb) => {
           if (err2 == null) {
             fs.writeFile(targetImgPath, data, (err3) => {
               if (err3 == null) {
-                const imgObj = {
+                const imageMeta = {
                   ext: path.extname(targetImgPath).replace('.', ''),
                   folders,
                   height: 0,
@@ -158,28 +158,30 @@ const addImage = (fileObjArr = [], targetPathId, cb) => {
                   palette: [],
                   tags: []
                 };
-                // TODO: format
+                // TODO: file format
                 const img = gm(targetImgPath);
                 img.size((err6, size) => {
                   if (err6 == null) {
-                    imgObj.width = size.width;
-                    imgObj.height = size.height;
+                    imageMeta.width = size.width;
+                    imageMeta.height = size.height;
+                    // TODO: make it better
                     img
                       .resize(600)
                       .write(thumbBaseName, (err4) => {
                         if (err4 == null) {
                           thmclrx.octree(thumbBaseName, 8, (err9, values) => {
                             if (err9 == null) {
-                              imgObj.palette = [
+                              imageMeta.palette = [
                                 `#${values[0].color}`,
                                 `#${values[1].color}`,
                                 `#${values[2].color}`,
                                 `#${values[3].color}`,
                                 `#${values[4].color}`];
-                              fs.writeFile(targetMetaPath, JSON.stringify(imgObj), (err5) => {
+                              cb(imageMeta);
+                              fs.writeFile(targetMetaPath, JSON.stringify(imageMeta), (err5) => {
                                 if (err5 == null) {
-                                  // arr.push(imgObj);
-                                  cb([imgObj]);
+                                  // TODO: test
+                                  // cb(imageMeta);
                                 }
                               });
                             } else {
@@ -198,59 +200,56 @@ const addImage = (fileObjArr = [], targetPathId, cb) => {
     });
   }
 };
-export const addImagesToFolder = (ids: string[], targetId, setFolder, cb) => {
-  addImageToFolder(ids, targetId, setFolder, [], (updatedItem: ImageType[]) => {
-    // TODO: use cb
-    cb(updatedItem);
-  });
-};
+export const addImagesToFolder =
+  (ids: string[], targetId, setFolder, cb: (imgMeta: ImageType) => void) => {
+    addImageToFolder(ids, targetId, setFolder, (updatedItem: ImageType) => {
+      cb(updatedItem);
+    });
+  };
 export const addImageToFolder =
   (
     ids: string[],
-    targetId: string, setFolder: boolean, updated: [],
-    cb: (updatedItem: ImageType[]) => void
+    targetId: string, setFolder: boolean,
+    cb: (updatedItem: ImageType) => void
   ) => {
     if (ids.length > 0) {
       const id = ids.pop();
-      readImageMeta(id, (res) => {
+      addImageToFolder(ids, targetId, setFolder, cb);
+      readImageMeta(id, (imageMeta) => {
         if (setFolder) {
-          res.folders = [targetId];
+          imageMeta.folders = [targetId];
         } else {
-          res.folders.push(targetId);
+          imageMeta.folders.push(targetId);
         }
-        updated.push(res);
-        saveImageMeta(id, res, () => {
-          addImageToFolder(ids, targetId, setFolder, updated, cb);
+        saveImageMeta(id, imageMeta, () => {
+          cb(imageMeta);
         });
       });
-    } else {
-      cb(updated);
     }
   };
 
-export const addImageTag = (id, tag, cb) => {
-  readImageMeta(id, (res) => {
-    res.tags.push(tag);
-    saveImageMeta(id, res, () => {
+export const addImageTag = (id, tag, cb: (imageMeta: ImageType, updatedHistTags?: any) => void) => {
+  readImageMeta(id, (imageMeta) => {
+    imageMeta.tags.push(tag);
+    saveImageMeta(id, imageMeta, () => {
       addHistoryTags(tag, (updatedHistTags) => {
-        cb([res], updatedHistTags);
+        cb(imageMeta, updatedHistTags);
       });
     });
   });
 };
-export const removeImageTag = (id, tag, cb) => {
-  // add to history
+export const removeImageTag = (id, tag, cb: (imageMeta: ImageType) => void) => {
   readImageMeta(id, (imageMeta) => {
     const index = imageMeta.tags.indexOf(tag);
     if (index >= 0) {
       imageMeta.tags.splice(index, 1);
       saveImageMeta(id, imageMeta, () => {
-        cb([imageMeta]);
+        cb(imageMeta);
       });
     }
   });
 };
-const addHistoryTags = (tag, cb) => {
+const addHistoryTags = (tag, cb: (historyTags: string[]) => void) => {
   readTags((res) => {
     let tags = Set(res.historyTags);
     tags = tags.add(tag);
@@ -260,4 +259,24 @@ const addHistoryTags = (tag, cb) => {
       cb(res.historyTags);
     });
   });
+};
+export const setImageName = (id, name, cb) => {
+
+};
+export const deleteImages = (ids, cb: (imgMeta: ImageType) => void) => {
+  deleteImage(ids, (imgMeta) => {
+    cb(imgMeta);
+  });
+};
+const deleteImage = (ids: string[], cb: (imgMeta: ImageType) => void) => {
+  if (ids.length > 0) {
+    const id = ids.pop();
+    deleteImages(ids, cb);
+    readImageMeta(id, (imgMeta) => {
+      imgMeta.isDeleted = true;
+      saveImageMeta(id, imgMeta, () => {
+        cb(imgMeta);
+      });
+    });
+  }
 };

@@ -17,6 +17,7 @@ type FolderItemProps = {
   selectedFolder: string,
   draggingNodeId: string,
   isParentDragging?: boolean,
+  counter: { [x: string]: number },
 
   onDropFolder?: Function
 };
@@ -30,9 +31,11 @@ class FolderItem extends Component<FolderItemProps> {
   }
   handleClick = () => {
     if (this.props.item.children && this.props.item.children.length > 0) {
-      this.setState({
-        collapsed: !this.state.collapsed
-      });
+      if (this.props.selectedFolder === this.props.item.id) {
+        this.setState({
+          collapsed: !this.state.collapsed
+        });
+      }
     }
     this.props.onClick(this.props.item.id);
   }
@@ -47,7 +50,8 @@ class FolderItem extends Component<FolderItemProps> {
       setDraggingNodeId,
       draggingNodeId,
       isParentDragging,
-      onDropFolder
+      onDropFolder,
+      counter
     } = this.props;
     const isDragging = !!isParentDragging || (draggingNodeId === item.id);
     return connectDragSource((
@@ -91,28 +95,31 @@ class FolderItem extends Component<FolderItemProps> {
                 selectedFolder={selectedFolder}
                 isDragging={isDragging}
                 onDropFolder={onDropFolder}
+                size={counter[item.id] || 0}
               />
               {/* TODO: make top bottom able to drop img */}
-              {
+              {/* {
                 (item.id === PRESET_FOLDER_ID[0] || item.id === PRESET_FOLDER_ID[3]) ? '' :
                   (
-                    <DropAreaTop
-                      item={item}
-                      isDragging={isDragging}
-                      onDropFolder={onDropFolder}
-                    />
+
                   )
               }
               {
                 (item.id === PRESET_FOLDER_ID[0] || item.id === PRESET_FOLDER_ID[3]) ? '' :
                   (
-                    <DropAreaBottom
-                      item={item}
-                      isDragging={isDragging}
-                      onDropFolder={onDropFolder}
-                    />
+
                   )
-              }
+              } */}
+              <DropAreaTop
+                item={item}
+                isDragging={isDragging}
+                onDropFolder={onDropFolder}
+              />
+              <DropAreaBottom
+                item={item}
+                isDragging={isDragging}
+                onDropFolder={onDropFolder}
+              />
 
             </div>
           ))
@@ -135,6 +142,7 @@ class FolderItem extends Component<FolderItemProps> {
                   draggingNodeId={draggingNodeId}
                   isParentDragging={isDragging}
                   onDropFolder={onDropFolder}
+                  counter={counter}
                 />
               );
             })
@@ -162,10 +170,7 @@ const folderSource = {
 };
 function collect(_connect, monitor) {
   return {
-    // Call this function inside render()
-    // to let React DnD handle the drag events:
     connectDragSource: _connect.dragSource(),
-    // You can ask the monitor about the current drag state:
     isDragging: monitor.isDragging(),
     connectDragPreview: _connect.dragPreview(),
   };

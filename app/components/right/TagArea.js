@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Input, Popover, } from 'antd';
 import AlphabetList from 'react-alphabet-list';
 import STag from './STag';
-
+// TODO: right click to delete tag
 const { ipcRenderer } = require('electron');
 
 type TagAreaProps = {
@@ -138,7 +138,8 @@ class TagArea extends Component<TagAreaProps> {
             overflow: 'scroll',
             overflowX: 'hidden',
             color: 'white',
-            fontSize: 12
+            fontSize: 12,
+            border: '1px solid #0988ff'
           }}
         >
           {
@@ -158,9 +159,7 @@ const tagFilter = (key: string, tags: string[]) => {
   if (key === '') {
     return tags;
   }
-  return tags.filter((item) => {
-    return item.indexOf(key) >= 0;
-  });
+  return tags.filter((item) => (item.indexOf(key) >= 0));
 };
 const mapStateToProps = (state) => (
   {

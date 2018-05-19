@@ -12,7 +12,7 @@
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
 import MenuBuilder from './menu';
-import { readMeta, readImages, addImages, addImagesToFolder, saveFolders, addImageTag, removeImageTag, readTags } from './operation/operation';
+import { readMeta, readImages, addImages, addImagesToFolder, saveFolders, addImageTag, removeImageTag, readTags, deleteImages } from './operation/operation';
 
 const path = require('path');
 const os = require('os');
@@ -20,14 +20,14 @@ const os = require('os');
 let mainWindow = null;
 // [imgPath] targetPath(id)
 ipcMain.on('addImages', (event, arg) => {
-  addImages(arg[0], arg[1], (res) => {
-    event.sender.send('addImages', res);
+  addImages(arg[0], arg[1], (imageMeta) => {
+    event.sender.send('addImages', [imageMeta]);
   });
 });
 // ids[] targetId setFolder
 ipcMain.on('addImagesToFolder', (event, arg) => {
-  addImagesToFolder(arg[0], arg[1], arg[2], (updated) => {
-    event.sender.send('updateImages', [updated]);
+  addImagesToFolder(arg[0], arg[1], arg[2], (updatedImageMeta) => {
+    event.sender.send('updateImages', [[updatedImageMeta]]);
   });
 });
 ipcMain.on('saveFolders', (event, arg) => {
@@ -35,16 +35,22 @@ ipcMain.on('saveFolders', (event, arg) => {
 });
 // id tag
 ipcMain.on('addTag', (event, arg) => {
-  addImageTag(arg[0], arg[1], (updated, updatedHistTags) => {
-    event.sender.send('updateImages', [updated, updatedHistTags]);
+  addImageTag(arg[0], arg[1], (updatedImageMeta, updatedHistTags) => {
+    event.sender.send('updateImages', [[updatedImageMeta], updatedHistTags]);
   });
 });
 ipcMain.on('removeTag', (event, arg) => {
-  removeImageTag(arg[0], arg[1], (updatedImg) => {
-    event.sender.send('updateImages', [updatedImg]);
+  removeImageTag(arg[0], arg[1], (updatedImageMeta) => {
+    event.sender.send('updateImages', [[updatedImageMeta]]);
   });
 });
-
+// ids:[]
+ipcMain.on('deleteImages', (event, arg) => {
+  console.log(arg[0]);
+  deleteImages(arg[0], (updatedImageMeta) => {
+    event.sender.send('updateImages', [[updatedImageMeta]]);
+  });
+});
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
