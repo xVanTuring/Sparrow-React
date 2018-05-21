@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
-import { PRESET_FOLDER_ID } from '../center/Center';
+import { PRESET_FOLDER_ID } from '../../center/Center';
 
-type DropAreaTopProps = {
+type DropAreaBottomProps = {
   connectDropTarget: any,
   isOver: boolean,
   isDragging: boolean,
   onDropFolder?: Function
 };
-class DropAreaTop extends Component<DropAreaTopProps> {
+class DropAreaBottom extends Component<DropAreaBottomProps> {
   render() {
     const {
       connectDropTarget,
@@ -23,7 +23,7 @@ class DropAreaTop extends Component<DropAreaTopProps> {
         style={{
           height: 8,
           position: 'absolute',
-          top: 0,
+          bottom: 0,
           left: 0,
           right: 16,
         }}
@@ -33,10 +33,10 @@ class DropAreaTop extends Component<DropAreaTopProps> {
             height: 4,
             backgroundColor,
             position: 'absolute',
-            top: 0,
+            borderRadius: '0 0 0px 4px',
             left: 0,
             right: 0,
-            borderRadius: '4px 0px 0 0 '
+            bottom: 0
           }}
         />
       </div>
@@ -49,9 +49,10 @@ const areaTarget = {
       props.onDropFolder({
         dropId: props.item.id,
         dragData: monitor.getItem(),
-        type: 'TopDrop'
+        type: 'BottomDrop'
       });
     }
+
   },
   canDrop(props) {
     if (props.isDragging && props.onDropFolder) {
@@ -75,4 +76,4 @@ const calcType = (props) => {
   }
   return ['FolderItem'];
 };
-export default DropTarget(calcType, areaTarget, collect)(DropAreaTop);
+export default DropTarget(calcType, areaTarget, collect)(DropAreaBottom);

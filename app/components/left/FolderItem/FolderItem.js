@@ -3,8 +3,8 @@ import { DragSource } from 'react-dnd';
 import DropAreaTop from './DropAreaTop';
 import DropAreaBottom from './DropAreaBottom';
 import DropAreaCenter from './DropAreaCenter';
-import { FolderType } from '../../types/app';
-import { PRESET_FOLDER_ID } from '../center/Center';
+import { FolderType } from '../../../types/app';
+// import { PRESET_FOLDER_ID } from '../../center/Center';
 // TODO: fix folder edit the drapeable
 type FolderItemProps = {
   connectDragSource: Function,
@@ -23,6 +23,7 @@ type FolderItemProps = {
 };
 class FolderItem extends Component<FolderItemProps> {
   constructor(props) {
+
     super(props);
     this.state = {
       isHover: false,
@@ -54,6 +55,7 @@ class FolderItem extends Component<FolderItemProps> {
       counter
     } = this.props;
     const isDragging = !!isParentDragging || (draggingNodeId === item.id);
+
     return connectDragSource((
       <div>
         {
@@ -98,18 +100,6 @@ class FolderItem extends Component<FolderItemProps> {
                 size={counter[item.id] || 0}
               />
               {/* TODO: make top bottom able to drop img */}
-              {/* {
-                (item.id === PRESET_FOLDER_ID[0] || item.id === PRESET_FOLDER_ID[3]) ? '' :
-                  (
-
-                  )
-              }
-              {
-                (item.id === PRESET_FOLDER_ID[0] || item.id === PRESET_FOLDER_ID[3]) ? '' :
-                  (
-
-                  )
-              } */}
               <DropAreaTop
                 item={item}
                 isDragging={isDragging}

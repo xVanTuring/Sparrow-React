@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { FolderType } from '../../types/app';
-import { ImageModel } from '../center/Image';
-import { PRESET_FOLDER_ID } from '../center/Center';
+import { FolderType } from '../../../types/app';
+import { ImageModel } from '../../center/Image';
+import { PRESET_FOLDER_ID } from '../../center/Center';
+import NameInputer from './NameInputer';
+import { List } from 'immutable';
 
 type DropAreaCenterProps = {
   connectDropTarget: any,
@@ -32,7 +34,8 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
     const hoverColor = (isHover ? 'rgba(192, 192, 192, 0.2)' : '');
     const selectedColor = (selectedFolder === item.id ? 'rgba(192, 192, 192, 0.3)' : hoverColor);
     const overColor = (isOver && onDropFolder) ? 'rgb(25, 153, 238)' : selectedColor;
-    const backgroundColor = isDragging ? '' : overColor;
+    const draggingColor = isDragging ? '' : overColor;
+    const backgroundColor = this.props.item.id === '93285250-56b6-11e8-bb6c-5fb7bc4983c' ? '' : draggingColor;
     return connectDropTarget((
       <div
         style={{
@@ -47,7 +50,8 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
           right: 0,
           textAlign: 'left',
           paddingLeft: 4,
-          WebkitTransition: ' all .2s'
+          WebkitTransition: ' all .2s',
+          fontSize: 14
         }}
       >
         {item.name}
@@ -59,6 +63,17 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
         >
           {size}
         </span>
+        {
+          this.props.item.id === '93285250-56b6-11e8-bb6c-5fb7bc4983cc' ?
+            (
+              <NameInputer
+                id="233"
+                value="456"
+                editing={false}
+                onChange={(e) => { console.log(e); }}
+              />
+            ) : ''
+        }
       </div>
     ));
   }

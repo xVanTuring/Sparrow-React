@@ -101,7 +101,6 @@ class BigPicture extends Component<BigPictureProps> {
     e.preventDefault();
   }
   render() {
-
     const {
       img,
 

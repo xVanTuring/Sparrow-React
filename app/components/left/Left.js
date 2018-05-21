@@ -4,7 +4,7 @@ import { List } from 'immutable';
 // import _ from 'lodash';
 import { PRESET_FOLDER_ID } from '../center/Center';
 import { selectFolder, setFolders } from '../../actions/folder';
-import DragFolderItem from './FolderItem';
+import DragFolderItem from './FolderItem/FolderItem';
 import { movePrepend, moveAfter, moveBefore, toFileData } from '../../utils/utils';
 import { ImageType } from '../../types/app';
 

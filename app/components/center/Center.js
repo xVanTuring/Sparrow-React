@@ -11,6 +11,7 @@ import { selectImage } from '../../actions/image';
 import { ImageType } from '../../types/app';
 import BigPicture from './BigPicture';
 // TODO: move ALL EVENT TO document and use state to tell actions.
+// TODO: add folder in gallery
 // separate the gallery to a component
 type Prop = {
   images: List<ImageType>,
