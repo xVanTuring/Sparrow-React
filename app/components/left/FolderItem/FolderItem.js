@@ -38,14 +38,16 @@ class FolderItem extends Component<FolderItemProps> {
     }
   }
   handleClick = () => {
-    // if (this.props.item.children && this.props.item.children.length > 0) {
-    //   if (this.props.selectedFolder === this.props.item.id) {
-    //     this.setState({
-    //       collapsed: !this.state.collapsed
-    //     });
-    //   }
-    // }
     this.props.onClick(this.props.item.id);
+  }
+  handleIndicatorClick = () => {
+    if (this.props.item.children && this.props.item.children.length > 0) {
+      this.setState((prev) => (
+        {
+          collapsed: !prev.collapsed
+        }
+      ));
+    }
   }
   render() {
     const {
@@ -84,16 +86,17 @@ class FolderItem extends Component<FolderItemProps> {
                   left: 0,
                   top: 4,
                   height: 20,
-                  width: 12,
+                  width: 16,
                   visibility: (item.children && item.children.length > 0) ? '' : 'hidden'
                 }}
+                onClick={this.handleIndicatorClick}
               >
                 <img
                   style={{
                     height: 12,
                     width: 12,
                     transform: this.state.collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
-                    WebkitTransition: 'all .3s'
+                    WebkitTransition: 'all .2s'
                   }}
                   alt="icon"
                   src="./dist/folder_indicator.svg"

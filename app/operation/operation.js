@@ -222,7 +222,9 @@ export const addImageToFolder =
         if (setFolder) {
           imageMeta.folders = [targetId];
         } else {
-          imageMeta.folders.push(targetId);
+          let folderSet = Set(imageMeta.folders);
+          folderSet = folderSet.add(targetId);
+          imageMeta.folders = folderSet.toArray();
         }
         saveImageMeta(id, imageMeta, () => {
           cb(imageMeta);

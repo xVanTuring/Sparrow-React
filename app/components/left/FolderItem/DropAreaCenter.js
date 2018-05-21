@@ -72,7 +72,7 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
           position: 'absolute',
           top: 0,
           bottom: 0,
-          left: 12,
+          left: 16,
           right: 0,
           textAlign: 'left',
           paddingLeft: 4,

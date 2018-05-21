@@ -5,9 +5,6 @@
 
 
 @import '~antd/dist/antd.css';
-.text-color{
-  background-color: rgba(96, 199, 247, 0.568);
-}
 
 .ant-popover-content{
   box-shadow: 0px 0px 12px 6px rgba(22, 22, 22, 0.397);

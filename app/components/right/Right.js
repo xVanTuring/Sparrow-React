@@ -85,7 +85,7 @@ class Right extends Component<RightProps> {
         }}
       >
         <div
-          className="bottom_border right_border"
+          className="bottom_border "
           style={{
             height: 32,
             background: '#535353',
@@ -104,10 +104,16 @@ class Right extends Component<RightProps> {
                 style={{
                   color: 'white',
                   textAlign: 'center',
-                  margin: 'auto'
+                  width: '100%',
+                  height: 'calc(100% - 32px)',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
                 }}
               >
-                Select One
+                <span>
+                  Select Image To View Detail
+                </span>
               </div>
             )
             : (
@@ -166,11 +172,11 @@ class Right extends Component<RightProps> {
                   }}
                   ref={(ref) => { this.nameInput = ref; }}
                 />
-                <Input
+                {/* <Input
                   style={{
                     marginTop: 16,
                   }}
-                />
+                /> */}
                 <TagArea
                   imgTags={selectedImage.tags}
                   currentId={selectedImage.id}
@@ -179,13 +185,13 @@ class Right extends Component<RightProps> {
                 <Input.TextArea
                   style={{
                     height: 90,
+                    width: '100%',
                     marginTop: 16,
                     backgroundColor: '#333',
                     color: 'white',
                     outline: 'none',
                     resize: 'none',
-                    fontSize: '12px',
-                    boxSizing: 'border-box',
+                    fontSize: '12px'
                   }}
                   placeholder="Add Annotation"
                 />

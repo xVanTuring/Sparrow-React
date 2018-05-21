@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import * as folders from './folder';
 import * as images from './images';
 import * as tags from './tags';
+import * as keys from './keys';
 import { RESET_APP } from '../actions/app';
 
 export type StoreInitState = {
@@ -15,6 +16,7 @@ const reducer = combineReducers({
   ...folders,
   ...images,
   ...tags,
+  ...keys,
   basePath
 });
 export const rootReducer = (state, action) => {

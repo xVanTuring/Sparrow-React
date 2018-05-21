@@ -19,7 +19,7 @@ class TagArea extends Component<TagAreaProps> {
     super(props);
     this.state = {
       searchContent: '',
-      // focused: false
+      opened: false
     };
     // this.focused = false;
     // this.input = null;
@@ -35,16 +35,18 @@ class TagArea extends Component<TagAreaProps> {
     ipcRenderer.send('removeTag', [this.props.currentId, value]);
   }
   handleVisibleChange = (visible) => {
-    console.log(visible);
-    // if (visible && this.input != null) {
-    //   this.input.input.focus();
-    // }
+    this.setState({
+      opened: visible
+    })
   }
   render() {
     const {
       tags,
       imgTags
     } = this.props;
+    const {
+      opened
+    } = this.state;
     const { searchContent } = this.state;
     const filteredTags = tagFilter(searchContent, tags);
     return (
@@ -143,9 +145,10 @@ class TagArea extends Component<TagAreaProps> {
             borderRadius: '4px',
             overflow: 'scroll',
             overflowX: 'hidden',
-            color: 'white',
-            fontSize: 12,
-            // border: '1px solid #0988ff'
+            color: '#BFBFBF',
+            fontSize: '12px',
+            border: `1px solid ${opened ? '#0988ff' : 'transparent'}`,
+            // boxSizing: 'border-box'
           }}
         >
           {

@@ -17,7 +17,8 @@ type LeftProp = {
   setFolders: (folders: []) => void,
   selectFolder: (id: string) => void,
   counter: { [x: string]: number },
-  folderArr: FolderType[]
+  folderArr: FolderType[],
+  altKey: boolean
 };
 class Left extends Component<LeftProp> {
   constructor(props) {
@@ -44,7 +45,7 @@ class Left extends Component<LeftProp> {
           break;
         }
       }
-    }    
+    }
     ipcRenderer.send('addFolder', [parentFolder]);
   }
   handleMouseEnterAdd = () => {
@@ -94,8 +95,7 @@ class Left extends Component<LeftProp> {
       ipcRenderer.send('saveFolders', [fileData]);
       // save
     } else if (e.dragData.images != null) {
-      // console.log(e.dragData.images);
-      ipcRenderer.send('addImagesToFolder', [e.dragData.images, e.dropId, true]);
+      ipcRenderer.send('addImagesToFolder', [e.dragData.images, e.dropId, !this.props.altKey]);
     }
   };
   render() {
@@ -261,8 +261,8 @@ const mapStateToProps = (state) => (
     folders: state.folders,
     selectedFolder: state.selectedFolder,
     counter: calcFolderSize(state.images),
-    folderArr: toArr(state.folders)
-    // folderAmount: calcAmount(state.folders)
+    folderArr: toArr(state.folders),
+    altKey: state.altKey
   }
 );
 const mapDispatchToProps = (dispatch) => (
