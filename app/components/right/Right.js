@@ -4,52 +4,74 @@ import { connect } from 'react-redux';
 import ColorPan from './ColorPan';
 import STag from './STag';
 import TagArea from './TagArea';
+import { mapToArr } from '../../utils/utils';
+import { FolderType } from '../../types/app';
 
 const { ipcRenderer } = require('electron');
 
 type RightProps = {
-  images: any,
-  basePath: string
+  images?: any,
+  basePath: string,
+  folders: FolderType[]
 };
 class Right extends Component<RightProps> {
   constructor(props) {
     super(props);
 
-    const { images, basePath } = this.props;
-    this.imgPath = null;
-    this.img = null;
-    if (images != null && images.size > 0) {
-      this.img = images.get(0);
-      this.imgPath = `${basePath}/images/${this.img.id}/${this.img.name}_thumb.${this.img.ext}`;
+    if (this.props.images) {
+      this.state = {
+        currentName: this.props.images.get(0).name
+      };
+    } else {
+      this.state = {
+        currentName: null
+      };
     }
-    this.state = {
-      currentName: this.img ? this.img.name : ''
-    };
   }
   componentWillReceiveProps(nextProps) {
-    const { images, basePath } = nextProps;
-    if (images != null && images.size > 0) {
-      this.img = images.get(0);
-      this.imgPath = `${basePath}/images/${this.img.id}/${this.img.name}_thumb.${this.img.ext}`;
-    } else {
-      this.img = null;
-      this.imgPath = null;
-    }
-    this.setState({
-      currentName: this.img ? this.img.name : ''
-    });
-  }
-  handleNameBlur = (name) => {
-    if (name !== '') {
-      ipcRenderer.send('setImageName', [this.img.id, name]);
+    if (nextProps.images) {
+      this.setState({
+        currentName: nextProps.images.get(0).name
+      });
     } else {
       this.setState({
-        currentName: this.img ? this.img.name : ''
+        currentName: null
+      });
+    }
+  }
+
+  handleNameBlur = (name) => {
+    if (name !== '' && (!this.nameInputCancelBlur)) {
+      ipcRenderer.send('setImageName', [this.props.images.get(0).id, name]);
+    } else {
+      this.nameInputCancelBlur = false;
+      this.setState({
+        currentName: this.props.images.get(0).name
       });
     }
   }
 
   render() {
+    const {
+      images,
+      basePath,
+      folders
+    } = this.props;
+    let selectedImage = null;
+    let selectedImagePath = '';
+    const folderTag = [];
+    if (images != null && images.size > 0) {
+      selectedImage = images.get(0);
+      selectedImagePath = `${basePath}/images/${selectedImage.id}/${selectedImage.name}_thumb.${selectedImage.ext}`;
+
+      folders.forEach(item => {
+        selectedImage.folders.forEach(item2 => {
+          if (item.id === item2) {
+            folderTag.push(item);
+          }
+        });
+      });
+    }
     return (
       <div
         style={{
@@ -76,7 +98,7 @@ class Right extends Component<RightProps> {
           Detail
         </div>
         {
-          this.img == null ?
+          selectedImage == null ?
             (
               <div
                 style={{
@@ -97,7 +119,7 @@ class Right extends Component<RightProps> {
                 }}
               >
                 <img
-                  src={this.imgPath}
+                  src={selectedImagePath}
                   alt="detail"
                   style={{
                     maxWidth: 140,
@@ -107,7 +129,7 @@ class Right extends Component<RightProps> {
                     boxShadow: '0 2px 6px rgba(0,0,0,0.16), 0 2px 6px rgba(0,0,0,0.23)'
                   }}
                 />
-                <ColorPan colorPan={this.img.palette} />
+                <ColorPan colorPan={selectedImage.palette} />
                 <div
                   style={{
                     textAlign: 'center',
@@ -122,11 +144,19 @@ class Right extends Component<RightProps> {
                     marginTop: 16,
 
                   }}
-                  value={this.state.currentName}
+                  value={this.state.currentName == null ? selectedImage.name : this.state.currentName}
                   onChange={(e) => {
                     this.setState({
                       currentName: e.target.value
                     });
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.keyCode === 27) {
+                      if (this.nameInput) {
+                        this.nameInputCancelBlur = true;
+                        this.nameInput.blur();
+                      }
+                    }
                   }}
                   onPressEnter={() => {
                     this.handleNameBlur(this.state.currentName);
@@ -134,6 +164,7 @@ class Right extends Component<RightProps> {
                   onBlur={() => {
                     this.handleNameBlur(this.state.currentName);
                   }}
+                  ref={(ref) => { this.nameInput = ref; }}
                 />
                 <Input
                   style={{
@@ -141,8 +172,8 @@ class Right extends Component<RightProps> {
                   }}
                 />
                 <TagArea
-                  imgTags={this.img.tags}
-                  currentId={this.img.id}
+                  imgTags={selectedImage.tags}
+                  currentId={selectedImage.id}
                 />
 
                 <Input.TextArea
@@ -174,9 +205,13 @@ class Right extends Component<RightProps> {
                   >
                     In Folders
                   </div>
-                  <STag value="Night" />
-                  <STag value="Night" />
-                  <STag value="Night" />
+                  {
+                    folderTag.map(item => {
+                      return (
+                        <STag value={item.name} key={item.id} />
+                      );
+                    })
+                  }
                 </div>
                 <Divider style={{
                   backgroundColor: '#333',
@@ -196,10 +231,16 @@ const filter = (images, selected) => {
     });
   }
 };
+const ToArr = (folders) => {
+  const arr = [];
+  mapToArr(folders, arr);
+  return arr;
+};
 const mapStateToProps = (state) => (
   {
     images: filter(state.images, state.selectedImgs),
-    basePath: state.basePath
+    basePath: state.basePath,
+    folders: ToArr(state.folders)
   }
 );
 export default connect(mapStateToProps)(Right);

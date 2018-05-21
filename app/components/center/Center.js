@@ -9,14 +9,16 @@ import Image from './Image';
 import DropArea from './DropArea';
 import { selectImage } from '../../actions/image';
 import { ImageType } from '../../types/app';
+import BigPicture from './BigPicture';
 // TODO: move ALL EVENT TO document and use state to tell actions.
-
+// separate the gallery to a component
 type Prop = {
   images: List<ImageType>,
   connectDropTarget: any,
   isOver: boolean,
   canDrop: boolean,
   basePath: string,
+  selectedFolder: string,
   setSelected: (ids: []) => void
 };
 class Center extends Component<Prop> {
@@ -27,11 +29,22 @@ class Center extends Component<Prop> {
       startMousePos: { x: 200, y: 32 },
       currentMousePos: { x: 200, y: 32 },
       offset: 0,
-      hoveredImgs: []
+      hoveredImgs: [],
+      viewImageId: ''
     };
     this.scroller = null;
     this.masonry = null;
     this.initScrollTop = 0;
+    // TODO: for big picture mode
+    this.folderIndex = {};
+  }
+  componentWillReceiveProps(nextProp: Prop) {
+    if (nextProp.selectedFolder !== this.props.selectedFolder && this.state.viewImageId !== '') {
+      // folder updated
+      this.setState({
+        viewImageId: nextProp.images.size > 0 ? nextProp.images.get(0).id : ''
+      });
+    }
   }
   handleHover = (newOffset) => {
     // console.log(this.masonry.items[0].element.childNodes[0].offsetHeight);
@@ -121,6 +134,11 @@ class Center extends Component<Prop> {
       this.handleHover(offset);
     }
   }
+  handleImageDoubleClick = (id: string) => {
+    this.setState({
+      viewImageId: id
+    });
+  }
   render() {
     const { connectDropTarget, isOver, canDrop } = this.props;
     const {
@@ -154,9 +172,15 @@ class Center extends Component<Prop> {
           style={{
             height: 32,
             background: '#535353',
-
           }}
         />
+        {
+          this.state.viewImageId !== '' ? (
+            <BigPicture
+              img={this.props.images.filter((item) => (item.id === this.state.viewImageId)).get(0)}
+            />
+          ) : ''
+        }
 
         <div
           style={{
@@ -166,7 +190,8 @@ class Center extends Component<Prop> {
             right: filterOpen ? 200 : 0,
             left: 0,
             backgroundColor: '#303030',
-            overflow: 'auto'
+            overflow: 'auto',
+            display: this.state.viewImageId === '' ? '' : 'none'
           }}
           onMouseDown={this.handleMouseDown}
           onMouseMove={this.handleMouseMove}
@@ -188,17 +213,16 @@ class Center extends Component<Prop> {
 
           >
             {
-              this.props.images.map((item) => {
-                return (<Image
-                  src={`${this.props.basePath}/images/${item.id}/${item.name}_thumb.${item.ext}`}
-                  key={item.id}
-                  size={`${item.width}x${item.height}`}
-                  name={item.name}
-                  id={item.id}
-                  hoveredImgs={this.state.hoveredImgs}
-                  displayImages={this.props.images}
-                />);
-              })
+              this.props.images.map((item) => (<Image
+                src={`${this.props.basePath}/images/${item.id}/${item.name}_thumb.${item.ext}`}
+                key={item.id}
+                size={`${item.width}x${item.height}`}
+                name={item.name}
+                id={item.id}
+                hoveredImgs={this.state.hoveredImgs}
+                displayImages={this.props.images}
+                onImageDoubleClick={this.handleImageDoubleClick}
+              />))
             }
           </Masonry>
           <div
@@ -299,8 +323,8 @@ const filter = (imgs: List, folderId) => {
 const mapStateToProps = (state) => (
   {
     images: filter(state.images, state.selectedFolder),
-    basePath: state.basePath
-    // with filter
+    basePath: state.basePath,
+    selectedFolder: state.selectedFolder
   }
 );
 const mapDispatchToProps = (dispatch) => (

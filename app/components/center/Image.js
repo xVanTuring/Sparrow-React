@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
+import { List } from 'immutable';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { DragSource } from 'react-dnd';
 import { selectImage } from '../../actions/image';
-import { List } from 'immutable';
 import { ImageType } from '../../types/app';
 
 // TODO: set selectedImg when drag(down)
@@ -12,6 +12,7 @@ export const ImageModel = 'Image';
 type ImageProp = {
   id?: string,
   onImageClick: (id: string) => void,
+  onImageDoubleClick: (id: string) => void,
   width?: number,
   size?: string,
   src: string,
@@ -34,7 +35,17 @@ class Image extends Component<ImageProp> {
     if (!this.regionSelection) {
       this.props.onImageClick([this.id]);
     }
+
     this.regionSelection = false;
+  }
+  handleDoubleClick = () => {
+    const { onImageDoubleClick } = this.props;
+    if (onImageDoubleClick) {
+      onImageDoubleClick(this.props.id);
+    }
+  }
+  handleContextMenu = (e) => {
+    e.preventDefault();
   }
   handleMouseDown = (e) => {
     e.stopPropagation();
@@ -123,17 +134,17 @@ class Image extends Component<ImageProp> {
           margin: '8px',
           pointerEvents: 'auto'
         }}
-        onClick={this.handleClick}
-        onMouseDown={this.handleMouseDown}
       >
         <div
           style={{
             padding: '2px',
             border: `2px solid ${selected ? '#0E70E8' : 'rgba(0,0,0,0)'}`,
             borderRadius: '4px',
-            marginBottom: 8,
-            pointerEvents: 'none',
+            marginBottom: 8
           }}
+          onClick={this.handleClick}
+          onMouseDown={this.handleMouseDown}
+          onContextMenu={this.handleContextMenu}
         >
           <img
             src={this.props.src}
@@ -143,11 +154,13 @@ class Image extends Component<ImageProp> {
               borderRadius: '2px',
             }}
             alt="img"
+            onDoubleClick={this.handleDoubleClick}
           />
         </div>
         <div
           style={{
             width: this.props.width || 200,
+            pointerEvents: 'none'
           }}
         >
           <span

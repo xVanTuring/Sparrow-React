@@ -74,7 +74,7 @@ class Left extends Component<LeftProp> {
       selectedFolder,
       counter
     } = this.props;
-    console.log(counter);
+    // console.log(counter);
     return ((
       <div
         className="right_border"

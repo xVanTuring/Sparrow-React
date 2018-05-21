@@ -5,6 +5,7 @@ import AlphabetList from 'react-alphabet-list';
 import STag from './STag';
 // TODO: right click to delete tag
 // TODO: add pin icon
+// TODO: search existed tag click to add to img
 const { ipcRenderer } = require('electron');
 
 type TagAreaProps = {
