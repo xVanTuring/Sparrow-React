@@ -329,3 +329,29 @@ export const setFolderName = (id, name, cb) => {
     });
   });
 };
+export const addFolder = (parentId, cb: (folders: FolderType[]) => void) => {
+  const id = uuid();
+  readMeta((meta) => {
+    const folderItem = {
+      id,
+      name: '--RENAME--',
+      children: []
+    };
+    if (!parentId || parentId === '' || parentId === '--ALL--' || parentId === 'ROOT') {
+      meta.folders.push(folderItem);
+    } else {
+      const arr: FolderType[] = [];
+      mapToArr(meta.folders, arr);
+      for (let index = 0; index < arr.length; index += 1) {
+        const element = arr[index];
+        if (element.id === parentId) {
+          element.children.push(folderItem);
+          break;
+        }
+      }
+    }
+    saveMeta(meta, () => {
+      cb(meta.folders);
+    });
+  });
+};

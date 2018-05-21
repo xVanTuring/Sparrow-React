@@ -5,6 +5,7 @@ import DropAreaTop from './DropAreaTop';
 import DropAreaBottom from './DropAreaBottom';
 import DropAreaCenter from './DropAreaCenter';
 import { FolderType } from '../../../types/app';
+import { setFolderRenaming } from '../../../actions/folder';
 // import { PRESET_FOLDER_ID } from '../../center/Center';
 // TODO: fix folder edit the drapeable
 type FolderItemProps = {
@@ -20,7 +21,8 @@ type FolderItemProps = {
   isParentDragging?: boolean,
   counter: { [x: string]: number },
 
-  onDropFolder?: Function
+  onDropFolder?: Function,
+  setRenamingFolder: Function
 };
 class FolderItem extends Component<FolderItemProps> {
   constructor(props) {
@@ -29,6 +31,11 @@ class FolderItem extends Component<FolderItemProps> {
       isHover: false,
       collapsed: false
     };
+  }
+  componentDidMount() {
+    if (this.props.item.name === '--RENAME--') {
+      this.props.setRenamingFolder(this.props.item.id);
+    }
   }
   handleClick = () => {
     // if (this.props.item.children && this.props.item.children.length > 0) {
@@ -175,5 +182,12 @@ const mapStateToProps = (state) => (
     renamingFolder: state.renamingFolder
   }
 );
-const RFolderItem = connect(mapStateToProps)(DragFolderItem);
+const mapDispatchToProps = (dispatch) => (
+  {
+    setRenamingFolder: (id) => {
+      dispatch(setFolderRenaming(id));
+    }
+  }
+);
+const RFolderItem = connect(mapStateToProps, mapDispatchToProps)(DragFolderItem);
 export default RFolderItem;

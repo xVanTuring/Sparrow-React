@@ -33,9 +33,13 @@ class NameInput extends Component<NameInputProps> {
   }
   handleOnBlur = () => {
     this.props.setRenamingFolder('');
-    this.props.onChange(this.state.value.trim());
+    let resultName = this.state.value.trim();
+    if (resultName === '') {
+      resultName = this.props.value;
+    }
+    this.props.onChange(resultName);
     this.setState({
-      value: this.state.value.trim()
+      value: resultName
     });
   }
   handleOnChange = (event) => {
@@ -52,6 +56,7 @@ class NameInput extends Component<NameInputProps> {
   }
   handleOnKeyDown = (e) => {
     if (e.keyCode === 27) {
+      // esc
       this.props.setRenamingFolder('');
       this.setState({
         value: this.props.value
@@ -60,6 +65,7 @@ class NameInput extends Component<NameInputProps> {
         this.props.onChange(this.props.value);
       }
     } else if (e.keyCode === 13) {
+      // enter
       this.input.blur();
     }
   }

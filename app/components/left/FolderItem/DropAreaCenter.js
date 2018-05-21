@@ -97,7 +97,7 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
             (
               <NameInput
                 id={this.props.item.id}
-                value={this.props.item.name}
+                value={this.props.item.name === '--RENAME--' ? 'New Folder' : this.props.item.name}
                 editing
                 onChange={this.handleNameChange}
               />

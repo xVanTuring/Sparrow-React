@@ -5,8 +5,8 @@ import { List } from 'immutable';
 import { PRESET_FOLDER_ID } from '../center/Center';
 import { selectFolder, setFolders } from '../../actions/folder';
 import DragFolderItem from './FolderItem/FolderItem';
-import { movePrepend, moveAfter, moveBefore, toFileData } from '../../utils/utils';
-import { ImageType } from '../../types/app';
+import { movePrepend, moveAfter, moveBefore, toFileData, mapToArr } from '../../utils/utils';
+import { ImageType, FolderType } from '../../types/app';
 
 
 const { ipcRenderer } = require('electron');
@@ -16,17 +16,46 @@ type LeftProp = {
   selectedFolder: string,
   setFolders: (folders: []) => void,
   selectFolder: (id: string) => void,
-  counter: { [x: string]: number }
+  counter: { [x: string]: number },
+  folderArr: FolderType[]
 };
 class Left extends Component<LeftProp> {
   constructor(props) {
     super(props);
     this.state = {
-      draggingNodeId: ''
+      draggingNodeId: '',
+      hoverAdd: false
     };
   }
   handleFolderItemClick = (id) => {
     this.props.selectFolder(id);
+  }
+  handleAddFolderClick = () => {
+    let parentFolder = '';
+    if (this.props.selectedFolder === '' ||
+      this.props.selectedFolder === PRESET_FOLDER_ID[0] ||
+      this.props.selectedFolder === PRESET_FOLDER_ID[3]) {
+      parentFolder = '';
+    } else {
+      for (let index = 0; index < this.props.folderArr.length; index += 1) {
+        const element = this.props.folderArr[index];
+        if (element.id === this.props.selectedFolder) {
+          parentFolder = element.parent;
+          break;
+        }
+      }
+    }    
+    ipcRenderer.send('addFolder', [parentFolder]);
+  }
+  handleMouseEnterAdd = () => {
+    this.setState({
+      hoverAdd: true
+    });
+  }
+  handleMouseLeaveAdd = () => {
+    this.setState({
+      hoverAdd: false
+    });
   }
   setDraggingNodeId = (id) => {
     this.setState({
@@ -72,9 +101,12 @@ class Left extends Component<LeftProp> {
   render() {
     const {
       selectedFolder,
-      counter
+      counter,
+      folderArr
     } = this.props;
-    // console.log(counter);
+    const {
+      hoverAdd
+    } = this.state;
     return ((
       <div
         className="right_border"
@@ -95,10 +127,10 @@ class Left extends Component<LeftProp> {
             textAlign: 'left',
             paddingLeft: '12px',
             color: '#fff',
-            fontSize: 12
+            fontSize: 14
           }}
         >
-          Sparrow
+          Assets
         </div>
         <div
           style={{
@@ -149,10 +181,31 @@ class Left extends Component<LeftProp> {
               fontSize: 10,
               lineHeight: '18px',
               height: 18,
-              marginLeft: 8
+              marginLeft: 8,
+              marginRight: 8
             }}
           >
-            Folder (11)
+            <span
+              style={{
+                height: 18,
+                lineHeight: '18px'
+              }}
+            >
+              {`Folder (${folderArr.length})`}
+            </span>
+            <img
+              style={{
+                height: 16,
+                float: 'right',
+                cursor: 'pointer',
+                padding: 2
+              }}
+              alt="img"
+              src={hoverAdd ? './dist/add.svg' : './dist/add_dark.svg'}
+              onClick={this.handleAddFolderClick}
+              onMouseEnter={this.handleMouseEnterAdd}
+              onMouseLeave={this.handleMouseLeaveAdd}
+            />
           </div>
           {
             this.props.folders.map(item => {
@@ -198,11 +251,18 @@ const calcFolderSize = (images: List<ImageType>) => {
   });
   return counter;
 };
+const toArr = (folders) => {
+  const arr = [];
+  mapToArr(folders, arr);
+  return arr;
+};
 const mapStateToProps = (state) => (
   {
     folders: state.folders,
     selectedFolder: state.selectedFolder,
-    counter: calcFolderSize(state.images)
+    counter: calcFolderSize(state.images),
+    folderArr: toArr(state.folders)
+    // folderAmount: calcAmount(state.folders)
   }
 );
 const mapDispatchToProps = (dispatch) => (
