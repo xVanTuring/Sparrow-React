@@ -1,6 +1,8 @@
 // @flow
 import { Set } from 'immutable';
+import _ from 'lodash';
 import { ImageType, FolderType } from '../types/app';
+import { mapToArr } from '../utils/utils';
 
 const fs = require('fs');
 const path = require('path');
@@ -156,7 +158,8 @@ const addImage = (fileObjArr = [], targetPathId, cb: (res: ImageType) => void) =
                   isDeleted: false,
                   modificationTime: fileObj.lastModified,
                   palette: [],
-                  tags: []
+                  tags: [],
+                  annotation: ''
                 };
                 // TODO: file format
                 const img = gm(targetImgPath);
@@ -308,4 +311,21 @@ const deleteImage = (ids: string[], cb: (imgMeta: ImageType) => void) => {
       });
     });
   }
+};
+export const setFolderName = (id, name, cb) => {
+  readMeta((res) => {
+    const resC = _.cloneDeep(res);
+    const arr = [];
+    mapToArr(resC.folders, arr);
+    for (let index = 0; index < arr.length; index += 1) {
+      const element = arr[index];
+      if (element.id === id) {
+        element.name = name;
+        break;
+      }
+    }
+    saveMeta(resC, () => {
+      cb(resC.folders);
+    });
+  });
 };

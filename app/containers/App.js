@@ -13,8 +13,8 @@ class App extends Component<Props> {
     return (
       <div className="App">
         <Left />
-        <Center />
-        <Right />
+        {/* <Center /> */}
+        {/* <Right /> */}
       </div>
 
     );

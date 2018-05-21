@@ -1,5 +1,5 @@
 
-import { SELECT_FOLDER, SET_FOLDERS } from '../actions/folder';
+import { SELECT_FOLDER, SET_FOLDERS, FOLDER_RENAMING } from '../actions/folder';
 import { RESET_APP } from '../actions/app';
 import { PRESET_FOLDER_ID } from '../components/center/Center';
 
@@ -19,4 +19,9 @@ export const folders = (state = [], action) => {
   }
   return state;
 };
-
+export const renamingFolder = (state = '', action) => {
+  if (action.type === FOLDER_RENAMING) {
+    return action.id;
+  }
+  return state;
+};

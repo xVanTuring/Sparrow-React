@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { DragSource } from 'react-dnd';
+import { connect } from 'react-redux';
 import DropAreaTop from './DropAreaTop';
 import DropAreaBottom from './DropAreaBottom';
 import DropAreaCenter from './DropAreaCenter';
@@ -23,7 +24,6 @@ type FolderItemProps = {
 };
 class FolderItem extends Component<FolderItemProps> {
   constructor(props) {
-
     super(props);
     this.state = {
       isHover: false,
@@ -31,13 +31,13 @@ class FolderItem extends Component<FolderItemProps> {
     };
   }
   handleClick = () => {
-    if (this.props.item.children && this.props.item.children.length > 0) {
-      if (this.props.selectedFolder === this.props.item.id) {
-        this.setState({
-          collapsed: !this.state.collapsed
-        });
-      }
-    }
+    // if (this.props.item.children && this.props.item.children.length > 0) {
+    //   if (this.props.selectedFolder === this.props.item.id) {
+    //     this.setState({
+    //       collapsed: !this.state.collapsed
+    //     });
+    //   }
+    // }
     this.props.onClick(this.props.item.id);
   }
   render() {
@@ -52,7 +52,8 @@ class FolderItem extends Component<FolderItemProps> {
       draggingNodeId,
       isParentDragging,
       onDropFolder,
-      counter
+      counter,
+      fixed
     } = this.props;
     const isDragging = !!isParentDragging || (draggingNodeId === item.id);
 
@@ -98,6 +99,7 @@ class FolderItem extends Component<FolderItemProps> {
                 isDragging={isDragging}
                 onDropFolder={onDropFolder}
                 size={counter[item.id] || 0}
+                fixed={fixed}
               />
               {/* TODO: make top bottom able to drop img */}
               <DropAreaTop
@@ -123,7 +125,7 @@ class FolderItem extends Component<FolderItemProps> {
           {
             item.children.map((subItem) => {
               return (
-                <DragFolderItem
+                <RFolderItem
                   item={subItem}
                   key={subItem.id}
                   onClick={onClick}
@@ -133,6 +135,7 @@ class FolderItem extends Component<FolderItemProps> {
                   isParentDragging={isDragging}
                   onDropFolder={onDropFolder}
                   counter={counter}
+                  fixed={fixed}
                 />
               );
             })
@@ -145,7 +148,7 @@ class FolderItem extends Component<FolderItemProps> {
 
 const folderSource = {
   canDrag(props) {
-    if (props.fixed) {
+    if (props.fixed || props.renamingFolder === props.item.id) {
       return false;
     }
     return true;
@@ -166,4 +169,11 @@ function collect(_connect, monitor) {
   };
 }
 const DragFolderItem = DragSource('FolderItem', folderSource, collect)(FolderItem);
-export default DragFolderItem;
+
+const mapStateToProps = (state) => (
+  {
+    renamingFolder: state.renamingFolder
+  }
+);
+const RFolderItem = connect(mapStateToProps)(DragFolderItem);
+export default RFolderItem;

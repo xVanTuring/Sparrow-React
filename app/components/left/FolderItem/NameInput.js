@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { mapToArr } from '../../../utils/utils';
-// import { List } from 'immutable';
+import { setFolderRenaming } from '../../../actions/folder';
 
 type NameInputProps = {
   value: string,
-  // setFolderRenaming: (id: string) => void,
+  setRenamingFolder: (id: string) => void,
   onChange: (e) => void,
   editing: boolean,
   isNewFolder?: boolean,
@@ -32,7 +32,7 @@ class NameInput extends Component<NameInputProps> {
     }
   }
   handleOnBlur = () => {
-    // this.props.setFolderRenaming('');
+    this.props.setRenamingFolder('');
     this.props.onChange(this.state.value.trim());
     this.setState({
       value: this.state.value.trim()
@@ -52,7 +52,7 @@ class NameInput extends Component<NameInputProps> {
   }
   handleOnKeyDown = (e) => {
     if (e.keyCode === 27) {
-      // this.props.setFolderRenaming('');
+      this.props.setRenamingFolder('');
       this.setState({
         value: this.props.value
       });
@@ -73,8 +73,8 @@ class NameInput extends Component<NameInputProps> {
       <div
         style={{
           position: 'absolute',
-          left: 4,
-          right: 6,
+          left: 0,
+          right: 0,
           top: 0,
           bottom: 0,
         }}
@@ -95,12 +95,12 @@ class NameInput extends Component<NameInputProps> {
             fontSize: '14px',
             borderRadius: 4,
             paddingLeft: 3,
-            height: 24,
-            top: 3,
+            top: 0,
+            bottom: 0,
             boxSizing: 'border-box',
             backgroundColor: '#a1a1a1',
             color: 'white',
-            lineHeight: '24px',
+            lineHeight: '28px',
           }}
           value={value}
           maxLength={25}
@@ -120,5 +120,12 @@ const toArr = (folders) => {
 const mapStateToProps = (state) => ({
   folders: toArr(state.folders)
 });
+const mapDispatchToProps = (dispatch) => (
+  {
+    setRenamingFolder: (id) => {
+      dispatch(setFolderRenaming(id));
+    }
+  }
+);
 
-export default connect(mapStateToProps)(NameInput);
+export default connect(mapStateToProps, mapDispatchToProps)(NameInput);

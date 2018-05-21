@@ -9,7 +9,8 @@ export type ImageType = {
   isDeleted: boolean,
   ext: string,
   tags: string[],
-  id: string
+  id: string,
+  annotation: string
 };
 export type FolderType = {
   name: string,

@@ -32,6 +32,7 @@ ipcRenderer.on('addImages', (event, data) => {
   store.dispatch(addImages(data));
 });
 ipcRenderer.on('setFolders', (event, folders) => {
+  updateFolders(folders);
   store.dispatch(setFolders(folders));
 });
 // [updatedImageMeta:[],updatedHistoryTags]

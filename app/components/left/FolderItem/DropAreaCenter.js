@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd';
+import { connect } from 'react-redux';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { FolderType } from '../../../types/app';
 import { ImageModel } from '../../center/Image';
 import { PRESET_FOLDER_ID } from '../../center/Center';
-import NameInputer from './NameInputer';
-import { List } from 'immutable';
+import NameInput from './NameInput';
+import { setFolderRenaming } from '../../../actions/folder';
+
+const { ipcRenderer } = require('electron');
 
 type DropAreaCenterProps = {
   connectDropTarget: any,
@@ -16,26 +19,49 @@ type DropAreaCenterProps = {
   selectedFolder: string,
   isDragging: boolean,
   onDropFolder?: Function,
-  size: number
+  size: number,
+  fixed?: boolean,
+
+  renamingFolder: string,
+  setRenamingFolder: (id) => void
+
 };
 class DropAreaCenter extends Component<DropAreaCenterProps> {
+  componentDidMount() {
+    if (this.props.item.name === '--RENAME--') {
+      this.props.setRenamingFolder(this.props.item.id);
+    }
+  }
+  handleDoubleClick = () => {
+    if (!this.props.fixed) {
+      this.props.setRenamingFolder(this.props.item.id);
+    }
+  }
+  handleNameChange = (name) => {
+    let finalName = name;
+    if (name === '--RENAME--') {
+      finalName = 'Untitled';
+    }
+    ipcRenderer.send('setFolderName', [this.props.item.id, finalName]);
+  }
   render() {
     const {
       connectDropTarget,
-
       isOver,
       item,
       isHover,
       selectedFolder,
       isDragging,
       onDropFolder,
-      size
+      size,
+      renamingFolder,
+      fixed
     } = this.props;
     const hoverColor = (isHover ? 'rgba(192, 192, 192, 0.2)' : '');
     const selectedColor = (selectedFolder === item.id ? 'rgba(192, 192, 192, 0.3)' : hoverColor);
     const overColor = (isOver && onDropFolder) ? 'rgb(25, 153, 238)' : selectedColor;
     const draggingColor = isDragging ? '' : overColor;
-    const backgroundColor = this.props.item.id === '93285250-56b6-11e8-bb6c-5fb7bc4983c' ? '' : draggingColor;
+    const backgroundColor = this.props.item.id === renamingFolder ? '' : draggingColor;
     return connectDropTarget((
       <div
         style={{
@@ -53,24 +79,27 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
           WebkitTransition: ' all .2s',
           fontSize: 14
         }}
+        onDoubleClick={this.handleDoubleClick}
       >
         {item.name}
         <span
           style={{
             float: 'right',
-            marginRight: 12
+            marginRight: 12,
+            lineHeight: '28px',
+            opacity: this.props.item.id === renamingFolder ? 0 : 1
           }}
         >
           {size}
         </span>
         {
-          this.props.item.id === '93285250-56b6-11e8-bb6c-5fb7bc4983cc' ?
+          (this.props.item.id === renamingFolder && !fixed) ?
             (
-              <NameInputer
-                id="233"
-                value="456"
-                editing={false}
-                onChange={(e) => { console.log(e); }}
+              <NameInput
+                id={this.props.item.id}
+                value={this.props.item.name}
+                editing
+                onChange={this.handleNameChange}
               />
             ) : ''
         }
@@ -105,4 +134,17 @@ const calcType = (props) => {
   }
   return ['FolderItem', NativeTypes.FILE, ImageModel];
 };
-export default DropTarget(calcType, areaTarget, collect)(DropAreaCenter);
+const mapStateToProps = (state) => (
+  {
+    renamingFolder: state.renamingFolder
+  }
+);
+const mapDispatchToProps = (dispatch) => (
+  {
+    setRenamingFolder: (id) => {
+      dispatch(setFolderRenaming(id));
+    }
+  }
+);
+const AreaCenter = DropTarget(calcType, areaTarget, collect)(DropAreaCenter);
+export default connect(mapStateToProps, mapDispatchToProps)(AreaCenter);
