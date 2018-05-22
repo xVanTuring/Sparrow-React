@@ -1,11 +1,2 @@
-fix some folder problem
-[✅]add 'add Folder'
-add 'add Folder to targetFolder'
-[✅]add 'move to folder'
-add 'arrange folder'
-[✅]add 'rename folder'
-add 'init'
-add 'shift select' (try to use global listener)
-[✅]fix image drag preview
-add thumb support
-add support for download url image from web
+use background.js
+add init

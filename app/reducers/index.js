@@ -4,6 +4,7 @@ import * as folders from './folder';
 import * as images from './images';
 import * as tags from './tags';
 import * as keys from './keys';
+import * as app from './app';
 import { RESET_APP } from '../actions/app';
 
 export type StoreInitState = {
@@ -17,6 +18,7 @@ const reducer = combineReducers({
   ...images,
   ...tags,
   ...keys,
+  ...app,
   basePath
 });
 export const rootReducer = (state, action) => {

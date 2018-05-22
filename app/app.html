@@ -28,7 +28,6 @@
       if (process.env.NODE_ENV === 'development') {
         scripts.push('../dll/renderer.dev.dll.js');
       }
-      scripts.push('./background.js')
 
       // Dynamically insert the bundled app script in the renderer process
       const port = process.env.PORT || 1212;
@@ -37,7 +36,6 @@
           ? 'http://localhost:' + port + '/dist/renderer.dev.js'
           : './dist/renderer.prod.js'
       );
-
       document.write(
         scripts
           .map(script => '<script defer src="' + script + '"><\/script>')

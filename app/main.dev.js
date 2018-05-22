@@ -15,9 +15,15 @@ import MenuBuilder from './menu';
 import { readMeta, readImages, addImages, addImagesToFolder, saveFolders, addImageTag, removeImageTag, readTags, deleteImages, setImageName, setFolderName, addFolder } from './operation/operation';
 
 const path = require('path');
-const os = require('os');
+
+app.setName('Sparrow');
+app.setPath('userData', path.join(app.getPath('appData'), app.getName()));
 
 let mainWindow = null;
+ipcMain.on('setLibraryPath', (event, libraryPath) => {
+  console.log('ipcMain ', libraryPath);
+  event.sender.send('setLibraryPath', libraryPath);
+});
 // [imgPath] targetPath(id)
 ipcMain.on('addImages', (event, arg) => {
   addImages(arg[0], arg[1], (imageMeta) => {
@@ -131,18 +137,18 @@ app.on('ready', async () => {
     }
     mainWindow.show();
     mainWindow.focus();
-    readMeta((projMeta) => {
-      readImages((imgs) => {
-        readTags((res) => {
-          mainWindow.webContents.send('metaLoaded', {
-            folders: projMeta.folders,
-            images: imgs,
-            basePath: path.join(os.homedir(), 'Sparrow'),
-            historyTags: res.historyTags
-          });
-        });
-      });
-    });
+    // readMeta((projMeta) => {
+    //   readImages((imgs) => {
+    //     readTags((res) => {
+    //       mainWindow.webContents.send('metaLoaded', {
+    //         folders: projMeta.folders,
+    //         images: imgs,
+    //         basePath: path.join(os.homedir(), 'Sparrow'),
+    //         historyTags: res.historyTags
+    //       });
+    //     });
+    //   });
+    // });
   });
 
   mainWindow.on('closed', () => {

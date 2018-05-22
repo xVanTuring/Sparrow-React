@@ -6,9 +6,12 @@ import Left from '../components/left/Left';
 import Center from '../components/center/Center';
 import Right from '../components/right/Right';
 import { setAlt } from '../actions/keys';
+import WelCome from '../components/welcome/Welcome';
+
 
 type Props = {
-  setAltStatus: (status: boolean) => void
+  setAltStatus: (status: boolean) => void,
+  initStatus: boolean
 };
 class App extends Component<Props> {
   componentDidMount() {
@@ -29,12 +32,25 @@ class App extends Component<Props> {
       this.props.setAltStatus(false);
     }
   }
+
   render() {
     return (
-      <div className="App">
-        <Left />
-        <Center />
-        <Right />
+      <div
+        className="App"
+      >
+
+        {
+          this.props.initStatus ? <WelCome /> :
+            (
+              [
+                <Left key="left" />,
+                <Center key="center" />,
+                <Right key="right" />
+              ]
+            )
+        }
+
+
       </div>
 
     );
@@ -42,6 +58,7 @@ class App extends Component<Props> {
 }
 const mapStateToProps = (state) => {
   return {
+    initStatus: state.initStatus
   };
 };
 const mapDispatchToProps = (dispatch) => ({
