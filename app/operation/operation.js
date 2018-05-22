@@ -128,7 +128,7 @@ export const addImages = (fileObjArr = [], targetPathId, cb: (imgMeta: ImageType
 const addImage = (fileObjArr = [], targetPathId, cb: (res: ImageType) => void) => {
   if (fileObjArr.length > 0) {
     const fileObj = fileObjArr.pop();
-    addImage(fileObjArr, targetPathId, cb);
+    // addImage(fileObjArr, targetPathId, cb);
     const id = uuid();
     const targetPath = path.join(os.homedir(), 'Sparrow', 'images', id);
     const targetImgPath = path.join(targetPath, fileObj.name);
@@ -181,6 +181,7 @@ const addImage = (fileObjArr = [], targetPathId, cb: (res: ImageType) => void) =
                                 `#${values[3].color}`,
                                 `#${values[4].color}`];
                               cb(imageMeta);
+                              addImage(fileObjArr, targetPathId, cb);
                               fs.writeFile(targetMetaPath, JSON.stringify(imageMeta), (err5) => {
                                 if (err5 == null) {
                                   // TODO: test

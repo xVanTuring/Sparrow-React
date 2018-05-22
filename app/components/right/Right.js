@@ -78,7 +78,7 @@ class Right extends Component<RightProps> {
           position: 'absolute',
           height: '100vh',
           backgroundColor: '#535353',
-          width: 200,
+          width: 230,
           right: 0,
           top: 0,
           bottom: 0

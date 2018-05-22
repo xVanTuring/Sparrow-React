@@ -239,8 +239,8 @@ const calcFolderSize = (images: List<ImageType>) => {
     if (item.isDeleted) {
       counter[PRESET_FOLDER_ID[3]] += 1;
     } else {
+      counter[PRESET_FOLDER_ID[0]] += 1;
       item.folders.forEach((name) => {
-        counter[PRESET_FOLDER_ID[0]] += 1;
         if (counter[name]) {
           counter[name] += 1;
         } else {

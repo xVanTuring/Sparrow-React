@@ -163,7 +163,7 @@ class Center extends Component<Prop> {
           position: 'absolute',
           backgroundColor: '#535353',
           left: 200,
-          right: 200,
+          right: 230,
           top: 0,
           bottom: 0,
         }}
@@ -192,6 +192,7 @@ class Center extends Component<Prop> {
             left: 0,
             backgroundColor: '#303030',
             overflow: 'auto',
+            overflowX: 'hidden',
             display: this.state.viewImageId === '' ? '' : 'none'
           }}
           onMouseDown={this.handleMouseDown}
