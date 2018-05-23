@@ -12,6 +12,7 @@ import App from './containers/App';
 import Loading from './components/welcome/Loading';
 import { configureStore } from './store/configureStore';
 import { resetApp } from './actions/app';
+import { addImages, updateImages } from './actions/image';
 
 let store = null;
 
@@ -33,6 +34,12 @@ ipcRenderer.on('done-loadLibrary', (event, data) => {
     doRender();
   }
 });
+ipcRenderer.on('imageAdded', (event, imgMeta) => {
+  store.dispatch(addImages([imgMeta]));
+});
+ipcRenderer.on('imageUpdated', (eve, newImageMeta) => {
+  store.dispatch(updateImages([newImageMeta]));
+});
 function doRender() {
   setTimeout(() => {
     render(
@@ -44,7 +51,7 @@ function doRender() {
       </AppContainer>,
       document.getElementById('root')
     );
-  }, 200);
+  }, 100);
 }
 
 render(

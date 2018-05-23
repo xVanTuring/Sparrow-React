@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { ipcRenderer } from 'electron';
 import { mapToArr, setFolderName, saveFoldersToFile } from '../../../utils/utils';
 import { setFolderRenaming, setFolders } from '../../../actions/folder';
 
@@ -10,7 +9,8 @@ type NameInputProps = {
   onChange: (e) => void,
   editing: boolean,
   isNewFolder?: boolean,
-  folders: FolderType[],
+  foldersArr: FolderType[],
+  folders: [],
   id: string,
   setFolders: Function
 };
@@ -39,7 +39,6 @@ class NameInput extends Component<NameInputProps> {
     if (resultName === '') {
       resultName = this.props.value;
     }
-    // this.props.onChange(resultName);
     let finalName = resultName;
     if (resultName === '--RENAME--') {
       finalName = 'Untitled';
@@ -52,7 +51,7 @@ class NameInput extends Component<NameInputProps> {
     saveFoldersToFile(newFolders);
   }
   handleOnChange = (event) => {
-    const rest = this.props.folders.filter((item) => {
+    const rest = this.props.foldersArr.filter((item) => {
       if ((item.name === event.target.value) && (item.id !== this.props.id)) {
         return true;
       }
@@ -133,7 +132,8 @@ const toArr = (folders) => {
   return arr;
 };
 const mapStateToProps = (state) => ({
-  folders: toArr(state.folders)
+  foldersArr: toArr(state.folders),
+  folders: state.folders
 });
 const mapDispatchToProps = (dispatch) => (
   {

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Input, Divider, } from 'antd';
 import { connect } from 'react-redux';
+import settings from 'electron-settings';
 import ColorPan from './ColorPan';
 import STag from './STag';
 import TagArea from './TagArea';
@@ -11,7 +12,6 @@ const { ipcRenderer } = require('electron');
 
 type RightProps = {
   images?: any,
-  basePath: string,
   folders: FolderType[]
 };
 class Right extends Component<RightProps> {
@@ -54,7 +54,6 @@ class Right extends Component<RightProps> {
   render() {
     const {
       images,
-      basePath,
       folders
     } = this.props;
     let selectedImage = null;
@@ -62,7 +61,7 @@ class Right extends Component<RightProps> {
     const folderTag = [];
     if (images != null && images.size > 0) {
       selectedImage = images.get(0);
-      selectedImagePath = `${basePath}/images/${selectedImage.id}/${selectedImage.name}_thumb.${selectedImage.ext}`;
+      selectedImagePath = `${settings.get('rootDir')}/images/${selectedImage.id}/${selectedImage.name}_thumb.png`;
 
       folders.forEach(item => {
         selectedImage.folders.forEach(item2 => {
@@ -245,7 +244,6 @@ const ToArr = (folders) => {
 const mapStateToProps = (state) => (
   {
     images: filter(state.images, state.selectedImgs),
-    basePath: state.basePath,
     folders: ToArr(state.folders)
   }
 );

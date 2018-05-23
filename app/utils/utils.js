@@ -9,6 +9,7 @@ const updateFolders = (folders: FolderType[], parent = ROOT, parentNode = null) 
     item.parent = parent;
     item.childrenId = [];
     if (parentNode != null) {
+      parentNode.childrenId = [];
       parentNode.childrenId.push(item.id);
     }
     if (item.children) {
@@ -92,35 +93,6 @@ export const moveAfter = (sourceId, targetId, state: FolderType[]) => {
   }
 
   return newState;
-  // const newState = _.cloneDeep(state);
-  // const arr = [];
-  // mapToArr(newState, arr);
-
-  // const source = find(sourceId, arr);
-  // const oldParent = find(source.parent, arr);
-
-  // const target = find(targetId, arr);
-
-  // if (oldParent != null && target != null) {
-  //   oldParent.childrenId.splice(oldParent.childrenId.indexOf(sourceId), 1);
-  //   oldParent.children.splice(oldParent.children.indexOf(source), 1);
-
-  //   const grandId = target.parent;
-  //   source.parent = grandId;
-  //   if (grandId === ROOT) {
-  //     const index = newState.indexOf(target);
-  //     newState.splice(index + 1, 0, source);
-  //   } else {
-  //     const grand = find(grandId, arr);
-  //     const index = grand.children.indexOf(target);
-  //     grand.childrenId.splice(index + 1, 0, sourceId);
-  //     grand.children.splice(index + 1, 0, source);
-  //   }
-  // } else {
-  //   console.error('NULL');
-  // }
-
-  // return newState;
 };
 export const moveAppend = (sourceId, targetId, state: FolderType[]) => {
   const newState = _.cloneDeep(state);
@@ -209,9 +181,9 @@ export const movePrepend = (sourceId, targetId, state: FolderType[]) => {
 export default updateFolders;
 
 export const setFolderName = (id, name, folders: []) => {
-  const foldersC = _.cloneDeep(folders);
+  const newFolders = _.cloneDeep(folders);
   const arr = [];
-  mapToArr(foldersC, arr);
+  mapToArr(newFolders, arr);
   for (let index = 0; index < arr.length; index += 1) {
     const element = arr[index];
     if (element.id === id) {
@@ -219,7 +191,8 @@ export const setFolderName = (id, name, folders: []) => {
       break;
     }
   }
-  return foldersC;
+  updateFolders(newFolders);
+  return newFolders;
 };
 export const createNewFolder = (parentId, folders: FolderType[]) => {
   const newFolders = _.cloneDeep(folders);

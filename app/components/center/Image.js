@@ -35,7 +35,6 @@ class Image extends Component<ImageProp> {
     if (!this.regionSelection) {
       this.props.onImageClick([this.id]);
     }
-
     this.regionSelection = false;
   }
   handleDoubleClick = () => {

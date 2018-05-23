@@ -13,13 +13,15 @@ class Loading extends Component {
           justifyContent: 'center',
         }}
       >
-        <span
+        <img
+          src="./dist/logo.png"
           style={{
-            fontSize: 18
+            width: 400,
+            height: 400,
+            marginTop: -60
           }}
-        >
-          Init...
-        </span>
+          alt="233"
+        />
       </div>
     );
   }

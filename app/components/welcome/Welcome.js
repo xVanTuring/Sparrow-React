@@ -55,7 +55,7 @@ class WelCome extends Component {
         }}
       >
         <img
-          src="./dist/icon.png"
+          src="./dist/logo.png"
           style={{
             width: 300,
             height: 300,

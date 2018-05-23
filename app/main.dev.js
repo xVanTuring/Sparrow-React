@@ -10,7 +10,7 @@
  *
  * @flow
  */
-import { app, BrowserWindow, ipcMain, Tray, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } from 'electron';
 import settings from 'electron-settings';
 
 
@@ -45,6 +45,20 @@ ipcMain.on('done-loadLibrary', (event, data) => {
 });
 ipcMain.on('setFolders', (event, folders) => {
   backgroundWindow.webContents.send('setFolders', folders);
+});
+// [fileObjs, targetFolder]
+ipcMain.on('addImages', (event, data) => {
+  backgroundWindow.webContents.send('addImages', data);
+});
+ipcMain.on('imageAdded', (event, imageMeta) => {
+  mainWindow.webContents.send('imageAdded', imageMeta);
+});
+// [e.dragData.images, e.dropId, !this.props.altKey]
+ipcMain.on('addImagesToFolder', (event, data) => {
+  backgroundWindow.webContents.send('addImagesToFolder', data);
+});
+ipcMain.on('imageUpdated', (event, newImageMeta) => {
+  mainWindow.webContents.send('imageUpdated', newImageMeta);
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -89,8 +103,6 @@ app.on('ready', async () => {
       nodeIntegrationInWorker: true
     }
   });
-  // http://www.lazyboy.site/2016/electron-note(3)/
-
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
@@ -98,17 +110,19 @@ app.on('ready', async () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
-    mainWindow.show();
+    // mainWindow.show();
   });
   mainWindow.webContents.on('dom-ready', () => {
     if (!backgroundWindow) {
       createBackgroundWindow();
+    } else {
+      backgroundWindow.send('reload-library');
     }
   });
 
-  // mainWindow.once('ready-to-show', () => {
-  //   mainWindow.show();
-  // });
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
   mainWindow.on('close', (e) => {
     e.preventDefault();
     mainWindow.hide();
@@ -124,7 +138,8 @@ function createTray() {
   if (tray && !tray.isDestroyed()) {
     tray.destroy();
   }
-  tray = new Tray(`${__dirname}/dist/icon_small.png`);
+  const image = nativeImage.createFromPath(`${__dirname}/dist/icon.png`);
+  tray = new Tray(image);
   tray.setToolTip('Sparrow');
   tray.on('click', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
@@ -166,6 +181,7 @@ function initSettings() {
   }
 }
 function createBackgroundWindow() {
+  // http://www.lazyboy.site/2016/electron-note(3)/
   backgroundWindow = new BrowserWindow({
     // titleBarStyle: 'hidden-inset',
     // show: false,

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { List } from 'immutable';
 import { Slider } from 'antd';
+import settings from 'electron-settings';
 import Masonry from 'react-masonry-component';
 import { connect } from 'react-redux';
 import { DropTarget } from 'react-dnd';
@@ -102,7 +103,9 @@ class Center extends Component<Prop> {
       currentMousePos: { x: e.clientX, y: e.clientY + top },
     });
     this.initScrollTop = top;
-    this.props.setSelected([]);// with comparing
+    if (this.props.selectedFolder.length !== 0) {
+      this.props.setSelected([]);
+    }
   }
   handleMouseMove = (e) => {
     if (this.state.isDragging) {
@@ -116,7 +119,9 @@ class Center extends Component<Prop> {
   }
   handleMouseUp = () => {
     if (this.state.isDragging) {
-      this.props.setSelected(this.state.hoveredImgs);
+      if (!(this.state.hoveredImgs.length === 0 || this.props.selectedFolder.length === 0)) {
+        this.props.setSelected(this.state.hoveredImgs);
+      }
       this.setState({
         isDragging: false,
         startMousePos: { x: 200, y: 32 },
@@ -216,7 +221,7 @@ class Center extends Component<Prop> {
           >
             {
               this.props.images.map((item) => (<Image
-                src={`${this.props.basePath}/images/${item.id}/${item.name}_thumb.${item.ext}`}
+                src={`${settings.get('rootDir')}/images/${item.id}/${item.name}_thumb.png`}
                 key={item.id}
                 size={`${item.width}x${item.height}`}
                 name={item.name}
