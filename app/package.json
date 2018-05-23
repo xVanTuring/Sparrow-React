@@ -14,7 +14,5 @@
     "postinstall": "npm run electron-rebuild"
   },
   "license": "MIT",
-  "dependencies": {
-    "thmclrx": "^1.0.0"
-  }
+  "dependencies": {}
 }

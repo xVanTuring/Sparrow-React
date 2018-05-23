@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { mapToArr } from '../../../utils/utils';
-import { setFolderRenaming } from '../../../actions/folder';
+import { ipcRenderer } from 'electron';
+import { mapToArr, setFolderName, saveFoldersToFile } from '../../../utils/utils';
+import { setFolderRenaming, setFolders } from '../../../actions/folder';
 
 type NameInputProps = {
   value: string,
@@ -10,7 +11,8 @@ type NameInputProps = {
   editing: boolean,
   isNewFolder?: boolean,
   folders: FolderType[],
-  id: string
+  id: string,
+  setFolders: Function
 };
 class NameInput extends Component<NameInputProps> {
   constructor(props) {
@@ -37,10 +39,17 @@ class NameInput extends Component<NameInputProps> {
     if (resultName === '') {
       resultName = this.props.value;
     }
-    this.props.onChange(resultName);
+    // this.props.onChange(resultName);
+    let finalName = resultName;
+    if (resultName === '--RENAME--') {
+      finalName = 'Untitled';
+    }
     this.setState({
-      value: resultName
+      value: finalName
     });
+    const newFolders = setFolderName(this.props.id, finalName, this.props.folders);
+    this.props.setFolders(newFolders);
+    saveFoldersToFile(newFolders);
   }
   handleOnChange = (event) => {
     const rest = this.props.folders.filter((item) => {
@@ -130,6 +139,9 @@ const mapDispatchToProps = (dispatch) => (
   {
     setRenamingFolder: (id) => {
       dispatch(setFolderRenaming(id));
+    },
+    setFolders: (folders) => {
+      dispatch(setFolders(folders));
     }
   }
 );

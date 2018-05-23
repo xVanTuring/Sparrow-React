@@ -10,71 +10,43 @@
  *
  * @flow
  */
-import { app, BrowserWindow, ipcMain } from 'electron';
-import MenuBuilder from './menu';
-import { readMeta, readImages, addImages, addImagesToFolder, saveFolders, addImageTag, removeImageTag, readTags, deleteImages, setImageName, setFolderName, addFolder } from './operation/operation';
+import { app, BrowserWindow, ipcMain, Tray, Menu } from 'electron';
+import settings from 'electron-settings';
+
 
 const path = require('path');
 
 app.setName('Sparrow');
 app.setPath('userData', path.join(app.getPath('appData'), app.getName()));
 
-let mainWindow = null;
-ipcMain.on('setLibraryPath', (event, libraryPath) => {
-  console.log('ipcMain ', libraryPath);
-  event.sender.send('setLibraryPath', libraryPath);
+let mainWindow: BrowserWindow;
+let backgroundWindow: BrowserWindow;
+// const shouldQuit = app.makeSingleInstance((cmd, workDir) => {
+//   if (mainWindow && !mainWindow.isDestroyed()) {
+//     if (mainWindow.isMinimized()) {
+//       mainWindow.restore();
+//     }
+//     mainWindow.show();
+//     mainWindow.focus();
+//   }
+// });
+// if (shouldQuit) {
+//   app.quit();
+// }
+ipcMain.on('go-welcome', () => {
+  console.log('Ipc Main ', 'go-welcome');
+  mainWindow.webContents.send('go-welcome');
 });
-// [imgPath] targetPath(id)
-ipcMain.on('addImages', (event, arg) => {
-  addImages(arg[0], arg[1], (imageMeta) => {
-    event.sender.send('addImages', [imageMeta]);
-  });
+ipcMain.on('createLibrary', (event, libraryPath) => {
+  backgroundWindow.webContents.send('createLibrary', libraryPath);
 });
-// ids[] targetId setFolder
-ipcMain.on('addImagesToFolder', (event, arg) => {
-  addImagesToFolder(arg[0], arg[1], arg[2], (updatedImageMeta) => {
-    event.sender.send('updateImages', [[updatedImageMeta]]);
-  });
+ipcMain.on('done-loadLibrary', (event, data) => {
+  mainWindow.webContents.send('done-loadLibrary', data);
 });
-ipcMain.on('saveFolders', (event, arg) => {
-  saveFolders(arg[0]);
+ipcMain.on('setFolders', (event, folders) => {
+  backgroundWindow.webContents.send('setFolders', folders);
 });
-// id tag
-ipcMain.on('addTag', (event, arg) => {
-  addImageTag(arg[0], arg[1], (updatedImageMeta, updatedHistTags) => {
-    event.sender.send('updateImages', [[updatedImageMeta], updatedHistTags]);
-  });
-});
-ipcMain.on('removeTag', (event, arg) => {
-  removeImageTag(arg[0], arg[1], (updatedImageMeta) => {
-    event.sender.send('updateImages', [[updatedImageMeta]]);
-  });
-});
-// ids:[]
-ipcMain.on('deleteImages', (event, arg) => {
-  console.log(arg[0]);
-  deleteImages(arg[0], (updatedImageMeta) => {
-    event.sender.send('updateImages', [[updatedImageMeta]]);
-  });
-});
-// id name
-ipcMain.on('setImageName', (event, arg) => {
-  setImageName(arg[0], arg[1], (updatedImageMeta) => {
-    event.sender.send('updateImages', [[updatedImageMeta]]);
-  });
-});
-// id name
-ipcMain.on('setFolderName', (event, arg) => {
-  setFolderName(arg[0], arg[1], (folders) => {
-    event.sender.send('setFolders', folders);
-  });
-});
-// parentId
-ipcMain.on('addFolder', (event, arg) => {
-  addFolder(arg[0], (folders) => {
-    event.sender.send('setFolders', folders);
-  });
-});
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -99,62 +71,116 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
-
-/**
- * Add event listeners...
- */
-
-app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
+let tray = null;
 
 app.on('ready', async () => {
+  initSettings();
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
-
+  createTray();
   mainWindow = new BrowserWindow({
+    icon: `${__dirname}/dist/icon_small.png`,
     show: false,
     width: 1024,
     height: 728,
+    backgroundColor: '#535353',
     webPreferences: {
       nodeIntegrationInWorker: true
     }
   });
+  // http://www.lazyboy.site/2016/electron-note(3)/
+
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
-  // @TODO: Use 'ready-to-show' event
-  //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   mainWindow.webContents.on('did-finish-load', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
     mainWindow.show();
-    mainWindow.focus();
-    // readMeta((projMeta) => {
-    //   readImages((imgs) => {
-    //     readTags((res) => {
-    //       mainWindow.webContents.send('metaLoaded', {
-    //         folders: projMeta.folders,
-    //         images: imgs,
-    //         basePath: path.join(os.homedir(), 'Sparrow'),
-    //         historyTags: res.historyTags
-    //       });
-    //     });
-    //   });
-    // });
+  });
+  mainWindow.webContents.on('dom-ready', () => {
+    if (!backgroundWindow) {
+      createBackgroundWindow();
+    }
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+  // mainWindow.once('ready-to-show', () => {
+  //   mainWindow.show();
+  // });
+  mainWindow.on('close', (e) => {
+    e.preventDefault();
+    mainWindow.hide();
   });
-
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  mainWindow.on('will-navigate', (e) => {
+    e.preventDefault();
+  });
+  // mainWindow.on('closed', () => {
+  //   mainWindow = null;
+  // });
 });
+function createTray() {
+  if (tray && !tray.isDestroyed()) {
+    tray.destroy();
+  }
+  tray = new Tray(`${__dirname}/dist/icon_small.png`);
+  tray.setToolTip('Sparrow');
+  tray.on('click', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  });
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show App',
+      click: () => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.show();
+          mainWindow.focus();
+        }
+      }
+    },
+    {
+      label: 'Quit',
+      click: () => {
+        app.quit();
+        app.exit();
+      }
+    }
+  ]);
+  tray.setContextMenu(contextMenu);
+}
+
+function initSettings() {
+  const setting = settings.getAll();
+  if (setting.tutorial == null) {
+    settings.setAll({
+      libraryHistory: [],
+      tutorial: false,
+      preferences: {
+        showSubFolder: false,
+      }
+    });
+  }
+}
+function createBackgroundWindow() {
+  backgroundWindow = new BrowserWindow({
+    // titleBarStyle: 'hidden-inset',
+    // show: false,
+    // resizable: false,
+    // minimizable: false,
+    // maximizable: false,
+    // fullscreenable: false,
+    // focusable: false,
+    width: 200,
+    height: 200,
+  });
+  backgroundWindow.loadURL(`file://${__dirname}/background.html`);
+  backgroundWindow.on('close', (e) => {
+    e.preventDefault();
+    backgroundWindow.blur();
+    backgroundWindow.hide();
+  });
+}

@@ -1,4 +1,6 @@
 import _ from 'lodash';
+import uuid from 'uuid/v1';
+import { ipcRenderer } from 'electron';
 import { FolderType } from '../types/app';
 
 export const ROOT = 'ROOT';
@@ -206,3 +208,44 @@ export const movePrepend = (sourceId, targetId, state: FolderType[]) => {
 };
 export default updateFolders;
 
+export const setFolderName = (id, name, folders: []) => {
+  const foldersC = _.cloneDeep(folders);
+  const arr = [];
+  mapToArr(foldersC, arr);
+  for (let index = 0; index < arr.length; index += 1) {
+    const element = arr[index];
+    if (element.id === id) {
+      element.name = name;
+      break;
+    }
+  }
+  return foldersC;
+};
+export const createNewFolder = (parentId, folders: FolderType[]) => {
+  const newFolders = _.cloneDeep(folders);
+  const id = uuid();
+  const folderItem = {
+    id,
+    name: '--RENAME--',
+    children: []
+  };
+  if (!parentId || parentId === '' || parentId === '--ALL--' || parentId === 'ROOT') {
+    newFolders.push(folderItem);
+  } else {
+    const arr: FolderType[] = [];
+    mapToArr(newFolders, arr);
+    for (let index = 0; index < arr.length; index += 1) {
+      const element = arr[index];
+      if (element.id === parentId) {
+        element.children.push(folderItem);
+        break;
+      }
+    }
+  }
+  updateFolders(newFolders);
+  return newFolders;
+};
+export const saveFoldersToFile = (folders) => {
+  const fileData = toFileData(folders);
+  ipcRenderer.send('setFolders', fileData);
+};

@@ -3,18 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>The Sparrow</title>
-  <script>
-    (function () {
-      if (!process.env.HOT) {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = './dist/style.css';
-        // HACK: Writing the script path should be done with webpack
-        document.getElementsByTagName('head')[0].appendChild(link);
-      }
-    }());
-  </script>
+  <title>background</title>
 </head>
 
 <body>
@@ -33,8 +22,8 @@
       const port = process.env.PORT || 1212;
       scripts.push(
         (process.env.HOT)
-          ? 'http://localhost:' + port + '/dist/main.entry.js'
-          : './dist/main.prod.js'
+          ? 'http://localhost:' + port + '/dist/background.entry.js'
+          : './dist/background.dev.js'
       );
       document.write(
         scripts

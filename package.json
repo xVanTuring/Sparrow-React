@@ -188,6 +188,7 @@
   },
   "dependencies": {
     "antd": "^3.5.2",
+    "async": "^2.6.1",
     "autoresponsive-react": "^1.1.31",
     "bluebird": "^3.5.1",
     "color-convert": "^1.9.1",
@@ -201,6 +202,7 @@
     "gm": "^1.23.1",
     "hashcode": "^1.0.3",
     "history": "^4.7.2",
+    "image-palette": "^1.0.3",
     "image-palette2": "^1.0.3",
     "immutable": "^3.8.2",
     "lodash": "^4.17.10",

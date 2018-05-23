@@ -9,8 +9,7 @@ const path = require('path');
 const os = require('os');
 const uuid = require('uuid/v1');
 const gm = require('gm');
-const thmclrx = require('thmclrx');
-// TODO: delete some func
+
 type metaCallBack = (res: { folders: FolderType[] }) => void;
 
 export const readMeta = (cb: metaCallBack) => {
@@ -172,26 +171,26 @@ const addImage = (fileObjArr = [], targetPathId, cb: (res: ImageType) => void) =
                       .resize(600)
                       .write(thumbBaseName, (err4) => {
                         if (err4 == null) {
-                          thmclrx.octree(thumbBaseName, 8, (err9, values) => {
-                            if (err9 == null) {
-                              imageMeta.palette = [
-                                `#${values[0].color}`,
-                                `#${values[1].color}`,
-                                `#${values[2].color}`,
-                                `#${values[3].color}`,
-                                `#${values[4].color}`];
-                              cb(imageMeta);
-                              addImage(fileObjArr, targetPathId, cb);
-                              fs.writeFile(targetMetaPath, JSON.stringify(imageMeta), (err5) => {
-                                if (err5 == null) {
-                                  // TODO: test
-                                  // cb(imageMeta);
-                                }
-                              });
-                            } else {
-                              console.error(err9);
-                            }
-                          });
+                          // thmclrx.octree(thumbBaseName, 8, (err9, values) => {
+                          //   if (err9 == null) {
+                          //     imageMeta.palette = [
+                          //       `#${values[0].color}`,
+                          //       `#${values[1].color}`,
+                          //       `#${values[2].color}`,
+                          //       `#${values[3].color}`,
+                          //       `#${values[4].color}`];
+                          //     cb(imageMeta);
+                          //     addImage(fileObjArr, targetPathId, cb);
+                          //     fs.writeFile(targetMetaPath, JSON.stringify(imageMeta), (err5) => {
+                          //       if (err5 == null) {
+                          //         // TODO: test
+                          //         // cb(imageMeta);
+                          //       }
+                          //     });
+                          //   } else {
+                          //     console.error(err9);
+                          //   }
+                          // });
                         }
                       });
                   }

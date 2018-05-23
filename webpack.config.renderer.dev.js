@@ -36,18 +36,31 @@ export default merge.smart(baseConfig, {
   devtool: 'inline-source-map',
 
   target: 'electron-renderer',
+  // https://github.com/chentsulin/electron-react-boilerplate/issues/1095
+  entry: {
+    main: [
+      'react-hot-loader/patch',
+      `webpack-dev-server/client?http://localhost:${port}/`,
+      'webpack/hot/only-dev-server',
+      path.join(__dirname, 'app/index.js'),
+    ],
+    background: [
+      'react-hot-loader/patch',
+      `webpack-dev-server/client?http://localhost:${port}/`,
+      'webpack/hot/only-dev-server',
+      path.join(__dirname, 'app/background.js'),
+    ]
 
-  entry: [
-    'react-hot-loader/patch',
-    `webpack-dev-server/client?http://localhost:${port}/`,
-    'webpack/hot/only-dev-server',
-    path.join(__dirname, 'app/index.js'),
-  ],
-
-  output: {
-    publicPath: `http://localhost:${port}/dist/`,
-    filename: 'renderer.dev.js'
   },
+  output: {
+    filename: '[name].entry.js',
+    path: path.join(__dirname, 'app/dist'),
+    publicPath: '../dist/'
+  },
+  // output: {
+  //   publicPath: `http://localhost:${port}/dist/`,
+  //   filename: 'renderer.dev.js'
+  // },
 
   module: {
     rules: [

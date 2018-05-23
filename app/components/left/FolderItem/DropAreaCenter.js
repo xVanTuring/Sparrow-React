@@ -38,11 +38,12 @@ class DropAreaCenter extends Component<DropAreaCenterProps> {
     }
   }
   handleNameChange = (name) => {
-    let finalName = name;
-    if (name === '--RENAME--') {
-      finalName = 'Untitled';
-    }
-    ipcRenderer.send('setFolderName', [this.props.item.id, finalName]);
+    // let finalName = name;
+    // if (name === '--RENAME--') {
+    //   finalName = 'Untitled';
+    // }
+
+    // ipcRenderer.send('setFolderName', [this.props.item.id, finalName]);
   }
   render() {
     const {
@@ -136,7 +137,8 @@ const calcType = (props) => {
 };
 const mapStateToProps = (state) => (
   {
-    renamingFolder: state.renamingFolder
+    renamingFolder: state.renamingFolder,
+    folders: state.folders
   }
 );
 const mapDispatchToProps = (dispatch) => (

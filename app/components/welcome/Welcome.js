@@ -29,7 +29,7 @@ class WelCome extends Component {
     }
   }
   handleNextClick = () => {
-    ipcRenderer.send('setLibraryPath', this.state.targetPath);
+    ipcRenderer.send('createLibrary', this.state.targetPath);
   }
   handleMouseEnter = () => {
     this.setState({

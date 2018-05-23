@@ -16,13 +16,19 @@ export default merge.smart(baseConfig, {
 
   target: 'electron-main',
 
-  entry: './app/main.dev',
-
+  // entry: './app/main.dev',
+  entry: {
+    main: ['babel-polyfill', './app/index'],
+    background: ['babel-polyfill', './app/background']
+  },
   output: {
     path: __dirname,
-    filename: './app/main.prod.js'
+    filename: '[name].entry.js',
   },
-
+  // output: {
+  //   path: __dirname,
+  //   filename: './app/main.prod.js'
+  // },
   plugins: [
     new UglifyJSPlugin({
       parallel: true,

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
-// import _ from 'lodash';
+import _ from 'lodash';
+import uuid from 'uuid/v1';
 import { PRESET_FOLDER_ID } from '../center/Center';
 import { selectFolder, setFolders } from '../../actions/folder';
 import DragFolderItem from './FolderItem/FolderItem';
-import { movePrepend, moveAfter, moveBefore, toFileData, mapToArr } from '../../utils/utils';
+import { movePrepend, moveAfter, moveBefore, toFileData, mapToArr, createNewFolder, saveFoldersToFile } from '../../utils/utils';
 import { ImageType, FolderType } from '../../types/app';
 
 
@@ -46,7 +47,10 @@ class Left extends Component<LeftProp> {
         }
       }
     }
-    ipcRenderer.send('addFolder', [parentFolder]);
+
+    const newFolders = createNewFolder(parentFolder, this.props.folders);
+    this.props.setFolders(newFolders);
+    saveFoldersToFile(newFolders);
   }
   handleMouseEnterAdd = () => {
     this.setState({
@@ -91,8 +95,7 @@ class Left extends Component<LeftProp> {
         default:
           break;
       }
-      const fileData = toFileData(data);
-      ipcRenderer.send('saveFolders', [fileData]);
+      saveFoldersToFile(data);
       // save
     } else if (e.dragData.images != null) {
       ipcRenderer.send('addImagesToFolder', [e.dragData.images, e.dropId, !this.props.altKey]);
