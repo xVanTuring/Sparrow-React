@@ -138,7 +138,7 @@ function createTray() {
   if (tray && !tray.isDestroyed()) {
     tray.destroy();
   }
-  const image = nativeImage.createFromPath(`${__dirname}/dist/icon.png`);
+  const image = nativeImage.createFromPath(`${__dirname}/assets/icon_512.png`);
   tray = new Tray(image);
   tray.setToolTip('Sparrow');
   tray.on('click', () => {
@@ -194,9 +194,9 @@ function createBackgroundWindow() {
     height: 200,
   });
   backgroundWindow.loadURL(`file://${__dirname}/background.html`);
-  backgroundWindow.on('close', (e) => {
-    e.preventDefault();
-    backgroundWindow.blur();
-    backgroundWindow.hide();
-  });
+  // backgroundWindow.on('close', (e) => {
+  //   e.preventDefault();
+  //   backgroundWindow.blur();
+  //   backgroundWindow.hide();
+  // });
 }

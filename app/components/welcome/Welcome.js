@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Icon } from 'antd';
+import logo from '../../assets/logo.svg';
 
 const electron = require('electron');
 
@@ -55,7 +56,7 @@ class WelCome extends Component {
         }}
       >
         <img
-          src="./dist/logo.png"
+          src={logo}
           style={{
             width: 300,
             height: 300,

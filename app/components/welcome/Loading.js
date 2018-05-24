@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import logo from '../../assets/logo.svg';
 
 class Loading extends Component {
   render() {
@@ -14,7 +15,7 @@ class Loading extends Component {
         }}
       >
         <img
-          src="./dist/logo.png"
+          src={logo}
           style={{
             width: 400,
             height: 400,

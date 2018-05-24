@@ -5,6 +5,8 @@ import _ from 'lodash';
 import uuid from 'uuid/v1';
 import { PRESET_FOLDER_ID } from '../center/Center';
 import { selectFolder, setFolders } from '../../actions/folder';
+import addDarker from '../../assets/add_darker.svg';
+import addLight from '../../assets/add_white.svg';
 import DragFolderItem from './FolderItem/FolderItem';
 import { movePrepend, moveAfter, moveBefore, toFileData, mapToArr, createNewFolder, saveFoldersToFile } from '../../utils/utils';
 import { ImageType, FolderType } from '../../types/app';
@@ -204,7 +206,7 @@ class Left extends Component<LeftProp> {
                 padding: 2
               }}
               alt="img"
-              src={hoverAdd ? './dist/add.svg' : './dist/add_dark.svg'}
+              src={hoverAdd ? addLight : addDarker}
               onClick={this.handleAddFolderClick}
               onMouseEnter={this.handleMouseEnterAdd}
               onMouseLeave={this.handleMouseLeaveAdd}

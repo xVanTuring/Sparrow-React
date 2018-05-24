@@ -133,7 +133,9 @@ const addImage = (fileObj, folder, cb) => {
   }
   const img = gm(targetImgPath);
   img.size((err, dimen) => {
-
+    if (err) {
+      console.log(err);
+    }
     imageMeta.width = dimen.width;
     imageMeta.height = dimen.height;
 
@@ -165,7 +167,7 @@ const processQueue = async.queue((task, callback) => {
   addImage(task.file, task.parentFolder, (imageMeta) => {
     callback(imageMeta);
   });
-});
+}, 4);
 const addToProcessQueue = (file, parentFolder) => {
   processQueue.push({
     file,

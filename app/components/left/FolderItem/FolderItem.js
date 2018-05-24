@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import folderIndicator from '../../../assets/folder_indication.svg';
 import { DragSource } from 'react-dnd';
 import { connect } from 'react-redux';
 import DropAreaTop from './DropAreaTop';
@@ -40,7 +41,9 @@ class FolderItem extends Component<FolderItemProps> {
   handleClick = () => {
     this.props.onClick(this.props.item.id);
   }
-  handleIndicatorClick = () => {
+  handleIndicatorClick = (e) => {
+    // TODO: if selecting is children and now is close,set selecting to this
+    e.stopPropagation();
     if (this.props.item.children && this.props.item.children.length > 0) {
       this.setState((prev) => (
         {
@@ -99,7 +102,7 @@ class FolderItem extends Component<FolderItemProps> {
                     WebkitTransition: 'all .2s'
                   }}
                   alt="icon"
-                  src="./dist/folder_indicator.svg"
+                  src={folderIndicator}
                 />
               </div>
               <DropAreaCenter

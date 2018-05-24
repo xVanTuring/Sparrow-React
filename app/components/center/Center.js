@@ -11,6 +11,7 @@ import DropArea from './DropArea';
 import { selectImage } from '../../actions/image';
 import { ImageType } from '../../types/app';
 import BigPicture from './BigPicture';
+import Gallery from './Gallery';
 // TODO: move ALL EVENT TO document and use state to tell actions.
 // TODO: add folder in gallery
 // separate the gallery to a component
@@ -49,7 +50,6 @@ class Center extends Component<Prop> {
     }
   }
   handleHover = (newOffset) => {
-    // console.log(this.masonry.items[0].element.childNodes[0].offsetHeight);
     const imgPos = this.masonry.items.map(item => {
       return convertPos(item, this.masonry.size.marginLeft, 0);
     });
@@ -112,9 +112,7 @@ class Center extends Component<Prop> {
       this.setState({
         currentMousePos: { x: e.clientX, y: e.clientY + this.initScrollTop },
       });
-      // console.log(this.masonry.size.marginLeft)
       this.handleHover();
-      // this.props.setSelected(selectedItem);
     }
   }
   handleMouseUp = () => {
@@ -124,8 +122,8 @@ class Center extends Component<Prop> {
       }
       this.setState({
         isDragging: false,
-        startMousePos: { x: 200, y: 32 },
-        currentMousePos: { x: 200, y: 32 },
+        startMousePos: { x: 0, y: 0 }, // startMousePos: { x: 200, y: 32 },
+        currentMousePos: { x: 0, y: 0 },
         offset: 0,
         hoveredImgs: []
       });
@@ -181,11 +179,11 @@ class Center extends Component<Prop> {
           }}
         />
         {
-          this.state.viewImageId !== '' ? (
-            <BigPicture
-              img={this.props.images.filter((item) => (item.id === this.state.viewImageId)).get(0)}
-            />
-          ) : ''
+          // this.state.viewImageId !== '' ? (
+          //   <BigPicture
+          //     img={this.props.images.filter((item) => (item.id === this.state.viewImageId)).get(0)}
+          //   />
+          // ) : ''
         }
 
         <div
@@ -207,43 +205,26 @@ class Center extends Component<Prop> {
           onScroll={this.handleSroll}
           ref={(ref) => { this.scroller = ref; }}
         >
-          <Masonry
-            ref={(ref) => {
-              this.masonry = this.masonry || ref.masonry;
-            }}
-            style={{
-              margin: 'auto',
-            }}
-            options={{
-              fitWidth: true,
-            }}
-
-          >
-            {
-              this.props.images.map((item) => (<Image
-                src={`${settings.get('rootDir')}/images/${item.id}/${item.name}_thumb.png`}
-                key={item.id}
-                size={`${item.width}x${item.height}`}
-                name={item.name}
-                id={item.id}
-                hoveredImgs={this.state.hoveredImgs}
-                displayImages={this.props.images}
-                onImageDoubleClick={this.handleImageDoubleClick}
-              />))
-            }
-          </Masonry>
+          <Gallery
+            images={this.props.images}
+            onRef={(ref) => { this.masonry = this.masonry || ref.masonry; }}
+            onImageDoubleClick={this.handleImageDoubleClick}
+            hoveredImgs={this.state.hoveredImgs}
+          />
           <div
+            className="drag-area"
             style={{
               position: 'absolute',
               left: left - 200,
               top: top - 32,
               width,
               height,
-              backgroundColor: 'rgba(58,201,223,0.44)',
-              display: isDragging ? '' : 'none',
-              border: '1px solid rgba(58,201,223,0.7)',
+              backgroundColor: `rgba(58,201,223,${isDragging ? '0.43' : '0'})`, // 0.44
+              border: '1px solid', // 0.7
+              borderColor: `rgba(58,201,223,${isDragging ? '0.7' : '0'})`,
               pointerEvents: 'none',
               boxSizing: 'border-box',
+              WebkitTransition: 'background-color .5s,border-color 1s',
             }}
           />
 
@@ -298,6 +279,7 @@ const isIntersect = (item1, item2) => {
 };
 export const PRESET_FOLDER_ID = ['--ALL--', '--UNCAT--', '--UNTAG--', '--TRASH--'];
 const filter = (imgs: List, folderId) => {
+  console.log('filter');
   switch (folderId) {
     case PRESET_FOLDER_ID[0]:
       return imgs.filter((item) => {

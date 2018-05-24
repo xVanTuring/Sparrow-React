@@ -5,12 +5,12 @@ import { connect } from 'react-redux';
 import { DragSource } from 'react-dnd';
 import { selectImage } from '../../actions/image';
 import { ImageType } from '../../types/app';
+import SimpleImage from './SimpleImage';
 
 // TODO: set selectedImg when drag(down)
-// fix landscape img border
 export const ImageModel = 'Image';
 type ImageProp = {
-  id?: string,
+  id: string,
   onImageClick: (id: string) => void,
   onImageDoubleClick: (id: string) => void,
   width?: number,
@@ -30,6 +30,22 @@ class Image extends Component<ImageProp> {
     this.id = this.props.id;
     this.imgRef = null;
     this.regionSelection = false;
+  }
+  shouldComponentUpdate(nextProp) {
+    if (nextProp.selectedImgs !== this.props.selectedImgs) {
+      return true;
+    }
+    if (
+      this.props.hoveredImgs.indexOf(this.props.id) === -1 &&
+      nextProp.hoveredImgs.indexOf(nextProp.id) === -1) {
+      return false;
+    }
+    if (
+      this.props.hoveredImgs.indexOf(this.props.id) !== -1 &&
+      nextProp.hoveredImgs.indexOf(nextProp.id) !== -1) {
+      return false;
+    }
+    return true;
   }
   handleClick = () => {
     if (!this.regionSelection) {
@@ -126,7 +142,7 @@ class Image extends Component<ImageProp> {
         }
       });
     }
-    return connectDragSource((
+    return (
       <div
         className="Image"
         style={{
@@ -134,28 +150,25 @@ class Image extends Component<ImageProp> {
           pointerEvents: 'auto'
         }}
       >
-        <div
-          style={{
-            padding: '2px',
-            border: `2px solid ${selected ? '#0E70E8' : 'rgba(0,0,0,0)'}`,
-            borderRadius: '4px',
-            marginBottom: 8
-          }}
-          onClick={this.handleClick}
-          onMouseDown={this.handleMouseDown}
-          onContextMenu={this.handleContextMenu}
-        >
-          <img
-            src={this.props.src}
+        {connectDragSource((
+          <div
             style={{
-              width: this.props.width || 200,
-              verticalAlign: 'bottom',
-              borderRadius: '2px',
+              padding: '2px',
+              border: `2px solid ${selected ? '#0E70E8' : 'rgba(0,0,0,0)'}`,
+              borderRadius: '4px',
+              marginBottom: 8,
+              WebkitTransition: 'border-color .15s ease'
             }}
-            alt="img"
-            onDoubleClick={this.handleDoubleClick}
-          />
-        </div>
+            onClick={this.handleClick}
+            onMouseDown={this.handleMouseDown}
+            onContextMenu={this.handleContextMenu}
+          >
+            <SimpleImage
+              imgPath={this.props.src}
+              width={this.props.width || 200}
+            />
+          </div>))
+        }
         <div
           style={{
             width: this.props.width || 200,
@@ -186,7 +199,7 @@ class Image extends Component<ImageProp> {
             {this.props.size}
           </span>
         </div>
-      </div>));
+      </div>);
   }
 }
 
