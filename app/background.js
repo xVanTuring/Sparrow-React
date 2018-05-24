@@ -105,7 +105,7 @@ const addImage = (fileObj, folder, cb) => {
   const filePath = fileObj.path;
   const fileName = fileObj.name;
   const fileSize = fileObj.size;
-  const lastModified = fileObj.lastModified;
+  const { lastModified } = fileObj;
 
   const targetPath = path.join(settings.get('rootDir'), 'images', id);
   const targetImgPath = path.join(targetPath, fileName);
@@ -219,15 +219,19 @@ ipcRenderer.on('addImages', (event, [fileObjs, targetFolder]) => {
   });
 });
 ipcRenderer.on('addImagesToFolder', (event, [images, targetFolder, setFolder]) => {
-  // console.log(images);
-  // console.log(targetFolder);
-  // console.log(setFolder);
   const folders = [targetFolder];
   images.forEach(img => {
     addToUpdateImageQueue(img, {
-      folders
+      folders,
+      isDeleted: false
     });
-    console.log(img);
+  });
+});
+ipcRenderer.on('setImageDeleted', (event, images: string[]) => {
+  images.forEach(img => {
+    addToUpdateImageQueue(img, {
+      isDeleted: true
+    });
   });
 });
 const initLibrary = () => {

@@ -60,7 +60,10 @@ ipcMain.on('addImagesToFolder', (event, data) => {
 ipcMain.on('imageUpdated', (event, newImageMeta) => {
   mainWindow.webContents.send('imageUpdated', newImageMeta);
 });
-
+ipcMain.on('deleteImages', (event, images) => {
+  console.log(images);
+  backgroundWindow.webContents.send('setImageDeleted', images);
+});
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

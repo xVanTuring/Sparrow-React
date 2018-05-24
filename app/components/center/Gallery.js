@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import Masonry from 'react-masonry-component';
 import Image from './Image';
 import { listDiff } from '../utils';
-
+// TODO: use React Virtualized or other to opti the list
 
 type GalleryProps = {
   images: List,

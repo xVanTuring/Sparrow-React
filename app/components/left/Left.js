@@ -72,7 +72,7 @@ class Left extends Component<LeftProp> {
   onDropFolder = (e: { dropId: string, dragData: {}, type: string }) => {
     if (e.dropId === PRESET_FOLDER_ID[3]) {
       if (e.dragData.images != null) {
-        ipcRenderer.send('deleteImages', [e.dragData.images]);
+        ipcRenderer.send('deleteImages', e.dragData.images);
       }
 
       return;
