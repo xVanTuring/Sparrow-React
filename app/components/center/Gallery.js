@@ -12,13 +12,6 @@ type GalleryProps = {
   onImageDoubleClick: () => void
 };
 class Gallery extends Component<GalleryProps> {
-  constructor(props) {
-    super(props);
-    this.masonry = null;
-  }
-  componentDidMount() {
-    this.masonry.on('layoutComplete', this.handleLayoutComplete);
-  }
   shouldComponentUpdate(nextProp) {
     if (listDiff(nextProp.images, this.props.images)) {
       console.log('gallery update 1');
@@ -26,20 +19,14 @@ class Gallery extends Component<GalleryProps> {
     }
     return false;
   }
-  componentWillUnmount() {
-    this.masonry.off('layoutComplete', this.handleLayoutComplete);
-  }
-  handleLayoutComplete = () => {
-    console.log(this.masonry.element.offsetLeft);
-  }
+
   render() {
     return (
       <Masonry
         ref={(ref) => {
-          console.log('Gallery Update');
-          this.masonry = this.masonry || ref.masonry;
-          console.log(this.masonry.items[5]);
-          this.props.onRef(ref.masonry);
+          if (ref) {
+            this.props.onRef(ref.masonry);
+          }
         }}
         style={{
           margin: 'auto',

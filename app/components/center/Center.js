@@ -68,10 +68,9 @@ class Center extends Component<Prop> {
     return false;
   }
   handleHover = (newOffset) => {
-    console.log(this.masonry.size.marginLeft);
-    const imgPos = this.masonry.items.map(item => {
-      return convertPos(item, this.masonry.element.offsetLeft, 0);
-    });
+    const imgPos = this.masonry.items.map(item => (
+      convertPos(item, this.masonry.element.offsetLeft, 0)
+    ));
     const { currentMousePos, startMousePos } = this.state;
     const { selectedImgs } = this.props;
     let { offset } = this.state;

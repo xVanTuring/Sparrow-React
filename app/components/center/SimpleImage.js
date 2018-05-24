@@ -6,9 +6,7 @@ type SimpleImageProps = {
 };
 class SimpleImage extends Component<SimpleImageProps> {
   shouldComponentUpdate(nextProps) {
-    if (
-      // nextProps.layoutIndex !== this.props.layoutIndex||
-      nextProps.imgPath !== this.props.imgPath
+    if (nextProps.imgPath !== this.props.imgPath
       || nextProps.width !== this.props.width) {
       console.log('SimpleImage Update');
       return true;

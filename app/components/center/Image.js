@@ -48,10 +48,8 @@ class Image extends Component<ImageProp> {
   handleClick = () => {
     if (!this.regionSelection) {
       if (this.props.selectedImgs.size === 0 || this.props.selectedImgs.size > 1) {
-        console.log('Set');
         this.props.onImageClick([this.props.id]);
       } else if (this.props.selectedImgs.get(0) !== this.props.id) {
-        console.log('Set');
         this.props.onImageClick([this.props.id]);
       }
     }

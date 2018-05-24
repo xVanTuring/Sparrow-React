@@ -94,7 +94,7 @@ app.on('ready', async () => {
   }
   createTray();
   mainWindow = new BrowserWindow({
-    icon: `${__dirname}/dist/icon_small.png`,
+    icon: `${__dirname}/assets/icon_512.png`,
     show: false,
     width: 1024,
     height: 728,
