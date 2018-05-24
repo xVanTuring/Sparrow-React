@@ -1,5 +1,5 @@
 import { List } from 'immutable';
-import { SELECT_IMAGE, SET_IMAGE, ADD_IMAGE, UPDATE_IMAGES } from '../actions/image';
+import { SELECT_IMAGE, SET_IMAGE, ADD_IMAGE, UPDATE_IMAGES, SET_HOVERED_IMAGES } from '../actions/image';
 import { RESET_APP } from '../actions/app';
 
 export const selectedImgs = (state = List([]), action) => {
@@ -25,6 +25,12 @@ export const images = (state = List([]), action) => {
       updatedState = updateImage(updatedState, action.images[i]);
     }
     return updatedState;
+  }
+  return state;
+};
+export const hoveredImages = (state = [], action) => {
+  if (action.type === SET_HOVERED_IMAGES) {
+    return action.images;
   }
   return state;
 };

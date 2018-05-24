@@ -7,10 +7,9 @@ type SimpleImageProps = {
 class SimpleImage extends Component<SimpleImageProps> {
   shouldComponentUpdate(nextProps) {
     if (nextProps.imgPath !== this.props.imgPath || nextProps.width !== this.props.width) {
-      // console.log('Updated');
+      console.log('SimpleImage Update');
       return true;
     }
-    // console.log('Not Updated');
     return false;
   }
   render() {

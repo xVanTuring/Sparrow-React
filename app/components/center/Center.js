@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import { List } from 'immutable';
 import { Slider } from 'antd';
 import settings from 'electron-settings';
-import Masonry from 'react-masonry-component';
 import { connect } from 'react-redux';
 import { DropTarget } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import Image from './Image';
 import DropArea from './DropArea';
-import { selectImage } from '../../actions/image';
+import { selectImage, setHoveredImage } from '../../actions/image';
 import { ImageType } from '../../types/app';
 import BigPicture from './BigPicture';
 import Gallery from './Gallery';
+import arrDiff, { listDiff } from '../utils';
+import TopController from './TopController';
 // TODO: move ALL EVENT TO document and use state to tell actions.
 // TODO: add folder in gallery
 // separate the gallery to a component
@@ -22,17 +22,17 @@ type Prop = {
   canDrop: boolean,
   basePath: string,
   selectedFolder: string,
-  setSelected: (ids: []) => void
+  setSelected: (ids: []) => void,
+  selectedImgs: List<string>
 };
 class Center extends Component<Prop> {
   constructor(props) {
     super(props);
     this.state = {
       isDragging: false,
-      startMousePos: { x: 200, y: 32 },
-      currentMousePos: { x: 200, y: 32 },
+      startMousePos: { x: 0, y: 0 },
+      currentMousePos: { x: 0, y: 0 },
       offset: 0,
-      hoveredImgs: [],
       viewImageId: ''
     };
     this.scroller = null;
@@ -49,11 +49,34 @@ class Center extends Component<Prop> {
       });
     }
   }
+  shouldComponentUpdate(nextProp, nextState) {
+    if (nextProp.selectedImgs !== this.props.selectedImgs) {
+      return true;
+    }
+    if (
+      nextState.offset !== this.state.offset
+      || nextState.isDragging !== this.state.isDragging
+      || nextState.startMousePos.y !== this.state.startMousePos.y
+      || nextState.startMousePos.x !== this.state.startMousePos.x
+      || nextState.currentMousePos.x !== this.state.currentMousePos.x
+      || nextState.currentMousePos.y !== this.state.currentMousePos.y
+    ) {
+      // console.log('Center Update 0');
+      return true;
+    }
+    if (listDiff(this.props.images, nextProp.images)) {
+      // console.log('Center Update 1');
+      return true;
+    }
+    // console.log('Center Not Update');
+    return false;
+  }
   handleHover = (newOffset) => {
     const imgPos = this.masonry.items.map(item => {
       return convertPos(item, this.masonry.size.marginLeft, 0);
     });
-    const { currentMousePos, startMousePos, hoveredImgs } = this.state;
+    const { currentMousePos, startMousePos } = this.state;
+    const { selectedImgs } = this.props;
     let { offset } = this.state;
     offset = newOffset || offset;
     const updatedY = currentMousePos.y + offset;
@@ -69,7 +92,6 @@ class Center extends Component<Prop> {
       width,
       height
     };
-    // TODO: use last index to reduce calcu.
     const interArr: [] = imgPos.map(item => {
       return isIntersect(selectionRect, item);
     });
@@ -79,20 +101,9 @@ class Center extends Component<Prop> {
         newHoveredImgs.push(this.props.images.get(index).id);
       }
     });
-    let diff = false;
-    if (hoveredImgs.length === newHoveredImgs.length) {
-      for (let i = 0; i < hoveredImgs.length; i += 1) {
-        if (hoveredImgs[i] !== newHoveredImgs[i]) {
-          diff = true;
-        }
-      }
-    } else {
-      diff = true;
-    }
+    const diff = arrDiff(selectedImgs.toArray(), newHoveredImgs);
     if (diff) {
-      this.setState({
-        hoveredImgs: newHoveredImgs
-      });
+      this.props.setSelected(newHoveredImgs);
     }
   }
   handleMouseDown = (e) => {
@@ -103,7 +114,7 @@ class Center extends Component<Prop> {
       currentMousePos: { x: e.clientX, y: e.clientY + top },
     });
     this.initScrollTop = top;
-    if (this.props.selectedFolder.length !== 0) {
+    if (this.props.selectedImgs.size !== 0) {
       this.props.setSelected([]);
     }
   }
@@ -117,15 +128,11 @@ class Center extends Component<Prop> {
   }
   handleMouseUp = () => {
     if (this.state.isDragging) {
-      if (!(this.state.hoveredImgs.length === 0 || this.props.selectedFolder.length === 0)) {
-        this.props.setSelected(this.state.hoveredImgs);
-      }
       this.setState({
         isDragging: false,
         startMousePos: { x: 0, y: 0 }, // startMousePos: { x: 200, y: 32 },
         currentMousePos: { x: 0, y: 0 },
         offset: 0,
-        hoveredImgs: []
       });
     }
   }
@@ -171,13 +178,7 @@ class Center extends Component<Prop> {
           bottom: 0,
         }}
       >
-        <div
-          className="bottom_border"
-          style={{
-            height: 32,
-            background: '#535353',
-          }}
-        />
+        <TopController />
         {
           // this.state.viewImageId !== '' ? (
           //   <BigPicture
@@ -209,7 +210,6 @@ class Center extends Component<Prop> {
             images={this.props.images}
             onRef={(ref) => { this.masonry = this.masonry || ref.masonry; }}
             onImageDoubleClick={this.handleImageDoubleClick}
-            hoveredImgs={this.state.hoveredImgs}
           />
           <div
             className="drag-area"
@@ -224,12 +224,12 @@ class Center extends Component<Prop> {
               borderColor: `rgba(58,201,223,${isDragging ? '0.7' : '0'})`,
               pointerEvents: 'none',
               boxSizing: 'border-box',
-              WebkitTransition: 'background-color .5s,border-color 1s',
+              WebkitTransition: 'background-color .5s ease ,border-color .3s',
             }}
           />
 
         </div>
-        <div
+        {/* <div
           className="drop_mask"
           style={{
             position: 'absolute',
@@ -242,7 +242,7 @@ class Center extends Component<Prop> {
           }}
         >
           <DropArea />
-        </div>
+        </div> */}
       </div >
     ));
   }
@@ -279,16 +279,12 @@ const isIntersect = (item1, item2) => {
 };
 export const PRESET_FOLDER_ID = ['--ALL--', '--UNCAT--', '--UNTAG--', '--TRASH--'];
 const filter = (imgs: List, folderId) => {
-  console.log('filter');
+  console.log('Center Folder Filter');
   switch (folderId) {
     case PRESET_FOLDER_ID[0]:
-      return imgs.filter((item) => {
-        return !item.isDeleted;
-      }).toList();
+      return imgs.filter((item) => (!item.isDeleted)).toList();
     case PRESET_FOLDER_ID[3]:
-      return imgs.filter((item) => {
-        return item.isDeleted;
-      }).toList();
+      return imgs.filter((item) => (item.isDeleted)).toList();
     case '':
       return List([]);
     default:
@@ -297,13 +293,13 @@ const filter = (imgs: List, folderId) => {
           return false;
         }
         if (item.folders.length > 0) {
-          let inFolder = false;
-          item.folders.forEach(id => {
+          for (let index = 0; index < item.folders.length; index += 1) {
+            const id = item.folders[index];
             if (id === folderId) {
-              inFolder = true;
+              return true;
             }
-          });
-          return inFolder;
+          }
+          return false;
         }
         return false;
       }).toList();
@@ -313,7 +309,8 @@ const mapStateToProps = (state) => (
   {
     images: filter(state.images, state.selectedFolder),
     basePath: state.basePath,
-    selectedFolder: state.selectedFolder
+    selectedFolder: state.selectedFolder,
+    selectedImgs: state.selectedImgs,
   }
 );
 const mapDispatchToProps = (dispatch) => (

@@ -3,27 +3,29 @@ import settings from 'electron-settings';
 import { List } from 'immutable';
 import Masonry from 'react-masonry-component';
 import Image from './Image';
-import arrDiff from '../utils';
+import arrDiff, { listDiff } from '../utils';
 
 
 type GalleryProps = {
   images: List,
   onRef: (ref) => void,
   onImageDoubleClick: () => void,
-  hoveredImgs: []
+  // hoveredImgs: []
 };
 class Gallery extends Component<GalleryProps> {
   shouldComponentUpdate(nextProp) {
-    if (arrDiff(this.props.hoveredImgs, nextProp.hoveredImgs)) {
+    // if (arrDiff(this.props.hoveredImgs, nextProp.hoveredImgs)) {
+    //   console.log('gallery update 0');
+    //   return true;
+    // }
+    if (listDiff(nextProp.images, this.props.images)) {
+      console.log('gallery update 1');
       return true;
     }
-    if (nextProp.images === this.props.images) {
-      return false;
-    }
-    return true;
+    // console.log('gallery not update');
+    return false;
   }
   render() {
-    console.log('render');
     return (
       <Masonry
         ref={(ref) => {
@@ -44,7 +46,6 @@ class Gallery extends Component<GalleryProps> {
             size={`${item.width}x${item.height}`}
             name={item.name}
             id={item.id}
-            hoveredImgs={this.props.hoveredImgs}
             displayImages={this.props.images}
             onImageDoubleClick={this.props.onImageDoubleClick}
           />))

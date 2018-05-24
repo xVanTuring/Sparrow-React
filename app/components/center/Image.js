@@ -6,6 +6,7 @@ import { DragSource } from 'react-dnd';
 import { selectImage } from '../../actions/image';
 import { ImageType } from '../../types/app';
 import SimpleImage from './SimpleImage';
+import { listDiff } from '../utils';
 
 // TODO: set selectedImg when drag(down)
 export const ImageModel = 'Image';
@@ -20,36 +21,39 @@ type ImageProp = {
   connectDragSource: any,
   // connectDragPreview: any,
   selectedImgs: List<string>,
-  hoveredImgs: string[],
 
   displayImages: List<ImageType>
 };
 class Image extends Component<ImageProp> {
   constructor(props) {
     super(props);
-    this.id = this.props.id;
     this.imgRef = null;
     this.regionSelection = false;
   }
   shouldComponentUpdate(nextProp) {
-    if (nextProp.selectedImgs !== this.props.selectedImgs) {
+    if (listDiff(nextProp.selectedImgs, this.props.selectedImgs)) {
+      if (this.props.selectedImgs.indexOf(this.props.id) === -1
+        && nextProp.selectedImgs.indexOf(nextProp.id) === -1) {
+        return false;
+      }
+      if (this.props.selectedImgs.indexOf(this.props.id) !== -1
+        && nextProp.selectedImgs.indexOf(nextProp.id) !== -1) {
+        return false;
+      }
+
       return true;
     }
-    if (
-      this.props.hoveredImgs.indexOf(this.props.id) === -1 &&
-      nextProp.hoveredImgs.indexOf(nextProp.id) === -1) {
-      return false;
-    }
-    if (
-      this.props.hoveredImgs.indexOf(this.props.id) !== -1 &&
-      nextProp.hoveredImgs.indexOf(nextProp.id) !== -1) {
-      return false;
-    }
-    return true;
+    return false;
   }
   handleClick = () => {
     if (!this.regionSelection) {
-      this.props.onImageClick([this.id]);
+      if (this.props.selectedImgs.size === 0 || this.props.selectedImgs.size > 1) {
+        console.log('Set');
+        this.props.onImageClick([this.props.id]);
+      } else if (this.props.selectedImgs.get(0) !== this.props.id) {
+        console.log('Set');
+        this.props.onImageClick([this.props.id]);
+      }
     }
     this.regionSelection = false;
   }
@@ -117,31 +121,16 @@ class Image extends Component<ImageProp> {
       }
     } else if (!this.isSelected()) {
       this.regionSelection = false;
-      this.props.onImageClick([this.id]);
+      this.props.onImageClick([this.props.id]);
     }
   }
   isSelected = () => {
     const { selectedImgs } = this.props;
-    let selected = false;
-    if (selectedImgs != null) {
-      selectedImgs.forEach((value) => {
-        if (value === this.props.id) {
-          selected = true;
-        }
-      });
-    }
-    return selected;
+    return selectedImgs.indexOf(this.props.id) !== -1;
   }
   render() {
-    const { connectDragSource, hoveredImgs } = this.props;
-    let selected = this.isSelected();
-    if (hoveredImgs != null) {
-      hoveredImgs.forEach((value) => {
-        if (value === this.props.id) {
-          selected = true;
-        }
-      });
-    }
+    const { connectDragSource } = this.props;
+    const selected = this.isSelected();
     return (
       <div
         className="Image"
@@ -205,7 +194,7 @@ class Image extends Component<ImageProp> {
 
 const mapStateToProps = (state) => {
   return {
-    selectedImgs: state.selectedImgs,
+    selectedImgs: state.selectedImgs
   };
 };
 const mapDispatchToProps = (dispatch) => {
