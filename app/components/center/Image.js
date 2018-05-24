@@ -194,7 +194,7 @@ class Image extends Component<ImageProp> {
 
 const mapStateToProps = (state) => {
   return {
-    selectedImgs: state.selectedImgs
+    selectedImgs: state.selectedImgs,
   };
 };
 const mapDispatchToProps = (dispatch) => {

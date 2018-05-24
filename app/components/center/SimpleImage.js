@@ -6,7 +6,10 @@ type SimpleImageProps = {
 };
 class SimpleImage extends Component<SimpleImageProps> {
   shouldComponentUpdate(nextProps) {
-    if (nextProps.imgPath !== this.props.imgPath || nextProps.width !== this.props.width) {
+    if (
+      // nextProps.layoutIndex !== this.props.layoutIndex||
+      nextProps.imgPath !== this.props.imgPath
+      || nextProps.width !== this.props.width) {
       console.log('SimpleImage Update');
       return true;
     }
@@ -27,3 +30,4 @@ class SimpleImage extends Component<SimpleImageProps> {
   }
 }
 export default SimpleImage;
+

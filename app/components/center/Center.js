@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { DropTarget } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import DropArea from './DropArea';
-import { selectImage, setHoveredImage } from '../../actions/image';
+import { selectImage } from '../../actions/image';
 import { ImageType } from '../../types/app';
 import BigPicture from './BigPicture';
 import Gallery from './Gallery';
@@ -20,7 +20,6 @@ type Prop = {
   connectDropTarget: any,
   isOver: boolean,
   canDrop: boolean,
-  basePath: string,
   selectedFolder: string,
   setSelected: (ids: []) => void,
   selectedImgs: List<string>
@@ -61,19 +60,17 @@ class Center extends Component<Prop> {
       || nextState.currentMousePos.x !== this.state.currentMousePos.x
       || nextState.currentMousePos.y !== this.state.currentMousePos.y
     ) {
-      // console.log('Center Update 0');
       return true;
     }
     if (listDiff(this.props.images, nextProp.images)) {
-      // console.log('Center Update 1');
       return true;
     }
-    // console.log('Center Not Update');
     return false;
   }
   handleHover = (newOffset) => {
+    console.log(this.masonry.size.marginLeft);
     const imgPos = this.masonry.items.map(item => {
-      return convertPos(item, this.masonry.size.marginLeft, 0);
+      return convertPos(item, this.masonry.element.offsetLeft, 0);
     });
     const { currentMousePos, startMousePos } = this.state;
     const { selectedImgs } = this.props;
@@ -92,9 +89,7 @@ class Center extends Component<Prop> {
       width,
       height
     };
-    const interArr: [] = imgPos.map(item => {
-      return isIntersect(selectionRect, item);
-    });
+    const interArr: [] = imgPos.map(item => (isIntersect(selectionRect, item)));
     const newHoveredImgs = [];
     interArr.forEach((value, index) => {
       if (value) {
@@ -122,8 +117,9 @@ class Center extends Component<Prop> {
     if (this.state.isDragging) {
       this.setState({
         currentMousePos: { x: e.clientX, y: e.clientY + this.initScrollTop },
+      }, () => {
+        this.handleHover();
       });
-      this.handleHover();
     }
   }
   handleMouseUp = () => {
@@ -141,8 +137,9 @@ class Center extends Component<Prop> {
     if (this.state.isDragging) {
       this.setState({
         offset
+      }, () => {
+        this.handleHover();
       });
-      this.handleHover(offset);
     }
   }
   handleImageDoubleClick = (id: string) => {
@@ -208,7 +205,7 @@ class Center extends Component<Prop> {
         >
           <Gallery
             images={this.props.images}
-            onRef={(ref) => { this.masonry = this.masonry || ref.masonry; }}
+            onRef={(masonry) => { this.masonry = masonry; }}
             onImageDoubleClick={this.handleImageDoubleClick}
           />
           <div
@@ -219,12 +216,12 @@ class Center extends Component<Prop> {
               top: top - 32,
               width,
               height,
-              backgroundColor: `rgba(58,201,223,${isDragging ? '0.43' : '0'})`, // 0.44
-              border: '1px solid', // 0.7
+              backgroundColor: `rgba(58,201,223,${isDragging ? '0.43' : '0'})`,
+              border: '1px solid',
               borderColor: `rgba(58,201,223,${isDragging ? '0.7' : '0'})`,
               pointerEvents: 'none',
               boxSizing: 'border-box',
-              WebkitTransition: 'background-color .5s ease ,border-color .3s',
+              WebkitTransition: 'background-color .1s  ,border-color .3s',
             }}
           />
 
@@ -279,7 +276,6 @@ const isIntersect = (item1, item2) => {
 };
 export const PRESET_FOLDER_ID = ['--ALL--', '--UNCAT--', '--UNTAG--', '--TRASH--'];
 const filter = (imgs: List, folderId) => {
-  console.log('Center Folder Filter');
   switch (folderId) {
     case PRESET_FOLDER_ID[0]:
       return imgs.filter((item) => (!item.isDeleted)).toList();
@@ -308,7 +304,6 @@ const filter = (imgs: List, folderId) => {
 const mapStateToProps = (state) => (
   {
     images: filter(state.images, state.selectedFolder),
-    basePath: state.basePath,
     selectedFolder: state.selectedFolder,
     selectedImgs: state.selectedImgs,
   }

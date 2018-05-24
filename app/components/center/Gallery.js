@@ -3,33 +3,43 @@ import settings from 'electron-settings';
 import { List } from 'immutable';
 import Masonry from 'react-masonry-component';
 import Image from './Image';
-import arrDiff, { listDiff } from '../utils';
+import { listDiff } from '../utils';
 
 
 type GalleryProps = {
   images: List,
   onRef: (ref) => void,
-  onImageDoubleClick: () => void,
-  // hoveredImgs: []
+  onImageDoubleClick: () => void
 };
 class Gallery extends Component<GalleryProps> {
+  constructor(props) {
+    super(props);
+    this.masonry = null;
+  }
+  componentDidMount() {
+    this.masonry.on('layoutComplete', this.handleLayoutComplete);
+  }
   shouldComponentUpdate(nextProp) {
-    // if (arrDiff(this.props.hoveredImgs, nextProp.hoveredImgs)) {
-    //   console.log('gallery update 0');
-    //   return true;
-    // }
     if (listDiff(nextProp.images, this.props.images)) {
       console.log('gallery update 1');
       return true;
     }
-    // console.log('gallery not update');
     return false;
+  }
+  componentWillUnmount() {
+    this.masonry.off('layoutComplete', this.handleLayoutComplete);
+  }
+  handleLayoutComplete = () => {
+    console.log(this.masonry.element.offsetLeft);
   }
   render() {
     return (
       <Masonry
         ref={(ref) => {
-          this.props.onRef(ref);
+          console.log('Gallery Update');
+          this.masonry = this.masonry || ref.masonry;
+          console.log(this.masonry.items[5]);
+          this.props.onRef(ref.masonry);
         }}
         style={{
           margin: 'auto',
@@ -54,4 +64,5 @@ class Gallery extends Component<GalleryProps> {
     );
   }
 }
+
 export default Gallery;
