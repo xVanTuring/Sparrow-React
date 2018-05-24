@@ -2,7 +2,7 @@
 export type ImageType = {
   name: string,
   size: number,
-  modificationTime: number,
+  modificationTime?: number,
   folders: string[],
   width: number,
   height: number,

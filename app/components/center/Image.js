@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { List } from 'immutable';
-import _ from 'lodash';
+// import _ from 'lodash';
 import { connect } from 'react-redux';
 import { DragSource } from 'react-dnd';
 import { selectImage } from '../../actions/image';
@@ -21,7 +21,7 @@ type ImageProp = {
   connectDragSource: any,
   // connectDragPreview: any,
   selectedImgs: List<string>,
-
+  image: ImageType,
   displayImages: List<ImageType>
 };
 class Image extends Component<ImageProp> {
@@ -130,6 +130,7 @@ class Image extends Component<ImageProp> {
     const { connectDragSource } = this.props;
     const selected = this.isSelected();
     return (
+
       <div
         className="Image"
         style={{
@@ -153,6 +154,7 @@ class Image extends Component<ImageProp> {
             <SimpleImage
               imgPath={this.props.src}
               width={this.props.width || 200}
+            // height={(200 / this.props.image.width) * this.props.image.height}
             />
           </div>))
         }
@@ -186,7 +188,8 @@ class Image extends Component<ImageProp> {
             {this.props.size}
           </span>
         </div>
-      </div>);
+      </div>
+    );
   }
 }
 

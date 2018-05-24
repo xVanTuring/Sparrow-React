@@ -19,7 +19,7 @@ type Prop = {
   images: List<ImageType>,
   connectDropTarget: any,
   isOver: boolean,
-  canDrop: boolean,
+  // canDrop: boolean,
   selectedFolder: string,
   setSelected: (ids: []) => void,
   selectedImgs: List<string>
@@ -50,6 +50,9 @@ class Center extends Component<Prop> {
   }
   shouldComponentUpdate(nextProp, nextState) {
     if (nextProp.selectedImgs !== this.props.selectedImgs) {
+      return true;
+    }
+    if (this.props.isOver !== nextProp.isOver) {
       return true;
     }
     if (
@@ -147,7 +150,7 @@ class Center extends Component<Prop> {
     });
   }
   render() {
-    const { connectDropTarget, isOver, canDrop } = this.props;
+    const { connectDropTarget, isOver } = this.props;
     const {
       isDragging,
       startMousePos,
@@ -203,7 +206,6 @@ class Center extends Component<Prop> {
           ref={(ref) => { this.scroller = ref; }}
         >
           <Gallery
-            images={this.props.images}
             onRef={(masonry) => { this.masonry = masonry; }}
             onImageDoubleClick={this.handleImageDoubleClick}
           />
@@ -225,7 +227,7 @@ class Center extends Component<Prop> {
           />
 
         </div>
-        {/* <div
+        <div
           className="drop_mask"
           style={{
             position: 'absolute',
@@ -234,17 +236,16 @@ class Center extends Component<Prop> {
             right: filterOpen ? 200 : 0,
             bottom: 0,
             backgroundColor: 'rgba(0,0,0,0.5)',
-            display: isOver && canDrop ? '' : 'none'
+            display: isOver ? '' : 'none'
           }}
         >
           <DropArea />
-        </div> */}
+        </div>
       </div >
     ));
   }
 }
 const convertPos = (item, marMarginL, marMarginT) => {
-  // console.log(item);
   return {
     width: item.size.width,
     height: item.element.childNodes[0].offsetHeight,
@@ -323,8 +324,7 @@ function collect(_connect, monitor) {
   return {
     connectDropTarget: _connect.dropTarget(),
     isOver: monitor.isOver(),
-    // isOverCurrent: monitor.isOver({ shallow: true }),
-    canDrop: monitor.canDrop(),
+    // canDrop: monitor.canDrop(),
   };
 }
 const DropCenter = DropTarget([NativeTypes.FILE, NativeTypes.URL], centerTarget, collect)(Center);

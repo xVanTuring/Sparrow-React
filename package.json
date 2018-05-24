@@ -213,6 +213,7 @@
     "react-dnd-html5-backend": "^2.6.0",
     "react-dom": "^16.3.2",
     "react-hot-loader": "^4.0.0-beta.13",
+    "react-lazyload": "^2.3.0",
     "react-masonry-component": "^6.2.0",
     "react-redux": "^5.0.6",
     "react-router": "^4.2.0",
