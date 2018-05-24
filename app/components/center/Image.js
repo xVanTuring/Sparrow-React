@@ -40,7 +40,7 @@ class Image extends Component<ImageProp> {
         && nextProp.selectedImgs.indexOf(nextProp.id) !== -1) {
         return false;
       }
-
+      console.log('Image updated');
       return true;
     }
     return false;
@@ -154,7 +154,7 @@ class Image extends Component<ImageProp> {
             <SimpleImage
               imgPath={this.props.src}
               width={this.props.width || 200}
-            // height={(200 / this.props.image.width) * this.props.image.height}
+              height={(200 / this.props.image.width) * this.props.image.height}
             />
           </div>))
         }
