@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-// import LazyLoad from 'react-lazyload';
+
 type SimpleImageProps = {
-  imgPath: string,
-  width: number,
-  height: number
+  imgPath: string
 };
 class SimpleImage extends Component<SimpleImageProps> {
   shouldComponentUpdate(nextProps) {
-    if (nextProps.imgPath !== this.props.imgPath
-      || nextProps.width !== this.props.width) {
+    if (nextProps.imgPath !== this.props.imgPath) {
       console.log('SimpleImage Update');
       return true;
     }
@@ -19,8 +16,8 @@ class SimpleImage extends Component<SimpleImageProps> {
       <img
         src={this.props.imgPath}
         style={{
-          width: this.props.width,
-          height: this.props.height,
+          width: '100%',
+          height: '100%',
           verticalAlign: 'bottom',
           borderRadius: '2px',
         }}

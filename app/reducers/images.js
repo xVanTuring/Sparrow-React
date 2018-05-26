@@ -20,10 +20,12 @@ export const images = (state = List([]), action) => {
   }
   if (action.type === UPDATE_IMAGES) {
     // test on huge mount image without update,but use reload
+    const start = new Date().getTime();
     let updatedState = state;
     for (let i = 0; i < action.images.length; i += 1) {
       updatedState = updateImage(updatedState, action.images[i]);
     }
+    console.log(new Date().getTime() - start);
     return updatedState;
   }
   return state;

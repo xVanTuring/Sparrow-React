@@ -182,14 +182,12 @@ const updateImageQueue = async.queue((task, callback) => {
   updateImage(task.id, task.data, (newImageMeta) => {
     callback(newImageMeta);
   });
-});
+}, 2);
 const addToUpdateImageQueue = (id, data) => {
   updateImageQueue.push({
     id,
     data
   }, (newImageMeta) => {
-    console.log('Image Updated');
-    console.log(newImageMeta);
     ipcRenderer.send('imageUpdated', newImageMeta);
   });
 };

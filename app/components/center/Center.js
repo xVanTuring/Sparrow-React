@@ -135,8 +135,8 @@ class Center extends Component<Prop> {
     }
   }
   handleSroll = () => {
-    const offset = this.scroller.scrollTop - this.initScrollTop;
     if (this.state.isDragging) {
+      const offset = this.scroller.scrollTop - this.initScrollTop;
       this.setState({
         offset
       }, () => {

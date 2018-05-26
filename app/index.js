@@ -51,7 +51,7 @@ function doRender() {
       </AppContainer>,
       document.getElementById('root')
     );
-  }, 500);
+  }, 100);
 }
 
 render(
