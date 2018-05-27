@@ -137,7 +137,10 @@ class Image extends Component<ImageProp> {
         style={{
           margin: '8px',
           width,
-          flexGrow: width
+          flexGrow: width,
+          minHeight: 100,
+          position: 'relative',
+          marginBottom: 36
         }}
       >
         {connectDragSource((
@@ -150,7 +153,7 @@ class Image extends Component<ImageProp> {
               boxSizing: 'border-box',
               border: `2px solid ${selected ? '#0E70E8' : 'rgba(0,0,0,0)'}`,
               borderRadius: '4px',
-              WebkitTransition: 'border-color .15s ease'
+              WebkitTransition: 'border-color .15s ease',
             }}
             onClick={this.handleClick}
             onMouseDown={this.handleMouseDown}
@@ -161,26 +164,36 @@ class Image extends Component<ImageProp> {
             />
           </div>))
         }
-        {/* <div
+        <div
           style={{
-            width: this.props.width || 200,
-            pointerEvents: 'none'
+            marginTop: 4,
+            pointerEvents: 'none',
+            position: 'absolute',
+            height: 36,
+            textAlign: 'center',
+            width: '100%',
+            paddingLeft: 4,
+            paddingRight: 4,
           }}
         >
-          <span
+          <div
             style={{
               color: 'white',
-              fontSize: 16,
-              padding: '2px 6px',
+              fontSize: 12,
+              padding: '0 2px',
               borderRadius: 4,
               textAlign: 'center',
-              whiteSpace: 'pre-wrap',
+              whiteSpace: 'nowrap', // pre-wrap
               wordBreak: 'break-word',
-              // backgroundColor: 'blue'
+              height: 18,
+              lineHeight: '18px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              // backgroundColor: 'red'
             }}
-          >{this.props.name}
-          </span>
-          <br />
+          >
+            {this.props.image.name}
+          </div>
           <span
             style={{
               color: '#686868',
@@ -188,9 +201,9 @@ class Image extends Component<ImageProp> {
               textAlign: 'right'
             }}
           >
-            {this.props.size}
+            {`${this.props.image.width}x${this.props.image.height}`}
           </span>
-        </div> */}
+        </div>
       </div>
     );
   }

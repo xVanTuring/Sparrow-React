@@ -31,7 +31,7 @@ class SimpleImage extends Component<SimpleImageProps> {
           verticalAlign: 'bottom',
           borderRadius: '2px',
           opacity: `${this.state.loaded ? 1 : 0}`,
-          WebkitTransition: 'opacity 0.5s'
+          WebkitTransition: 'opacity 0.3s'
         }}
         alt="img"
       />

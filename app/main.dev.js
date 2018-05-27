@@ -99,8 +99,10 @@ app.on('ready', async () => {
   mainWindow = new BrowserWindow({
     icon: `${__dirname}/assets/icon_512.png`,
     show: false,
-    width: 1024,
-    height: 728,
+    width: 1200,
+    height: 750,
+    minWidth: 1000,
+    minHeight: 720,
     backgroundColor: '#535353',
     webPreferences: {
       nodeIntegrationInWorker: true

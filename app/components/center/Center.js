@@ -37,8 +37,6 @@ class Center extends Component<Prop> {
     this.scroller = null;
     this.masonry = null;
     this.initScrollTop = 0;
-    // TODO: for big picture mode
-    this.folderIndex = {};
   }
   componentWillReceiveProps(nextProp: Prop) {
     if (nextProp.selectedFolder !== this.props.selectedFolder && this.state.viewImageId !== '') {
@@ -178,14 +176,6 @@ class Center extends Component<Prop> {
         }}
       >
         <TopController />
-        {
-          // this.state.viewImageId !== '' ? (
-          //   <BigPicture
-          //     img={this.props.images.filter((item) => (item.id === this.state.viewImageId)).get(0)}
-          //   />
-          // ) : ''
-        }
-
         <div
           style={{
             position: 'absolute',
@@ -206,9 +196,8 @@ class Center extends Component<Prop> {
           ref={(ref) => { this.scroller = ref; }}
         >
           <Gallery
-            onRef={(masonry) => { this.masonry = masonry; }}
             onImageDoubleClick={this.handleImageDoubleClick}
-            folderId="--ALL--"
+          // images={filter(this.props.images, this.props.selectedFolder)}
           />
           <div
             className="drag-area"
@@ -276,12 +265,12 @@ const isIntersect = (item1, item2) => {
   return true;
 };
 export const PRESET_FOLDER_ID = ['--ALL--', '--UNCAT--', '--UNTAG--', '--TRASH--'];
-const filter = (imgs: List, folderId) => {
+export const filter = (imgs: List, folderId) => {
   switch (folderId) {
     case PRESET_FOLDER_ID[0]:
-      return imgs.filter((item) => (!item.isDeleted)).toList();
+      return imgs.filter((item) => (!item.isDeleted));
     case PRESET_FOLDER_ID[3]:
-      return imgs.filter((item) => (item.isDeleted)).toList();
+      return imgs.filter((item) => (item.isDeleted));
     case '':
       return List([]);
     default:
@@ -299,7 +288,7 @@ const filter = (imgs: List, folderId) => {
           return false;
         }
         return false;
-      }).toList();
+      })
   }
 };
 const mapStateToProps = (state) => (
