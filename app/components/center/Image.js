@@ -7,12 +7,10 @@ import { DragSource } from 'react-dnd';
 import { selectImage } from '../../actions/image';
 import { ImageType } from '../../types/app';
 import SimpleImage from './SimpleImage';
-import { listDiff } from '../utils';
 
-// TODO: set selectedImg when drag(down)
 export const ImageModel = 'Image';
 type ImageProp = {
-  selectImage: (id: string) => void,
+  selectImage: (id: string[]) => void,
   onImageDoubleClick: (id: string) => void,
   connectDragSource: any,
   // connectDragPreview: any,
@@ -32,13 +30,13 @@ class Image extends Component<ImageProp> {
     this.regionSelection = false;
   }
   shouldComponentUpdate(nextProp) {
-    if (listDiff(nextProp.selectedImgs, this.props.selectedImgs)) {
+    if (nextProp.selectedImgs !== this.props.selectedImgs) {
       if (this.props.selectedImgs.indexOf(this.props.image.id) === -1
-        && nextProp.selectedImgs.indexOf(nextProp.id) === -1) {
+        && nextProp.selectedImgs.indexOf(nextProp.image.id) === -1) {
         return false;
       }
       if (this.props.selectedImgs.indexOf(this.props.image.id) !== -1
-        && nextProp.selectedImgs.indexOf(nextProp.id) !== -1) {
+        && nextProp.selectedImgs.indexOf(nextProp.image.id) !== -1) {
         return false;
       }
       return true;
@@ -46,15 +44,14 @@ class Image extends Component<ImageProp> {
     return false;
   }
   handleClick = () => {
-    this.props.selectImage([this.props.image.id]);
-    // if (!this.regionSelection) {
-    //   if (this.props.selectedImgs.size === 0 || this.props.selectedImgs.size > 1) {
-    //     this.props.selectImage([this.props.image.id]);
-    //   } else if (this.props.selectedImgs.get(0) !== this.props.image.id) {
-    //     this.props.selectImage([this.props.image.id]);
-    //   }
-    // }
-    // this.regionSelection = false;
+    if (!this.regionSelection) {
+      if (this.props.selectedImgs.size === 0 || this.props.selectedImgs.size > 1) {
+        this.props.selectImage([this.props.image.id]);
+      } else if (this.props.selectedImgs.get(0) !== this.props.image.id) {
+        this.props.selectImage([this.props.image.id]);
+      }
+    }
+    this.regionSelection = false;
   }
   handleDoubleClick = () => {
     const { onImageDoubleClick } = this.props;
@@ -68,7 +65,6 @@ class Image extends Component<ImageProp> {
   handleMouseDown = (e) => {
     e.stopPropagation();
     if (e.shiftKey) {
-      // lose the first selectedKey
       this.regionSelection = true;
       const {
         displayImages,
@@ -111,7 +107,7 @@ class Image extends Component<ImageProp> {
         selectedImgs,
         image
       } = this.props;
-      const id = image.id;
+      const { id } = image;
       if (selectedImgs.indexOf(id) === -1) {
         const newSelected = selectedImgs.push(id);
         this.props.selectImage(newSelected);
@@ -136,7 +132,6 @@ class Image extends Component<ImageProp> {
     const width = image.width * (150 / normalHeight(image.height, image.width));
     const selected = this.isSelected();
     return (
-
       <div
         className="Image"
         style={{
@@ -144,7 +139,6 @@ class Image extends Component<ImageProp> {
           width,
           flexGrow: width
         }}
-
       >
         {connectDragSource((
           <div
@@ -159,7 +153,7 @@ class Image extends Component<ImageProp> {
               WebkitTransition: 'border-color .15s ease'
             }}
             onClick={this.handleClick}
-          // onMouseDown={this.handleMouseDown}
+            onMouseDown={this.handleMouseDown}
           // onContextMenu={this.handleContextMenu}
           >
             <SimpleImage
@@ -209,13 +203,13 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    selectImage: (id) => {
+    selectImage: (id: string[]) => {
       dispatch(selectImage(id));
     }
   };
 };
 const imageSource = {
-  beginDrag(props, monitor) {
+  beginDrag(props) {
     return { images: props.selectedImgs.toArray() };
   }
 };

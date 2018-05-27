@@ -3,7 +3,7 @@ export const SET_IMAGE = 'SET_IMAGE';
 export const ADD_IMAGE = 'ADD_IMAGE';
 export const UPDATE_IMAGES = 'UPDATE_IMAGES';
 export const SET_HOVERED_IMAGES = 'SET_HOVERED_IMAGES';
-export function selectImage(ids) {
+export function selectImage(ids: string[]) {
   return {
     type: SELECT_IMAGE,
     ids

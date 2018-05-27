@@ -4,9 +4,14 @@ type SimpleImageProps = {
   imgPath: string
 };
 class SimpleImage extends Component<SimpleImageProps> {
-  shouldComponentUpdate(nextProps) {
-    if (nextProps.imgPath !== this.props.imgPath) {
-      console.log('SimpleImage Update');
+  constructor(props) {
+    super(props);
+    this.state = {
+      loaded: false
+    };
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.imgPath !== this.props.imgPath || this.state.loaded !== nextState.loaded) {
       return true;
     }
     return false;
@@ -14,12 +19,19 @@ class SimpleImage extends Component<SimpleImageProps> {
   render() {
     return (
       <img
+        onLoad={() => {
+          this.setState({
+            loaded: true
+          });
+        }}
         src={this.props.imgPath}
         style={{
           width: '100%',
           height: '100%',
           verticalAlign: 'bottom',
           borderRadius: '2px',
+          opacity: `${this.state.loaded ? 1 : 0}`,
+          WebkitTransition: 'opacity 0.5s'
         }}
         alt="img"
       />

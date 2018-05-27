@@ -104,16 +104,16 @@ class Center extends Component<Prop> {
     }
   }
   handleMouseDown = (e) => {
-    const top = this.scroller.scrollTop;
-    this.setState({
-      isDragging: true,
-      startMousePos: { x: e.clientX, y: e.clientY + top },
-      currentMousePos: { x: e.clientX, y: e.clientY + top },
-    });
-    this.initScrollTop = top;
-    if (this.props.selectedImgs.size !== 0) {
-      this.props.setSelected([]);
-    }
+    // const top = this.scroller.scrollTop;
+    // this.setState({
+    //   isDragging: true,
+    //   startMousePos: { x: e.clientX, y: e.clientY + top },
+    //   currentMousePos: { x: e.clientX, y: e.clientY + top },
+    // });
+    // this.initScrollTop = top;
+    // if (this.props.selectedImgs.size !== 0) {
+    //   this.props.setSelected([]);
+    // }
   }
   handleMouseMove = (e) => {
     if (this.state.isDragging) {
@@ -208,6 +208,7 @@ class Center extends Component<Prop> {
           <Gallery
             onRef={(masonry) => { this.masonry = masonry; }}
             onImageDoubleClick={this.handleImageDoubleClick}
+            folderId="--ALL--"
           />
           <div
             className="drag-area"
