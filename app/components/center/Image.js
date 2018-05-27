@@ -129,7 +129,7 @@ class Image extends Component<ImageProp> {
       connectDragSource,
       image
     } = this.props;
-    const width = image.width * (150 / normalHeight(image.height, image.width));
+    const width = image.width * (200 / normalHeight(image.height, image.width));
     const selected = this.isSelected();
     return (
       <div

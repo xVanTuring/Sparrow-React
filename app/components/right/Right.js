@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
-import { Input, Divider, } from 'antd';
+import { Input, Divider, List, } from 'antd';
 import { connect } from 'react-redux';
 import settings from 'electron-settings';
 import ColorPan from './ColorPan';
 import STag from './STag';
 import TagArea from './TagArea';
 import { mapToArr } from '../../utils/utils';
-import { FolderType } from '../../types/app';
+import { FolderType, ImageType } from '../../types/app';
 
 const { ipcRenderer } = require('electron');
 
 type RightProps = {
-  images?: any,
+  images?: List<ImageType>,
   folders: FolderType[]
 };
 class Right extends Component<RightProps> {
@@ -41,7 +41,7 @@ class Right extends Component<RightProps> {
   }
 
   handleNameBlur = (name) => {
-    if (name !== '' && (!this.nameInputCancelBlur)) {
+    if (name !== '' && (name !== this.props.images.get(0).name) && (!this.nameInputCancelBlur)) {
       ipcRenderer.send('setImageName', [this.props.images.get(0).id, name]);
     } else {
       this.nameInputCancelBlur = false;
@@ -49,6 +49,9 @@ class Right extends Component<RightProps> {
         currentName: this.props.images.get(0).name
       });
     }
+  }
+  handleFolderTagClosed = (id) => {
+    ipcRenderer.send('deleteImageFolder', [this.props.images.get(0).id, id]);
   }
 
   render() {
@@ -171,11 +174,6 @@ class Right extends Component<RightProps> {
                   }}
                   ref={(ref) => { this.nameInput = ref; }}
                 />
-                {/* <Input
-                  style={{
-                    marginTop: 16,
-                  }}
-                /> */}
                 <TagArea
                   imgTags={selectedImage.tags}
                   currentId={selectedImage.id}
@@ -213,7 +211,7 @@ class Right extends Component<RightProps> {
                   {
                     folderTag.map(item => {
                       return (
-                        <STag value={item.name} key={item.id} />
+                        <STag value={item.name} key={item.id} id={item.id} onClose={this.handleFolderTagClosed} />
                       );
                     })
                   }

@@ -64,6 +64,12 @@ ipcMain.on('deleteImages', (event, images) => {
   console.log(images);
   backgroundWindow.webContents.send('setImageDeleted', images);
 });
+ipcMain.on('deleteImageFolder', (event, data) => {
+  backgroundWindow.webContents.send('deleteImageFolder', data);
+});
+ipcMain.on('setImageName', (_, data) => {
+  backgroundWindow.webContents.send('setImageName', data);
+});
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

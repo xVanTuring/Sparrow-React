@@ -32,10 +32,11 @@ class Center extends Component<Prop> {
       startMousePos: { x: 0, y: 0 },
       currentMousePos: { x: 0, y: 0 },
       offset: 0,
-      viewImageId: ''
+      viewImageId: '',
+      scrollTop: 0
     };
     this.scroller = null;
-    this.masonry = null;
+    // this.masonry = null;
     this.initScrollTop = 0;
   }
   componentWillReceiveProps(nextProp: Prop) {
@@ -60,6 +61,7 @@ class Center extends Component<Prop> {
       || nextState.startMousePos.x !== this.state.startMousePos.x
       || nextState.currentMousePos.x !== this.state.currentMousePos.x
       || nextState.currentMousePos.y !== this.state.currentMousePos.y
+      || nextState.scrollTop !== this.state.scrollTop
     ) {
       return true;
     }
@@ -133,19 +135,27 @@ class Center extends Component<Prop> {
     }
   }
   handleSroll = () => {
-    if (this.state.isDragging) {
-      const offset = this.scroller.scrollTop - this.initScrollTop;
-      this.setState({
-        offset
-      }, () => {
-        this.handleHover();
-      });
-    }
+    // if (this.state.isDragging) {
+    //   const offset = this.scroller.scrollTop - this.initScrollTop;
+    //   this.setState({
+    //     offset
+    //   }, () => {
+    //     this.handleHover();
+    //   });
+    // }
+    this.setState({
+      scrollTop: this.scroller.scrollTop
+    });
   }
   handleImageDoubleClick = (id: string) => {
     this.setState({
       viewImageId: id
     });
+  }
+  setScrollTop = (value) => {
+    if (this.scroller) {
+      this.scroller.scrollTop = value;
+    }
   }
   render() {
     const { connectDropTarget, isOver } = this.props;
@@ -177,6 +187,7 @@ class Center extends Component<Prop> {
       >
         <TopController />
         <div
+          className="container"
           style={{
             position: 'absolute',
             top: 32,
@@ -188,15 +199,17 @@ class Center extends Component<Prop> {
             overflowX: 'hidden',
             display: this.state.viewImageId === '' ? '' : 'none'
           }}
-          onMouseDown={this.handleMouseDown}
-          onMouseMove={this.handleMouseMove}
-          onMouseUp={this.handleMouseUp}
-          onMouseLeave={this.handleMouseUp}
+          // onMouseDown={this.handleMouseDown}
+          // onMouseMove={this.handleMouseMove}
+          // onMouseUp={this.handleMouseUp}
+          // onMouseLeave={this.handleMouseUp}
           onScroll={this.handleSroll}
           ref={(ref) => { this.scroller = ref; }}
         >
           <Gallery
             onImageDoubleClick={this.handleImageDoubleClick}
+            setScrollTop={this.setScrollTop}
+            scrollTop={this.state.scrollTop}
           // images={filter(this.props.images, this.props.selectedFolder)}
           />
           <div

@@ -4,11 +4,19 @@ type SimpleImageProps = {
   imgPath: string
 };
 class SimpleImage extends Component<SimpleImageProps> {
+  // TODO: use global setting to disable the opacity anim
   constructor(props) {
     super(props);
     this.state = {
-      loaded: false
+      loaded: true
     };
+  }
+  componentWillReceiveProps(nextProps) {
+    // if (nextProps.imgPath !== this.props.imgPath) {
+    //   this.setState({
+    //     loaded: true
+    //   });
+    // }
   }
   shouldComponentUpdate(nextProps, nextState) {
     if (nextProps.imgPath !== this.props.imgPath || this.state.loaded !== nextState.loaded) {
@@ -31,7 +39,7 @@ class SimpleImage extends Component<SimpleImageProps> {
           verticalAlign: 'bottom',
           borderRadius: '2px',
           opacity: `${this.state.loaded ? 1 : 0}`,
-          WebkitTransition: 'opacity 0.3s'
+          WebkitTransition: 'opacity 0.5s ease'
         }}
         alt="img"
       />

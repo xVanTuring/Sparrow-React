@@ -45,7 +45,7 @@ class App extends Component<Props> {
               [
                 <Left key="left" />,
                 <Center key="center" />,
-                // <Right key="right" />
+                <Right key="right" />
               ]
             )
         }

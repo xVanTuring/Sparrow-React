@@ -6,6 +6,7 @@ type STagProps = {
   onClose?: Function,
   onClick?: Function,
   value?: string,
+  id?: string,
   type?: string // 0 1 2
 };
 class STag extends Component<STagProps> {
@@ -108,9 +109,9 @@ class STag extends Component<STagProps> {
             }}
           >
             <Tag
-              color={color ? color : 'rgb(45, 183, 245)'}
+              color={color || 'rgb(45, 183, 245)'}
               closable
-              onClose={onClose}
+              onClose={() => { onClose(this.props.id); }}
             >
               <Icon type="folder" style={{ margin: '0 4px 0 0' }} />
               {value == null ? this.props.children : value}

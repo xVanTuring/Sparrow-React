@@ -9,6 +9,7 @@ import gm from 'gm';
 import palette from 'image-palette2';
 import { ipcRenderer, remote } from 'electron';
 import updateFolders from './utils/utils';
+import { ImageType } from './types/app';
 
 
 const { app } = remote;
@@ -151,12 +152,34 @@ const addImage = (fileObj, folder, cb) => {
       });
   });
 };
-const updateImage = (id, data, cb) => {
+const updateImage = (id, data, concat = false, remove = false, cb) => {
   readImageMeta(id, (meta) => {
-    const newImageMeta = {
+    let newImageMeta = {
       ...meta,
-      ...data
     };
+    if (concat) {
+      Object.keys(data).forEach(key => {
+        if (newImageMeta[key] && newImageMeta[key] instanceof Array) {
+          newImageMeta[key] = Array.from(new Set(newImageMeta[key].concat(data[key])));
+        } else {
+          newImageMeta[key] = data[key];
+        }
+      });
+    } else if (remove) {
+      Object.keys(data).forEach(key => {
+        if (newImageMeta[key] && newImageMeta[key] instanceof Array) {
+          if (newImageMeta[key].indexOf(data[key]) !== -1) {
+            newImageMeta[key].splice(newImageMeta[key].indexOf(data[key]), 1);
+          }
+        }
+      });
+    } else {
+      newImageMeta = {
+        ...meta,
+        ...data
+      };
+    }
+
     saveImageMeta(id, newImageMeta, () => {
       cb(newImageMeta);
     });
@@ -179,14 +202,16 @@ const addToProcessQueue = (file, parentFolder) => {
 };
 
 const updateImageQueue = async.queue((task, callback) => {
-  updateImage(task.id, task.data, (newImageMeta) => {
+  updateImage(task.id, task.data, task.concat, task.remove, (newImageMeta) => {
     callback(newImageMeta);
   });
 }, 2);
-const addToUpdateImageQueue = (id, data) => {
+const addToUpdateImageQueue = (id, data, concat = false, remove = false) => {
   updateImageQueue.push({
     id,
-    data
+    data,
+    concat,
+    remove
   }, (newImageMeta) => {
     ipcRenderer.send('imageUpdated', newImageMeta);
   });
@@ -218,12 +243,51 @@ ipcRenderer.on('addImages', (event, [fileObjs, targetFolder]) => {
 });
 ipcRenderer.on('addImagesToFolder', (event, [images, targetFolder, setFolder]) => {
   const folders = [targetFolder];
-  images.forEach(img => {
-    addToUpdateImageQueue(img, {
-      folders,
-      isDeleted: false
+  if (setFolder) {
+    images.forEach(img => {
+      addToUpdateImageQueue(img, {
+        folders,
+        isDeleted: false
+      });
+    });
+  } else {
+    console.log('add Folder');
+    images.forEach(img => {
+      addToUpdateImageQueue(img, {
+        folders,
+        isDeleted: false
+      }, true);
+    });
+  }
+});
+ipcRenderer.on('setImageName', (event, [imageId, newName]) => {
+  readImageMeta(imageId, (meta) => {
+    const oldName = meta.name;
+    console.log('One');
+    fse.rename(
+      path.join(settings.get('rootDir'), 'images', imageId, `${oldName}.${meta.ext}`),
+      path.join(settings.get('rootDir'), 'images', imageId, `${newName}.${meta.ext}`)
+    ).then(() => {
+      console.log('Two');
+      return fse.rename(
+        path.join(settings.get('rootDir'), 'images', imageId, `${oldName}_thumb.png`),
+        path.join(settings.get('rootDir'), 'images', imageId, `${newName}_thumb.png`)
+      );
+    }).then(() => {
+      console.log('Three');
+      addToUpdateImageQueue(imageId, {
+        name: newName
+      });
+      return true;
+    }).catch((err) => {
+      console.log('ERR', err);
     });
   });
+});
+ipcRenderer.on('deleteImageFolder', (event, [imageId, folderId]) => {
+  addToUpdateImageQueue(imageId, {
+    folders: folderId
+  }, false, true);
 });
 ipcRenderer.on('setImageDeleted', (event, images: string[]) => {
   images.forEach(img => {
