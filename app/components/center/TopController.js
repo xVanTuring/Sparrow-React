@@ -25,9 +25,9 @@ class TopController extends PureComponent<TopControllerProps> {
             width: 120,
             margin: '8px auto'
           }}
-          min={0.3}
+          min={0.5}
           max={2.5}
-          step={0.1}
+          step={0.2}
           defaultValue={1}
           onChange={this.handleSliderChange}
         />

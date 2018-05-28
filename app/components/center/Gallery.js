@@ -51,7 +51,7 @@ class Gallery extends Component<GalleryProps> {
     }
     if (nextProps.images !== this.props.images ||
       nextProps.selectedFolder !== this.props.selectedFolder
-      // || nextProps.imageHeight !== this.props.imageHeight
+      || nextProps.imageHeight !== this.props.imageHeight
     ) {
       return true;
     }

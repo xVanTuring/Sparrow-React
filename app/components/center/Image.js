@@ -146,8 +146,8 @@ class Image extends Component<ImageProp> {
         style={{
           margin: '8px',
           width,
-          // flexGrow: width,
-          // minHeight: 60,
+          flexGrow: width,
+          minHeight: 60,
           position: 'relative',
           // marginBottom: showName ? 36 : 0
         }}
