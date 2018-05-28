@@ -16,7 +16,8 @@ type ImageProp = {
   // connectDragPreview: any,
   selectedImgs: List<string>,
   displayImages: List<ImageType>,
-  image: ImageType
+  image: ImageType,
+  imageHeight: number
 };
 const normalHeight = (h, w) => {
   if (h / w > 2 && w > 640) {
@@ -30,6 +31,9 @@ class Image extends Component<ImageProp> {
     this.regionSelection = false;
   }
   shouldComponentUpdate(nextProp) {
+    if (nextProp.imageHeight !== this.props.imageHeight) {
+      return true;
+    }
     if (nextProp.selectedImgs !== this.props.selectedImgs) {
       if (this.props.selectedImgs.indexOf(this.props.image.id) === -1
         && nextProp.selectedImgs.indexOf(nextProp.image.id) === -1) {
@@ -127,9 +131,10 @@ class Image extends Component<ImageProp> {
   render() {
     const {
       connectDragSource,
-      image
+      image,
+      imageHeight
     } = this.props;
-    const width = image.width * (200 / normalHeight(image.height, image.width));
+    const width = image.width * (imageHeight / normalHeight(image.height, image.width));
     const selected = this.isSelected();
     return (
       <div
@@ -210,11 +215,11 @@ class Image extends Component<ImageProp> {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
+const mapStateToProps = (state) => (
+  {
     selectedImgs: state.selectedImgs,
-  };
-};
+    imageHeight: state.imageHeight
+  });
 const mapDispatchToProps = (dispatch) => {
   return {
     selectImage: (id: string[]) => {

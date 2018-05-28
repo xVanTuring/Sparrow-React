@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Set } from 'immutable';
 import { connect } from 'react-redux';
 import { Input, Popover, } from 'antd';
 import AlphabetList from 'react-alphabet-list';
@@ -8,9 +9,9 @@ import STag from './STag';
 const { ipcRenderer } = require('electron');
 
 type TagAreaProps = {
-  currentId: string,
-  tags: [],
-  imgTags: string[]
+  currentId: string | string[],
+  tags: Set,
+  currentTags: string[]
 };
 class TagArea extends Component<TagAreaProps> {
   constructor(props) {
@@ -19,34 +20,55 @@ class TagArea extends Component<TagAreaProps> {
       searchContent: '',
       opened: false
     };
-    // this.focused = false;
-    // this.input = null;
+    this.filteredTags = null;
   }
   handleTagClick = (tag, type) => {
     if (type === 'add') {
-      ipcRenderer.send('addTag', [this.props.currentId, tag]);
+      if (this.props.currentId instanceof Array) {
+        ipcRenderer.send('addImagesTag', [this.props.currentId, tag]);
+      } else {
+        ipcRenderer.send('addImagesTag', [[this.props.currentId], tag]);
+      }
     } else {
       this.handleOnClose(tag);
     }
   }
-  handleOnClose = (value) => {
-    ipcRenderer.send('removeTag', [this.props.currentId, value]);
+  handleOnClose = (tag) => {
+    if (this.props.currentId instanceof Array) {
+      ipcRenderer.send('deleteImagesTag', [this.props.currentId, tag]);
+    } else {
+      ipcRenderer.send('deleteImagesTag', [[this.props.currentId], tag]);
+    }
   }
   handleVisibleChange = (visible) => {
     this.setState({
       opened: visible
-    })
+    });
+  }
+  handleInputChange = (e) => {
+    this.setState({
+      searchContent: e.target.value
+    });
+  }
+  handleEnterPress = () => {
+    if (!(this.filteredTags.size > 0 && this.filteredTags.contains(this.state.searchContent))) {
+      this.handleTagClick(this.state.searchContent, 'add');
+    }
+  }
+  handleInputKeyDown = (e) => {
+    console.log(e.keyCode);
   }
   render() {
     const {
       tags,
-      imgTags
+      currentTags
     } = this.props;
     const {
       opened
     } = this.state;
     const { searchContent } = this.state;
     const filteredTags = tagFilter(searchContent, tags);
+    this.filteredTags = filteredTags;
     return (
       <Popover
         style={{
@@ -75,17 +97,10 @@ class TagArea extends Component<TagAreaProps> {
             <Input.Search
               autoFocus
               placeholder="Search yours tags"
-              onPressEnter={() => {
-                if (!(filteredTags.length > 0 && filteredTags.indexOf(searchContent) > -1)) {
-                  this.handleTagClick(searchContent, 'add');
-                }
-              }}
+              onPressEnter={this.handleEnterPress}
               value={searchContent}
-              onChange={(e) => {
-                this.setState({
-                  searchContent: e.target.value
-                });
-              }}
+              onChange={this.handleInputChange}
+              onKeyDown={this.handleInputKeyDown}
             />
             <div
               style={{
@@ -93,16 +108,16 @@ class TagArea extends Component<TagAreaProps> {
               }}
             >
               {
-                filteredTags.length > 0 ? (
+                filteredTags.size > 0 ? (
                   <AlphabetList
                     style={{
                       width: 300,
-                      height: 360
+                      height: 380
                     }}
                     data={filteredTags}
                     generateFn={
                       (item, index) => {
-                        if (imgTags.indexOf(item) >= 0) {
+                        if (currentTags.indexOf(item) >= 0) {
                           return (
                             <STag key={item + index} value={item} type="3" onClick={this.handleTagClick} />
                           );
@@ -150,8 +165,8 @@ class TagArea extends Component<TagAreaProps> {
           }}
         >
           {
-            imgTags.length > 0 ?
-              imgTags.map((item) => (
+            currentTags.length > 0 ?
+              currentTags.map((item) => (
                 <STag key={item} color="#2db7f5" value={item} type="1" onClose={this.handleOnClose} />
               ))
               :
@@ -162,7 +177,7 @@ class TagArea extends Component<TagAreaProps> {
     );
   }
 }
-const tagFilter = (key: string, tags: string[]) => {
+const tagFilter = (key: string, tags: Set) => {
   if (key === '') {
     return tags;
   }

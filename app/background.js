@@ -3,6 +3,7 @@ import settings from 'electron-settings';
 import _ from 'lodash';
 import uuid from 'uuid/v1';
 import async from 'async';
+import randomWord from 'random-words';
 import fse from 'fs-extra';
 import path from 'path';
 import gm from 'gm';
@@ -12,7 +13,7 @@ import updateFolders from './utils/utils';
 import { ImageType } from './types/app';
 
 
-const { app } = remote;
+// const { app } = remote;
 const createLibrary = (libraryPath, cb) => {
   const libraryMetaPath = path.join(libraryPath, 'metadata.json');
   const libraryTagPath = path.join(libraryPath, 'tags.json');
@@ -296,9 +297,29 @@ ipcRenderer.on('setImageDeleted', (event, images: string[]) => {
     });
   });
 });
+ipcRenderer.on('addImagesTag', (event, [ids, tag]) => {
+  ids.forEach(id => {
+    addToUpdateImageQueue(id, {
+      tags: [tag]
+    }, true, false);
+  });
+});
+ipcRenderer.on('deleteImagesTag', (event, [ids, tag]) => {
+  ids.forEach(id => {
+    addToUpdateImageQueue(id, {
+      tags: tag
+    }, false, true);
+  });
+});
+ipcRenderer.on('setImagesAnnotation', (event, [ids, annotation]) => {
+  ids.forEach(id => {
+    addToUpdateImageQueue(id, {
+      annotation
+    });
+  });
+});
 const initLibrary = () => {
   const rootDir = settings.get('rootDir');
-  // console.log(rootDir);
   if (!rootDir || !fse.existsSync(path.join(rootDir, 'metadata.json'))) {
     ipcRenderer.send('go-welcome');
   } else {
@@ -309,7 +330,8 @@ const initLibrary = () => {
         ipcRenderer.send('done-loadLibrary', {
           folders: meta.folders,
           images,
-          initStatus: false
+          initStatus: false,
+          tags: randomWord(50)
         });
       });
     });

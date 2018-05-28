@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 // import { Map } from 'immutable';
 import * as folders from './folder';
 import * as images from './images';
-import * as tags from './tags';
+import tags from './tags';
 import * as keys from './keys';
 import * as app from './app';
 import { RESET_APP } from '../actions/app';
@@ -16,7 +16,7 @@ const basePath = (state = '') => state;
 const reducer = combineReducers({
   ...folders,
   ...images,
-  ...tags,
+  tags,
   ...keys,
   ...app,
   basePath

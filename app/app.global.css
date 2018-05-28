@@ -5,7 +5,20 @@
 
 
 @import '~antd/dist/antd.css';
-
+@import '~rc-slider/assets/index.css';
+.rc-slider-handle:active{
+  box-shadow: none;
+  border:0px;
+}
+.rc-slider-rail{
+  background-color:rgb(116, 116, 116);
+}
+.rc-slider-handle{
+  border: 1px;
+}
+.rc-slider-track{
+ background-color: #0988ff;
+}
 .wrap::after{
   /* make sure the last image will not scale */
   content: '';

@@ -10,11 +10,39 @@ type STagProps = {
   type?: string // 0 1 2
 };
 class STag extends Component<STagProps> {
+  handleTypeOneClick = (e) => {
+    e.stopPropagation();
+    if (this.props.onClick != null) {
+      this.props.onClick(e);
+    }
+  }
+  hadleTypeTwoClick = (e) => {
+    e.stopPropagation();
+    if (this.props.onClick != null) {
+      this.props.onClick(this.props.value, 'add');
+    }
+  };
+  handleTypeThreeClick = (e) => {
+    e.stopPropagation();
+    if (this.props.onClick != null) {
+      this.props.onClick(this.props.value, 'remove');
+    }
+  }
+  handleTypeFolderClick = (e) => {
+    e.stopPropagation();
+    if (this.props.onClick != null) {
+      this.props.onClick(e);
+    }
+  }
+  handleTypeOneClose = () => {
+    this.props.onClose(this.props.value);
+  }
+  handleTypeFolderClose = () => {
+    this.props.onClose(this.props.id);
+  }
   render() {
     const {
       color,
-      onClose,
-      onClick,
       value,
       type
     } = this.props;
@@ -26,17 +54,12 @@ class STag extends Component<STagProps> {
             style={{
               display: 'inline-block'
             }}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onClick != null) {
-                onClick(e);
-              }
-            }}
+            onClick={this.handleTypeOneClick}
           >
             <Tag
               closable
               color={color}
-              onClose={() => { onClose(value); }}
+              onClose={this.handleTypeOneClose}
             >
               {value == null ? this.props.children : value}
             </Tag>
@@ -49,16 +72,7 @@ class STag extends Component<STagProps> {
             style={{
               display: 'inline-block'
             }}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onClick != null) {
-                onClick(this.props.value, 'add');
-              }
-            }}
-            onContextMenu={(e) => {
-              // delete without save to history
-              e.preventDefault();
-            }}
+            onClick={this.hadleTypeTwoClick}
           >
             <Tag
               color={color || 'rgb(51, 51, 51)'}
@@ -75,16 +89,7 @@ class STag extends Component<STagProps> {
             style={{
               display: 'inline-block'
             }}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onClick != null) {
-                onClick(value, 'remove');
-              }
-            }}
-            onContextMenu={(e) => {
-              // delete without save to history
-              e.preventDefault();
-            }}
+            onClick={this.handleTypeThreeClick}
           >
             <Tag
               color={color || 'rgb(45, 183, 245)'}
@@ -101,17 +106,12 @@ class STag extends Component<STagProps> {
             style={{
               display: 'block'
             }}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onClick != null) {
-                onClick(e);
-              }
-            }}
+            onClick={this.handleTypeFolderClick}
           >
             <Tag
               color={color || 'rgb(45, 183, 245)'}
               closable
-              onClose={() => { onClose(this.props.id); }}
+              onClose={this.handleTypeFolderClose}
             >
               <Icon type="folder" style={{ margin: '0 4px 0 0' }} />
               {value == null ? this.props.children : value}
@@ -120,5 +120,7 @@ class STag extends Component<STagProps> {
         );
     }
   }
+
+
 }
 export default STag;

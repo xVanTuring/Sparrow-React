@@ -1,6 +1,6 @@
 import React from 'react';
 // import _ from 'lodash';
-import { List } from 'immutable';
+import { List, Set } from 'immutable';
 import { ipcRenderer } from 'electron';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
@@ -24,12 +24,14 @@ ipcRenderer.on('go-welcome', () => {
 ipcRenderer.on('done-loadLibrary', (event, data) => {
   console.log('done-loadLibrary');
   if (store != null) {
+    console.log('233');
     store.dispatch(resetApp(data));
   } else {
     store = configureStore({
       initStatus: false,
       folders: data.folders,
-      images: List(data.images)
+      images: List(data.images),
+      tags: Set(data.tags)
     });
     doRender();
   }

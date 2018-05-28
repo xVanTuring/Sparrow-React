@@ -70,6 +70,13 @@ ipcMain.on('deleteImageFolder', (event, data) => {
 ipcMain.on('setImageName', (_, data) => {
   backgroundWindow.webContents.send('setImageName', data);
 });
+ipcMain.on('addImagesTag', (event, data) => {
+  console.log('Add Image Tag', data);
+  backgroundWindow.webContents.send('addImagesTag', data);
+});
+ipcMain.on('deleteImagesTag', (event, data) => {
+  backgroundWindow.webContents.send('deleteImagesTag', data);
+});
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

@@ -18,3 +18,4 @@ export function increaseLayoutIndex() {
     type: INCREASE_LAYOUT_INDEX
   };
 }
+

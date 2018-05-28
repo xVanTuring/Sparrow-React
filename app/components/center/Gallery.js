@@ -6,9 +6,11 @@ import Image from './Image';
 import { ImageType } from '../../types/app';
 import { filter } from './Center';
 
+// TODO: add init children about 50-70 items
 type GalleryProps = {
   images: List<ImageType>,
   selectedFolder: string,
+  imageHeight: number,
   onImageDoubleClick: () => void
 };
 class Gallery extends Component<GalleryProps> {
@@ -47,12 +49,11 @@ class Gallery extends Component<GalleryProps> {
       return true;
     }
     if (nextProps.images !== this.props.images ||
-      nextProps.selectedFolder !== this.props.selectedFolder) {
-      return false;
+      nextProps.selectedFolder !== this.props.selectedFolder ||
+      nextProps.imageHeight !== this.props.imageHeight) {
+      return true;
     }
     return false;
-  }
-  componentDidUpdate() {
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
@@ -101,7 +102,8 @@ class Gallery extends Component<GalleryProps> {
 const mapStateToProps = (state) => (
   {
     images: state.images,
-    selectedFolder: state.selectedFolder
+    selectedFolder: state.selectedFolder,
+    imageHeight: state.imageHeight
   }
 );
 export default connect(mapStateToProps)(Gallery);

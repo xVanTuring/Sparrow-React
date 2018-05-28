@@ -1,5 +1,5 @@
 import { List } from 'immutable';
-import { SELECT_IMAGE, SET_IMAGE, ADD_IMAGE, UPDATE_IMAGES, SET_HOVERED_IMAGES } from '../actions/image';
+import { SELECT_IMAGE, SET_IMAGE, ADD_IMAGE, UPDATE_IMAGES, SET_HOVERED_IMAGES, SET_IMAGE_HEIGHT } from '../actions/image';
 import { RESET_APP } from '../actions/app';
 
 export const selectedImgs = (state = List([]), action) => {
@@ -41,4 +41,10 @@ const updateImage = (state: List, image) => {
       return state.update(i, () => image);
     }
   }
+};
+export const imageHeight = (status = 200, action) => {
+  if (action.type === SET_IMAGE_HEIGHT) {
+    return action.height;
+  }
+  return status;
 };

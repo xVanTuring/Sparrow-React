@@ -11,7 +11,7 @@ import { FolderType, ImageType } from '../../types/app';
 const { ipcRenderer } = require('electron');
 
 type RightProps = {
-  images?: List<ImageType>,
+  images: List<ImageType> | undefined,
   folders: FolderType[]
 };
 class Right extends Component<RightProps> {
@@ -20,11 +20,13 @@ class Right extends Component<RightProps> {
 
     if (this.props.images) {
       this.state = {
-        currentName: this.props.images.get(0).name
+        currentName: this.props.images.get(0).name,
+        currentAnno: this.props.images.get(0).annotation
       };
     } else {
       this.state = {
-        currentName: null
+        currentName: null,
+        currentAnno: null
       };
     }
   }
@@ -175,7 +177,7 @@ class Right extends Component<RightProps> {
                   ref={(ref) => { this.nameInput = ref; }}
                 />
                 <TagArea
-                  imgTags={selectedImage.tags}
+                  currentTags={selectedImage.tags}
                   currentId={selectedImage.id}
                 />
 
@@ -184,6 +186,7 @@ class Right extends Component<RightProps> {
                     height: 90,
                     width: '100%',
                     marginTop: 16,
+                    lineHeight: '14px',
                     backgroundColor: '#333',
                     color: 'white',
                     outline: 'none',
@@ -191,6 +194,12 @@ class Right extends Component<RightProps> {
                     fontSize: '12px'
                   }}
                   placeholder="Add Annotation"
+                  value={this.state.currentAnno}
+                  onChange={(e) => {
+                    this.setState({
+                      currentAnno: e.target.value
+                    });
+                  }}
                 />
                 <Divider style={{
                   backgroundColor: '#333',
