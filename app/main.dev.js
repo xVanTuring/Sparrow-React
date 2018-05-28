@@ -107,7 +107,7 @@ app.on('ready', async () => {
     show: false,
     width: 1200,
     height: 750,
-    minWidth: 1000,
+    minWidth: 1200,
     minHeight: 720,
     backgroundColor: '#535353',
     webPreferences: {
@@ -141,9 +141,6 @@ app.on('ready', async () => {
   mainWindow.on('will-navigate', (e) => {
     e.preventDefault();
   });
-  // mainWindow.on('closed', () => {
-  //   mainWindow = null;
-  // });
 });
 function createTray() {
   if (tray && !tray.isDestroyed()) {

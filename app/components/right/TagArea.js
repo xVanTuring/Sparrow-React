@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Input, Popover, } from 'antd';
 import AlphabetList from 'react-alphabet-list';
 import STag from './STag';
-// TODO: right click to delete tag
 // TODO: add pin icon
 // TODO: search existed tag click to add to img
 const { ipcRenderer } = require('electron');
@@ -12,7 +11,6 @@ type TagAreaProps = {
   currentId: string,
   tags: [],
   imgTags: string[]
-
 };
 class TagArea extends Component<TagAreaProps> {
   constructor(props) {

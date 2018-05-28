@@ -302,9 +302,7 @@ const initLibrary = () => {
   if (!rootDir || !fse.existsSync(path.join(rootDir, 'metadata.json'))) {
     ipcRenderer.send('go-welcome');
   } else {
-    const cacheFile = path.join(app.getPath('userData'), 'cache');
-
-    // console.log(cacheFile);
+    // const cacheFile = path.join(app.getPath('userData'), 'cache');
     readMeta(rootDir, (meta) => {
       readImages(rootDir, (images) => {
         updateFolders(meta.folders);

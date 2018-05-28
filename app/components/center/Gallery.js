@@ -9,9 +9,7 @@ import { filter } from './Center';
 type GalleryProps = {
   images: List<ImageType>,
   selectedFolder: string,
-  onImageDoubleClick: () => void,
-  setScrollTop: (value: number) => void,
-  scrollTop: number
+  onImageDoubleClick: () => void
 };
 class Gallery extends Component<GalleryProps> {
   constructor(props) {
@@ -21,28 +19,25 @@ class Gallery extends Component<GalleryProps> {
       pageLoaded: Map(),
       images: filter(this.props.images, this.props.selectedFolder)
     };
-    // this.infinte = React.createRef();
-    this.scrollTop = 0;
-    this.scrollTopMap = {};
   }
   componentDidMount() {
     window.addEventListener('resize', this.handleResize);
   }
   componentWillReceiveProps(nextProps) {
-    // if (nextProps.selectedFolder === this.props.selectedFolder) {
-    //   this.scrollTopMap[this.props.selectedFolder] = nextProps.scrollTop;
-    // }
-    // if (nextProps.selectedFolder === this.props.selectedFolder) {
-    //   this.scrollTopMap[this.props.selectedFolder] = nextProps.scrollTop;
-    // }
-
     if (nextProps.images !== this.props.images ||
       nextProps.selectedFolder !== this.props.selectedFolder) {
-      this.setState({
-        pageElements: List([]),
-        images: filter(nextProps.images, nextProps.selectedFolder),
-        pageLoaded: this.state.pageLoaded.set(this.props.selectedFolder, 0)
-      });
+      if (nextProps.selectedFolder !== this.props.selectedFolder) {
+        this.setState({
+          pageElements: List([]),
+          images: filter(nextProps.images, nextProps.selectedFolder),
+          pageLoaded: this.state.pageLoaded.set(this.props.selectedFolder, 0)
+        });
+      } else {
+        this.setState({
+          images: filter(nextProps.images, nextProps.selectedFolder),
+          pageLoaded: this.state.pageLoaded.set(this.props.selectedFolder, 0)
+        });
+      }
     }
   }
   shouldComponentUpdate(nextProps, nextState) {
@@ -69,27 +64,19 @@ class Gallery extends Component<GalleryProps> {
     if (this.state.images.size > this.state.pageElements.size) {
       const newData = this.state.pageLoaded.set(this.props.selectedFolder, page);
       this.setState({
-        pageElements: this.state.images.slice(0, 10 * page).map((item) => (
-          <Image
-            key={item.id}
-            displayImages={this.props.images}
-            onImageDoubleClick={this.props.onImageDoubleClick}
-            image={item}
-          />
-        )),
+        pageElements: this.state.images.slice(0, 10 * page),
         pageLoaded: newData
       });
     }
   }
-
   render() {
     return (
       <InfiniteScroll
-        className="wrap"
         pageStart={this.state.pageLoaded.get(this.props.selectedFolder, 0)}
         loadMore={this.loadMore}
         hasMore={this.state.images.size > this.state.pageElements.size}
         useWindow={false}
+        className="wrap"
         style={{
           margin: '0 auto',
           width: 'calc(100% - 24px)',
@@ -98,7 +85,13 @@ class Gallery extends Component<GalleryProps> {
         }}
       >
         {
-          this.state.pageElements
+          this.state.pageElements.map((item) => (
+            <Image
+              key={item.id}
+              displayImages={this.props.images}
+              onImageDoubleClick={this.props.onImageDoubleClick}
+              image={item}
+            />))
         }
       </InfiniteScroll>
 

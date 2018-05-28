@@ -8,15 +8,8 @@ class SimpleImage extends Component<SimpleImageProps> {
   constructor(props) {
     super(props);
     this.state = {
-      loaded: true
+      loaded: false
     };
-  }
-  componentWillReceiveProps(nextProps) {
-    // if (nextProps.imgPath !== this.props.imgPath) {
-    //   this.setState({
-    //     loaded: true
-    //   });
-    // }
   }
   shouldComponentUpdate(nextProps, nextState) {
     if (nextProps.imgPath !== this.props.imgPath || this.state.loaded !== nextState.loaded) {

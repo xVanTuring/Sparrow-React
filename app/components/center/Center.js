@@ -143,9 +143,6 @@ class Center extends Component<Prop> {
     //     this.handleHover();
     //   });
     // }
-    this.setState({
-      scrollTop: this.scroller.scrollTop
-    });
   }
   handleImageDoubleClick = (id: string) => {
     this.setState({
@@ -208,9 +205,6 @@ class Center extends Component<Prop> {
         >
           <Gallery
             onImageDoubleClick={this.handleImageDoubleClick}
-            setScrollTop={this.setScrollTop}
-            scrollTop={this.state.scrollTop}
-          // images={filter(this.props.images, this.props.selectedFolder)}
           />
           <div
             className="drag-area"

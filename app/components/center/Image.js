@@ -140,7 +140,7 @@ class Image extends Component<ImageProp> {
           flexGrow: width,
           minHeight: 100,
           position: 'relative',
-          marginBottom: 36
+          marginBottom: 12
         }}
       >
         {connectDragSource((
@@ -174,6 +174,7 @@ class Image extends Component<ImageProp> {
             width: '100%',
             paddingLeft: 4,
             paddingRight: 4,
+            display: 'none'
           }}
         >
           <div
