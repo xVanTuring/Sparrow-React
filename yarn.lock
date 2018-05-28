@@ -90,6 +90,24 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
+"@egjs/component@^2.1.0":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@egjs/component/-/component-2.1.1.tgz#f09fc412ba138d7b8a83078e8864760526066e58"
+  dependencies:
+    xml2js "^0.4.19"
+
+"@egjs/infinitegrid@^3.3.4":
+  version "3.3.5"
+  resolved "https://registry.yarnpkg.com/@egjs/infinitegrid/-/infinitegrid-3.3.5.tgz#a40feed6928283024c2dbefab115cd1c69e2e738"
+  dependencies:
+    "@egjs/component" "^2.1.0"
+
+"@egjs/react-infinitegrid@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@egjs/react-infinitegrid/-/react-infinitegrid-0.2.3.tgz#b3df427c3b50068b8097378ee3c1042356a06e90"
+  dependencies:
+    "@egjs/infinitegrid" "^3.3.4"
+
 "@types/node@*":
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.0.tgz#b85a0bcf1e1cc84eb4901b7e96966aedc6f078d1"
@@ -8667,6 +8685,12 @@ react-infinite-scroller@^1.1.4:
   dependencies:
     prop-types "^15.5.8"
 
+react-lazily-render@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-lazily-render/-/react-lazily-render-1.0.1.tgz#9a3826443b97ab291b69f4b45c5530d4e6680089"
+  dependencies:
+    scrollparent "^2.0.1"
+
 react-lazy-load@^3.0.12:
   version "3.0.13"
   resolved "https://registry.yarnpkg.com/react-lazy-load/-/react-lazy-load-3.0.13.tgz#3b0a92d336d43d3f0d73cbe6f35b17050b08b824"
@@ -9412,7 +9436,7 @@ sass-loader@^6.0.6:
     lodash.tail "^4.1.1"
     pify "^3.0.0"
 
-sax@^1.2.4, sax@~1.2.1:
+sax@>=0.6.0, sax@^1.2.4, sax@~1.2.1:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
 
@@ -9428,6 +9452,10 @@ schema-utils@^0.4.2, schema-utils@^0.4.3:
   dependencies:
     ajv "^5.0.0"
     ajv-keywords "^2.1.0"
+
+scrollparent@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/scrollparent/-/scrollparent-2.0.1.tgz#715d5b9cc57760fb22bdccc3befb5bfe06b1a317"
 
 scss-tokenizer@^0.2.3:
   version "0.2.3"
@@ -11254,9 +11282,20 @@ xml-name-validator@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xml-name-validator/-/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
 
+xml2js@^0.4.19:
+  version "0.4.19"
+  resolved "https://registry.yarnpkg.com/xml2js/-/xml2js-0.4.19.tgz#686c20f213209e94abf0d1bcf1efaa291c7827a7"
+  dependencies:
+    sax ">=0.6.0"
+    xmlbuilder "~9.0.1"
+
 xmlbuilder@8.2.2:
   version "8.2.2"
   resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-8.2.2.tgz#69248673410b4ba42e1a6136551d2922335aa773"
+
+xmlbuilder@~9.0.1:
+  version "9.0.7"
+  resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-9.0.7.tgz#132ee63d2ec5565c557e20f4c22df9aca686b10d"
 
 xmldom@0.1.x:
   version "0.1.27"

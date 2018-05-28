@@ -134,6 +134,10 @@ class Image extends Component<ImageProp> {
       image,
       imageHeight
     } = this.props;
+    let showName = true;
+    if (imageHeight < 200 * 0.7) {
+      showName = false;
+    }
     const width = image.width * (imageHeight / normalHeight(image.height, image.width));
     const selected = this.isSelected();
     return (
@@ -142,10 +146,10 @@ class Image extends Component<ImageProp> {
         style={{
           margin: '8px',
           width,
-          flexGrow: width,
-          minHeight: 100,
+          // flexGrow: width,
+          // minHeight: 60,
           position: 'relative',
-          marginBottom: 12
+          // marginBottom: showName ? 36 : 0
         }}
       >
         {connectDragSource((
@@ -179,7 +183,7 @@ class Image extends Component<ImageProp> {
             width: '100%',
             paddingLeft: 4,
             paddingRight: 4,
-            display: 'none'
+            display: 'none' // showName ? '' : 'none'
           }}
         >
           <div
@@ -195,7 +199,6 @@ class Image extends Component<ImageProp> {
               lineHeight: '18px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              // backgroundColor: 'red'
             }}
           >
             {this.props.image.name}

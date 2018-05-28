@@ -25,7 +25,7 @@ class TopController extends PureComponent<TopControllerProps> {
             width: 120,
             margin: '8px auto'
           }}
-          min={0.5}
+          min={0.3}
           max={2.5}
           step={0.1}
           defaultValue={1}

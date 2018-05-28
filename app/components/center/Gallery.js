@@ -7,6 +7,7 @@ import { ImageType } from '../../types/app';
 import { filter } from './Center';
 
 // TODO: add init children about 50-70 items
+// TODO: lazy load
 type GalleryProps = {
   images: List<ImageType>,
   selectedFolder: string,
@@ -49,8 +50,9 @@ class Gallery extends Component<GalleryProps> {
       return true;
     }
     if (nextProps.images !== this.props.images ||
-      nextProps.selectedFolder !== this.props.selectedFolder ||
-      nextProps.imageHeight !== this.props.imageHeight) {
+      nextProps.selectedFolder !== this.props.selectedFolder
+      // || nextProps.imageHeight !== this.props.imageHeight
+    ) {
       return true;
     }
     return false;
