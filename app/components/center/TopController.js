@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 import Slider from 'rc-slider';
 import { setImageHeight } from '../../actions/image';
 
@@ -9,7 +10,7 @@ type TopControllerProps = {
 
 class TopController extends PureComponent<TopControllerProps> {
   handleSliderChange = (v) => {
-    this.props.setImageHieght(parseInt(200 * v, 10));
+    this.props.setImageHieght(Math.ceil(200 * v));
   }
   render() {
     return (
@@ -26,8 +27,8 @@ class TopController extends PureComponent<TopControllerProps> {
             margin: '8px auto'
           }}
           min={0.5}
-          max={2.5}
-          step={0.2}
+          max={2}
+          step={0.1}
           defaultValue={1}
           onChange={this.handleSliderChange}
         />

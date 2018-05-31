@@ -19,12 +19,6 @@ type ImageProp = {
   image: ImageType,
   imageHeight: number
 };
-const normalHeight = (h, w) => {
-  if (h / w > 2 && w > 640) {
-    return w * 2;
-  }
-  return h;
-};
 class Image extends Component<ImageProp> {
   constructor(props) {
     super(props);
@@ -135,28 +129,19 @@ class Image extends Component<ImageProp> {
       imageHeight
     } = this.props;
     let showName = true;
-    if (imageHeight < 200 * 0.7) {
+    if (imageHeight <= 200 * 0.6) {
       showName = false;
     }
-    const width = image.width * (imageHeight / normalHeight(image.height, image.width));
     const selected = this.isSelected();
     return (
       <div
-        className="Image"
         style={{
-          margin: '8px',
-          width,
-          flexGrow: width,
-          minHeight: 60,
-          position: 'relative',
-          // marginBottom: showName ? 36 : 0
+          padding: 12
         }}
       >
         {connectDragSource((
           <div
             style={{
-              height: '100%',
-              width: '100%',
               objectFit: 'cover',
               padding: 2,
               boxSizing: 'border-box',
@@ -177,13 +162,12 @@ class Image extends Component<ImageProp> {
           style={{
             marginTop: 4,
             pointerEvents: 'none',
-            position: 'absolute',
             height: 36,
             textAlign: 'center',
             width: '100%',
             paddingLeft: 4,
             paddingRight: 4,
-            display: 'none' // showName ? '' : 'none'
+            display: showName ? '' : 'none'
           }}
         >
           <div

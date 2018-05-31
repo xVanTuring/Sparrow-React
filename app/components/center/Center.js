@@ -295,7 +295,7 @@ export const filter = (imgs: List, folderId) => {
           return false;
         }
         return false;
-      })
+      });
   }
 };
 const mapStateToProps = (state) => (
