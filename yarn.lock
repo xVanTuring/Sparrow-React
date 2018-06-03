@@ -96,17 +96,16 @@
   dependencies:
     xml2js "^0.4.19"
 
-"@egjs/infinitegrid@^3.3.4":
+"@egjs/infinitegrid@^3.3.4", "@egjs/infinitegrid@^3.3.5":
   version "3.3.5"
   resolved "https://registry.yarnpkg.com/@egjs/infinitegrid/-/infinitegrid-3.3.5.tgz#a40feed6928283024c2dbefab115cd1c69e2e738"
   dependencies:
     "@egjs/component" "^2.1.0"
 
-"@egjs/react-infinitegrid@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@egjs/react-infinitegrid/-/react-infinitegrid-0.2.3.tgz#b3df427c3b50068b8097378ee3c1042356a06e90"
+"@egjs/react-infinitegrid@file:../egjs-infinitegrid/packages/react-infinitegrid/":
+  version "0.2.7"
   dependencies:
-    "@egjs/infinitegrid" "^3.3.4"
+    "@egjs/infinitegrid" "^3.3.5"
 
 "@egjs/react-layout@^1.3.2":
   version "1.3.2"

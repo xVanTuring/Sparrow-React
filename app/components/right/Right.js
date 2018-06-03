@@ -33,7 +33,8 @@ class Right extends Component<RightProps> {
   componentWillReceiveProps(nextProps) {
     if (nextProps.images) {
       this.setState({
-        currentName: nextProps.images.get(0).name
+        currentName: nextProps.images.get(0).name,
+        currentAnno: nextProps.images.get(0).annotation
       });
     } else {
       this.setState({
@@ -55,7 +56,14 @@ class Right extends Component<RightProps> {
   handleFolderTagClosed = (id) => {
     ipcRenderer.send('deleteImageFolder', [this.props.images.get(0).id, id]);
   }
-
+  handleAnnoBlur = () => {
+    ipcRenderer.send('setAnno', [[this.props.images.get(0).id], this.state.currentAnno]);
+  }
+  handleAnnoKeyDown = (e) => {
+    if (e.keyCode === 13 && e.ctrlKey) {
+      this.handleAnnoBlur();
+    }
+  }
   render() {
     const {
       images,
@@ -200,6 +208,8 @@ class Right extends Component<RightProps> {
                       currentAnno: e.target.value
                     });
                   }}
+                  onBlur={this.handleAnnoBlur}
+                  onKeyDown={this.handleAnnoKeyDown}
                 />
                 <Divider style={{
                   backgroundColor: '#333',

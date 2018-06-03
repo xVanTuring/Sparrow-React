@@ -1,14 +1,8 @@
 import React, { Component } from 'react';
 import { JustifiedLayout } from '@egjs/react-infinitegrid';
 import { connect } from 'react-redux';
-import settings from 'electron-settings';
+// import settings from 'electron-settings';
 import { List } from 'immutable';
-import {
-  CellMeasurer,
-  CellMeasurerCache,
-  createMasonryCellPositioner,
-  Masonry
-} from 'react-virtualized';
 import Image from './Image';
 import { ImageType } from '../../types/app';
 import { filter } from './Center';
@@ -25,74 +19,107 @@ class Gallery extends Component<GalleryProps> {
   constructor(props) {
     super(props);
     this.state = {
-      images: filter(this.props.images, this.props.selectedFolder)
+      images: filter(this.props.images, this.props.selectedFolder),
+      pageElement: [],
+      column: 4
     };
-    this.cellWidth = 250;
-    this.cache = new CellMeasurerCache({
-      defaultHeight: 100,
-      defaultWidth: this.cellWidth,
-      fixedWidth: true
-    });
-    this.cellPositioner = createMasonryCellPositioner({
-      cellMeasurerCache: this.cache,
-      columnCount: 3,
-      columnWidth: this.cellWidth,
-      spacer: 10
-    });
   }
-  // Our masonry layout will use 3 columns with a 10px gutter between
-  cellRenderer = ({
-    index,
-    key,
-    parent,
-    style
-  }) => {
-    const image = this.state.images.get(index);
-    // console.log(index, style);
-    // if (style.top != null) {
-    //   posCache[index] = {
-    //     width: style.width,
-    //     height: style.height,
-    //     x: style.left,
-    //     y: style.top
-    //   };
-    // }
-    return (
-      <CellMeasurer cache={this.cache} index={index} key={key} parent={parent}>
-        <div style={style}>
-          <img
-            src={`${settings.get('rootDir')}/images/${image.id}/${image.name}_thumb.png`}
-            style={{
-              height: image.height * (this.cellWidth / image.width),
-              width: this.cellWidth
-            }}
-            alt="img"
-          />
-        </div>
-      </CellMeasurer>
-    );
+  componentDidMount() {
+    window.addEventListener('resize', this.handleResize);
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.selectedFolder !== this.props.selectedFolder) {
+      this.setState({
+        pageElement: [],
+        images: filter(nextProps.images, nextProps.selectedFolder),
+      });
+    } else if (nextProps.imageHeight !== this.props.imageHeight) {
+      const column =
+        Math.ceil((document.body.offsetWidth - 430 - 40) / this.props.imageHeight);
+      if (this.state.column !== column) {
+        this.setState({
+          column
+        });
+      }
+    } else if (nextProps.images !== this.props.images) {
+      this.setState({
+        // pageElement: [],
+        images: filter(nextProps.images, nextProps.selectedFolder),
+      });
+    }
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.imageHeight !== this.props.imageHeight) {
+      this.layout.layout();
+    }
+  }
+  loadItems = (groupKey, start) => {
+    return this.state.images.slice(start, start + 60).map(item => {
+      return {
+        groupKey,
+        item
+      };
+    }).toArray();
+  };
+  onAppend = ({ groupKey }) => {
+    if (this.state.images.size > this.state.pageElement.length) {
+      const { pageElement } = this.state;
+      const start = pageElement.length;
+      const items = this.loadItems((groupKey || 0) + 1, start);
+      this.setState({ pageElement: pageElement.concat(items) });
+    }
+  };
+  handleResize = () => {
+    let column = Math.ceil((document.body.offsetWidth - 430 - 40) / this.props.imageHeight);
+    if (column >= 7) {
+      column = 6;
+    }
+    if (this.state.column !== column) {
+      this.setState({
+        column
+      });
+    }
   }
 
   render() {
-    // const children = this.state.images.map((item) => (
-    //   <Image
-    //     key={item.item.id}
-    //     groupKey={item.groupKey}
-    //     displayImages={this.props.images}
-    //     onImageDoubleClick={this.props.onImageDoubleClick}
-    //     image={item.item}
-    //   />));
     return (
-      <div>
-        <Masonry
-          cellCount={this.state.images.size}
-          cellMeasurerCache={this.cache}
-          cellPositioner={this.cellPositioner}
-          overscanByPixels={100}
-          cellRenderer={this.cellRenderer}
-          height={600}
-          width={800}
-        />
+      <div
+        id="infinite-grid-container"
+        style={{
+          width: '100%',
+          height: '100%',
+          overflow: 'auto'
+        }}
+      >
+        <JustifiedLayout
+          column={this.state.column}
+          ref={ref => {
+            this.layout = this.layout || ref;
+          }}
+          onAppend={this.onAppend}
+          threshold={500}
+          margin={16}
+          style={{
+            width: 'calc(100% - 40px)',
+            margin: '0 auto',
+            marginTop: 8,
+          }}
+          containerId="infinite-grid-container"
+        >
+          {
+            this.state.pageElement.map(item => {
+              return (
+                <Image
+                  groupKey={item.groupKey}
+                  key={item.item.id}
+                  displayImages={this.state.images}
+                  onImageDoubleClick={this.props.onImageDoubleClick}
+                  image={item.item}
+                />
+              );
+            })
+          }
+        </JustifiedLayout>
       </div>
     );
   }

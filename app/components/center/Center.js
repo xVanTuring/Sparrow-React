@@ -192,7 +192,7 @@ class Center extends Component<Prop> {
             right: filterOpen ? 200 : 0,
             left: 0,
             backgroundColor: '#303030',
-            overflow: 'auto',
+            overflow: 'hidden',
             overflowX: 'hidden',
             display: this.state.viewImageId === '' ? '' : 'none'
           }}

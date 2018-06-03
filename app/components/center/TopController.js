@@ -36,8 +36,9 @@ class TopController extends PureComponent<TopControllerProps> {
     );
   }
 }
-const mapStateToProps = () => (
+const mapStateToProps = (state) => (
   {
+    imageSize: state.imageHeight
   }
 );
 const mapDispatchToProps = (dispatch) => (

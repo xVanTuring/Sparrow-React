@@ -77,6 +77,9 @@ ipcMain.on('addImagesTag', (event, data) => {
 ipcMain.on('deleteImagesTag', (event, data) => {
   backgroundWindow.webContents.send('deleteImagesTag', data);
 });
+ipcMain.on('setAnno', (event, data) => {
+  backgroundWindow.webContents.send('setAnno', data);
+});
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

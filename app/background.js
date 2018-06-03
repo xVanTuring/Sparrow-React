@@ -311,7 +311,8 @@ ipcRenderer.on('deleteImagesTag', (event, [ids, tag]) => {
     }, false, true);
   });
 });
-ipcRenderer.on('setImagesAnnotation', (event, [ids, annotation]) => {
+ipcRenderer.on('setAnno', (event, [ids, annotation]) => {
+  console.log('setAnno')
   ids.forEach(id => {
     addToUpdateImageQueue(id, {
       annotation
@@ -323,15 +324,20 @@ const initLibrary = () => {
   if (!rootDir || !fse.existsSync(path.join(rootDir, 'metadata.json'))) {
     ipcRenderer.send('go-welcome');
   } else {
-    // const cacheFile = path.join(app.getPath('userData'), 'cache');
     readMeta(rootDir, (meta) => {
       readImages(rootDir, (images) => {
+        const tagSet = new Set();
+        images.forEach(item => {
+          item.tags.forEach(tag => {
+            tagSet.add(tag);
+          });
+        });
         updateFolders(meta.folders);
         ipcRenderer.send('done-loadLibrary', {
           folders: meta.folders,
           images,
           initStatus: false,
-          tags: randomWord(50)
+          tags: Array.from(tagSet)
         });
       });
     });
