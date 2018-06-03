@@ -7,6 +7,7 @@ import STag from './STag';
 import TagArea from './TagArea';
 import { mapToArr } from '../../utils/utils';
 import { FolderType, ImageType } from '../../types/app';
+import ImageInfo from './ImageInfo';
 
 const { ipcRenderer } = require('electron');
 
@@ -72,10 +73,11 @@ class Right extends Component<RightProps> {
     let selectedImage = null;
     let selectedImagePath = '';
     const folderTag = [];
+    const date = new Date();
     if (images != null && images.size > 0) {
       selectedImage = images.get(0);
       selectedImagePath = `${settings.get('rootDir')}/images/${selectedImage.id}/${selectedImage.name}_thumb.png`;
-
+      date.setTime(this.props.images.get(0).lastModified);
       folders.forEach(item => {
         selectedImage.folders.forEach(item2 => {
           if (item.id === item2) {
@@ -241,9 +243,24 @@ class Right extends Component<RightProps> {
                   marginBottom: 8
                 }}
                 />
+                <div
+                  className="image-info"
+                >
+                  <ImageInfo name="File Size" value={`${this.props.images.get(0).size / 1000} KB`} />
+                  <ImageInfo name="File Type" value={`${this.props.images.get(0).ext.toUpperCase()}`} />
+                  <ImageInfo
+                    name="Resolution"
+                    value={`${this.props.images.get(0).width} x ${this.props.images.get(0).height}`}
+                  />
+                  <ImageInfo
+                    name="Modify Time"
+                    value={`${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`}
+                  />
+                </div>
               </div>)
         }
       </div>);
+
   }
 }
 const filter = (images, selected) => {

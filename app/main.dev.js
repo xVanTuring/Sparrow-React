@@ -71,7 +71,6 @@ ipcMain.on('setImageName', (_, data) => {
   backgroundWindow.webContents.send('setImageName', data);
 });
 ipcMain.on('addImagesTag', (event, data) => {
-  console.log('Add Image Tag', data);
   backgroundWindow.webContents.send('addImagesTag', data);
 });
 ipcMain.on('deleteImagesTag', (event, data) => {
