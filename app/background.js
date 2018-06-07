@@ -180,9 +180,8 @@ const updateImage = (id, data, concat = false, remove = false, cb) => {
         ...data
       };
     }
-
     saveImageMeta(id, newImageMeta, () => {
-      cb(newImageMeta);
+      cb(newImageMeta, !!data.tags);
     });
   });
 };
@@ -197,14 +196,13 @@ const addToProcessQueue = (file, parentFolder) => {
     file,
     parentFolder
   }, (imageMeta) => {
-    console.log(processQueue.length);
     ipcRenderer.send('imageAdded', imageMeta);
   });
 };
 
 const updateImageQueue = async.queue((task, callback) => {
-  updateImage(task.id, task.data, task.concat, task.remove, (newImageMeta) => {
-    callback(newImageMeta);
+  updateImage(task.id, task.data, task.concat, task.remove, (newImageMeta, updateTags) => {
+    callback(newImageMeta, updateTags);
   });
 }, 2);
 const addToUpdateImageQueue = (id, data, concat = false, remove = false) => {
@@ -213,7 +211,11 @@ const addToUpdateImageQueue = (id, data, concat = false, remove = false) => {
     data,
     concat,
     remove
-  }, (newImageMeta) => {
+  }, (newImageMeta, updateTags) => {
+    console.log(updateTags);
+    if (updateTags) {
+      ipcRenderer.send('tagsUpdated');
+    }
     ipcRenderer.send('imageUpdated', newImageMeta);
   });
 };
@@ -312,7 +314,6 @@ ipcRenderer.on('deleteImagesTag', (event, [ids, tag]) => {
   });
 });
 ipcRenderer.on('setAnno', (event, [ids, annotation]) => {
-  console.log('setAnno')
   ids.forEach(id => {
     addToUpdateImageQueue(id, {
       annotation
